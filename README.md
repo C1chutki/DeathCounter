@@ -1,24 +1,46 @@
-<<<<<<< HEAD
 # EldenDeathCounter
 
-Windows desktop app for tracking Elden Ring deaths locally with a live always-on-top overlay.
+## Overview
 
-The overlay text is:
+EldenDeathCounter is a Windows desktop app for tracking Elden Ring deaths locally. It provides a WPF control window and an always-on-top click-through overlay that can show the total death count, active boss information, boss-specific deaths, and boss timer details.
+
+The default local data folder remains:
 
 ```text
-Śmierci: 0
+%USERPROFILE%\Desktop\EldenDeathCounter\
 ```
+
+## Features
+
+- Tracks total deaths and stores the counter locally.
+- Shows a transparent, always-on-top overlay for use while playing.
+- Provides manual controls and global hotkeys for adding, subtracting, and recording boss victories.
+- Stores active boss state and completed boss history.
+- Can detect Elden Ring death screens from local screen captures.
+- Can detect configured death phrases such as `YOU DIED` and `NIE ŻYJESZ`.
+- Can attempt to read active boss names from the boss health bar area while detection is running.
+- Supports English and Polish counter text, including examples such as `Deaths` and `Śmierci`.
+- Writes local logs and detection diagnostics for troubleshooting.
+
+## Requirements
+
+- Windows 10 version 19041 or later.
+- .NET 9 SDK.
+- Elden Ring running in borderless fullscreen or windowed mode for the most reliable overlay behavior.
+- Windows OCR language support for English and/or Polish if OCR detection is used.
+
+The app targets `net9.0-windows10.0.19041.0` and `win-x64`.
 
 ## Build
 
-This machine currently has .NET SDK 9.0.305 installed, so the project targets `net9.0-windows10.0.19041.0`. The code is structured so it can be moved to .NET 10 LTS by installing the .NET 10 SDK and changing the app target framework to `net10.0-windows10.0.19041.0`.
+Run these commands from the repository root:
 
 ```powershell
 dotnet restore EldenDeathCounter.sln
 dotnet build EldenDeathCounter.sln
 ```
 
-Run tests:
+Run tests with:
 
 ```powershell
 dotnet test EldenDeathCounter.sln
@@ -30,66 +52,56 @@ dotnet test EldenDeathCounter.sln
 dotnet run --project src/EldenDeathCounter/EldenDeathCounter.csproj
 ```
 
-Start the app before launching Elden Ring. Use Elden Ring in borderless fullscreen or windowed mode. Exclusive fullscreen can prevent normal desktop overlays from appearing correctly.
+Start EldenDeathCounter before or alongside Elden Ring. Use borderless fullscreen or windowed mode. Exclusive fullscreen can prevent normal desktop overlays from appearing correctly.
 
-## What It Does
+## How It Works
 
-- Shows a small WPF control window.
-- Shows a transparent, always-on-top, click-through WPF overlay.
-- Saves all death data locally.
-- Captures the configured screen periodically and checks the center region for death text.
-- Detects the configured phrases:
-  - `YOU DIED`
-  - `NIE ŻYJESZ`
-- Uses a cooldown to avoid counting one death screen multiple times.
-- Provides manual fallback buttons and global hotkeys:
-  - `F7` marks the active boss as defeated.
-  - `F8` adds one death.
-  - `F9` subtracts one death.
-- Lets you type a custom active boss name and shows that boss counter under the global overlay counter.
-- Can auto-read the current boss name from the bottom boss health bar while detection is running.
-- If two boss health bars are visible, the active boss name is combined as `Boss 1 + Boss 2`.
+EldenDeathCounter keeps all state on the local machine. The WPF control window is used to manage settings, detection, manual counter changes, boss state, and history. The overlay is a separate click-through WPF window designed to stay above the game without receiving mouse input.
+
+Death counting can happen manually through the UI or hotkeys, and automatically through screen-based detection. Boss history is updated when the active boss is marked as defeated.
 
 ## Detection
 
 Detection is screen-based only. The app does not read or modify Elden Ring memory, inject DLLs, hook the game process, bypass anti-cheat, or interact with Easy Anti-Cheat.
 
-The app uses two local screen-based detection paths:
+The app uses local detection paths:
 
-1. Windows local OCR through `Windows.Media.Ocr`. OCR text is normalized and matched with configurable fuzzy sensitivity against `detectionPhrases`.
-2. A local shape/template detector built from the `PL_Death_Screen*` and `ENG_Death_Screen*` reference images. It compares the centered death-message text shape using image contrast and edges, not a count of red pixels. This is the first detector used, with Windows OCR as a fallback when the template does not match.
+1. A local shape/template detector built from bundled death-screen reference images. It compares the centered death-message text shape using image contrast and edges.
+2. Windows local OCR through `Windows.Media.Ocr`. OCR text is normalized and matched against configured detection phrases with fuzzy sensitivity.
 
-Both OCR and template matches must be observed on consecutive frames before a death is counted. Once a signal is pending, a strong template candidate slightly below the threshold can confirm it.
+Template detection is used first, with OCR as a fallback. Detection requires stable signals across frames before incrementing the counter, and a cooldown/latch prevents one death screen from being counted repeatedly.
 
-Windows OCR was selected because it is built into Windows, runs locally, avoids cloud accounts, and does not require a heavy external OCR runtime. English and Polish OCR engines are initialized when available; if they are not installed, the app falls back to the user's Windows OCR profile languages and logs the issue.
+Boss name detection looks for long red boss health bars in the lower part of the capture area, then OCRs the name area above each bar. If two boss health bars are visible, the active boss name can be combined as `Boss 1 + Boss 2`.
 
 ## Local Files
 
-By default, files are stored here:
+By default, EldenDeathCounter stores files under:
 
 ```text
 %USERPROFILE%\Desktop\EldenDeathCounter\
 ```
 
-Files:
+Common files include:
 
-- `deaths.json` stores `currentDeathCount` and `deathEvents`.
-- `deaths.json` also stores `activeBoss` and `bossHistory` when you use boss tracking.
-- `appsettings.json` stores overlay, detection, phrase, folder, and hotkey settings.
-- `log.txt` stores app, detection, hotkey, OCR, and storage logs.
-- `detection-screenshots\*.png` stores the captured frame whenever an automatic detection actually increments the counter, so false positives can be reviewed.
+- `deaths.json` stores `currentDeathCount`, `deathEvents`, `activeBoss`, and `bossHistory`.
+- `appsettings.json` stores overlay, detection, phrase, folder, language, and hotkey settings.
+- `log.txt` stores app, detection, hotkey, OCR, and storage log entries.
+- `detection-events.jsonl` stores structured detection events when diagnostics are enabled.
+- `diagnostics-latest.json` stores the latest diagnostics snapshot when diagnostics are enabled.
+- `diagnostics\` stores diagnostics packages when full diagnostics are enabled.
+- `detection-screenshots\*.png` stores captured frames for automatic detections so false positives can be reviewed.
 
 If `deaths.json` or `appsettings.json` is corrupt, the app creates a timestamped backup and starts with a clean file.
 
 ## Settings
 
-Edit settings in the control window or directly in:
+Settings can be edited in the control window or directly in:
 
 ```text
 %USERPROFILE%\Desktop\EldenDeathCounter\appsettings.json
 ```
 
-Important settings:
+Important settings include:
 
 - `overlayEnabled`
 - `overlayX`
@@ -98,6 +110,7 @@ Important settings:
 - `detectionIntervalMs`
 - `detectionCooldownSeconds`
 - `detectionSensitivity`
+- `captureTarget`
 - `dataFolderPath`
 - `detectionPhrases`
 - `manualAddHotkey`
@@ -105,32 +118,63 @@ Important settings:
 - `bossDefeatedHotkey`
 - `autoDetectBossNames`
 
-`dataFolderPath` changes are safest after restarting the app.
+`detectionIntervalMs` controls how often the screen is sampled. `detectionCooldownSeconds` controls the minimum time between separate death events. `captureTarget` controls which monitor or window target is sampled. `dataFolderPath` changes are safest after restarting the app.
 
-`detectionIntervalMs` controls how often the screen is sampled. `detectionCooldownSeconds` controls the minimum time between separate death events. `captureTarget` controls which monitor is sampled. The default `EldenRingWindow` target follows the visible Elden Ring window and falls back to the primary screen when the game window is not available. The app also keeps an internal latch: once a death screen is detected, it will not count again until the death signal disappears for several consecutive frames.
+## Hotkeys
+
+Default global hotkeys:
+
+- `F7` marks the active boss as defeated.
+- `F8` adds one death.
+- `F9` subtracts one death.
+
+Hotkeys can be changed in the control window or in `appsettings.json`. If a hotkey does not work, another application may already be using it.
 
 ## Troubleshooting
 
-- Overlay missing: use borderless fullscreen or windowed mode, not exclusive fullscreen.
+- Overlay missing: use borderless fullscreen or windowed mode instead of exclusive fullscreen.
 - Missed death: press `F8` to add one manually.
 - Accidental detection: press `F9` to subtract one manually.
-- Boss defeated: press `F7` or use the `Boss Defeated` button. The active boss is moved into `bossHistory` and cleared from the overlay.
-- Boss name not detected: keep `Auto-read boss name` enabled, make sure detection is running, and use the manual boss name field as a fallback if OCR reads the UI incorrectly.
-- Double count on one death screen: keep `detectionCooldownSeconds` near the default `25`. The app also ignores repeated detections while the same death screen remains visible.
+- Boss defeated: press `F7` or use the boss defeated button in the app.
+- Boss name not detected: keep boss auto-detection enabled, make sure detection is running, and use the manual boss name field as a fallback.
+- Double count on one death screen: keep `detectionCooldownSeconds` near the default value and avoid lowering detection stability too far.
 - OCR not working: check `log.txt` for OCR language messages and install Windows OCR language support for English and/or Polish.
-- Hotkeys not working: another app may already own the key. Change `manualAddHotkey` or `manualSubtractHotkey` in `appsettings.json` or the control window.
-- Detection too strict or too loose: adjust `detectionSensitivity`. Higher is stricter; lower is more permissive.
+- Hotkeys not working: change the hotkey bindings in the control window or `appsettings.json`.
+- Detection too strict or too loose: adjust `detectionSensitivity`. Higher values are stricter; lower values are more permissive.
 
 ## Limitations
 
-- Borderless fullscreen/windowed mode is required or strongly recommended.
+- Borderless fullscreen or windowed mode is required or strongly recommended.
 - Exclusive fullscreen may hide the overlay.
-- Screen capture targets the configured monitor center region, or the monitor containing the Elden Ring window when `captureTarget` is `EldenRingWindow`.
 - OCR quality depends on resolution, scaling, language packs, and the death-screen presentation.
-- The template fallback intentionally searches only the central death-message region and does not treat red scenery, lava, scarlet rot, or red HUD elements as a death signal by themselves.
-- Boss auto-detection looks for long red boss HP bars in the bottom part of the configured monitor, then OCRs the name area above each bar.
-- Final reliability should be tested in-game with both English and Polish game language settings.
-=======
-# DeathCounter
-DeathCounter with boss history for From Software games
->>>>>>> 843a39b021b37a1110d51cf88217f533d04492c2
+- Template detection searches the central death-message region and does not treat red scenery, lava, scarlet rot, or red HUD elements as death signals by themselves.
+- Boss auto-detection depends on visible boss health bars and readable boss name text.
+- Detection reliability should be verified in-game for the selected language and display setup.
+
+## Privacy and Safety
+
+EldenDeathCounter is designed to work locally. It stores data on disk, uses local screen capture, uses local Windows OCR when available, and does not require cloud services for detection.
+
+The app is screen-based only. It does not modify the game, inspect game memory, inject code, hook the game process, or bypass anti-cheat systems.
+
+## Development
+
+Solution and project layout:
+
+- `EldenDeathCounter.sln` is the main solution.
+- `src/EldenDeathCounter` contains the WPF desktop app.
+- `src/EldenDeathCounter.Core` contains testable core logic.
+- `tests/EldenDeathCounter.Tests` contains xUnit tests.
+- `Assets` contains reference images, icons, and other app assets copied into the app output.
+
+For behavior or core logic changes, run:
+
+```powershell
+dotnet test EldenDeathCounter.sln
+```
+
+For project or dependency changes, run:
+
+```powershell
+dotnet build EldenDeathCounter.sln
+```
