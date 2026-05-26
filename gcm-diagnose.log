@@ -1,0 +1,189 @@
+﻿Diagnose log at 2026-05-26T09:46:14Z
+
+AppPath: C:\Program Files\Git\mingw64\bin\git-credential-manager.exe
+InstallDir: C:\Program Files\Git\mingw64\bin\
+Version: 2.7.3+5fa7116896c82164996a609accd1c5ad90fe730a
+
+------------
+Diagnostic: Environment
+Skipped: False
+Success: True
+Exception: None
+Log:
+OSType: Windows
+OSVersion: 10.0 (build 26100)
+Reading environment variables... OK
+ Variables:
+SystemDrive=C:
+ProgramFiles(x86)=C:\Program Files (x86)
+MSYSTEM=MINGW64
+ProgramW6432=C:\Program Files
+windir=C:\WINDOWS
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 183 Stepping 1, GenuineIntel
+ACSetupSvcPort=23210
+TMP=C:\Users\Kamil\AppData\Local\Temp
+CODEX_INTERNAL_ORIGINATOR_OVERRIDE=Codex Desktop
+Path=C:/Program Files/Git/mingw64/libexec/git-core;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\Kamil\bin;C:\Users\Kamil\.codex\tmp\arg0\codex-arg0ghX4I4;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\dotnet\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\NVIDIA app\NvDLISR;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Users\Kamil\AppData\Local\Programs\garyttierney\me3\bin;C:\Users\Kamil\.local\bin;C:\Users\Kamil\AppData\Local\Programs\Python\Launcher\;C:\Users\Kamil\AppData\Local\Microsoft\WindowsApps;C:\Users\Kamil\AppData\Roaming\npm;C:\Users\Kamil\AppData\Local\gitkraken\bin;C:\Users\Kamil\.dotnet\tools;C:\Users\Kamil\AppData\Local\OpenAI\Codex\bin\ada252862d154cdd;C:\Program Files\WindowsApps\OpenAI.Codex_26.513.4821.0_x64__2p2nqsd0c76g0\app\resources
+RUST_LOG=warn
+EnableLog=INFO
+PROCESSOR_REVISION=b701
+TEMP=C:\Users\Kamil\AppData\Local\Temp
+USERPROFILE=C:\Users\Kamil
+LOGONSERVER=\\DESKTOP-6FB9TFP
+TERM=xterm-256color
+USERNAME=Kamil
+SHELL=C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+ZSH_TMUX_AUTOSTARTED=true
+CODEX_THREAD_ID=019e639b-2580-7261-82d8-5d17c6f97720
+PLINK_PROTOCOL=ssh
+OneDrive=C:\Users\Kamil\OneDrive
+PROCESSOR_ARCHITECTURE=AMD64
+CommonProgramFiles=C:\Program Files\Common Files
+SystemRoot=C:\WINDOWS
+PROCESSOR_LEVEL=6
+CODEX_SHELL=1
+ProgramData=C:\ProgramData
+LC_CTYPE=C.UTF-8
+RlsSvcPort=22112
+HOMEPATH=\Users\Kamil
+COMPUTERNAME=DESKTOP-6FB9TFP
+ALLUSERSPROFILE=C:\ProgramData
+CommonProgramW6432=C:\Program Files\Common Files
+GIT_EXEC_PATH=C:/Program Files/Git/mingw64/libexec/git-core
+ZSH_TMUX_AUTOSTART=false
+DriverData=C:\Windows\System32\Drivers\DriverData
+HOMEDRIVE=C:
+DISABLE_AUTO_UPDATE=true
+GIT_TRACE2_PARENT_SID=bea84438-d860-42cc-a422-fa3d15fd9477
+NUMBER_OF_PROCESSORS=20
+OS=Windows_NT
+ProgramFiles=C:\Program Files
+ComSpec=C:\WINDOWS\system32\cmd.exe
+USERDOMAIN_ROAMINGPROFILE=DESKTOP-6FB9TFP
+PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.CPL
+HOME=C:\Users\Kamil
+PSModulePath=C:\Users\Kamil\Documents\WindowsPowerShell\Modules;C:\Program Files\WindowsPowerShell\Modules;C:\WINDOWS\system32\WindowsPowerShell\v1.0\Modules
+TMPDIR=C:\Users\Kamil\AppData\Local\Temp
+APPDATA=C:\Users\Kamil\AppData\Roaming
+USERDOMAIN=DESKTOP-6FB9TFP
+ACSvcPort=17532
+LOCALAPPDATA=C:\Users\Kamil\AppData\Local
+CommonProgramFiles(x86)=C:\Program Files (x86)\Common Files
+COLORTERM=truecolor
+PUBLIC=C:\Users\Public
+LOG_FORMAT=json
+
+
+------------
+Diagnostic: File system
+Skipped: False
+Success: True
+Exception: None
+Log:
+Temporary directory is 'C:\Users\Kamil\AppData\Local\Temp\'...
+Checking basic file I/O...
+Writing to temporary file 'C:\Users\Kamil\AppData\Local\Temp\949f4b40aadee93168ec098c'... OK
+Reading from temporary file 'C:\Users\Kamil\AppData\Local\Temp\949f4b40aadee93168ec098c'... OK
+Deleting temporary file 'C:\Users\Kamil\AppData\Local\Temp\949f4b40aadee93168ec098c'... OK
+Testing IFileSystem instance...
+UserHomePath: C:\Users\Kamil
+UserDataDirectoryPath: C:\Users\Kamil\.gcm
+GetCurrentDirectory(): C:\Users\Kamil\Desktop\Kamil\01 - Projects\Elden Ring death counter
+
+------------
+Diagnostic: Networking
+Skipped: False
+Success: True
+Exception: None
+Log:
+Checking networking and HTTP stack...
+Creating HTTP client... OK
+IsNetworkAvailable: True
+Sending HEAD request to http://example.com...Sending HEAD request to https://example.com... OK
+ OK
+Acquiring free TCP port... OK
+Testing local HTTP loopback connections...
+Creating new HTTP listener for http://localhost:57647/... OK
+Waiting for loopback connection... OK
+Writing response... OK
+Waiting for response data... OK
+Loopback connection data OK
+
+------------
+Diagnostic: Git
+Skipped: False
+Success: True
+Exception: None
+Log:
+Getting Git version... OK
+Git version is '2.53.0.windows.3'
+Locating current repository...Git repository at 'C:/Users/Kamil/Desktop/Kamil/01 - Projects/Elden Ring death counter/.git'
+ OK
+Listing all Git configuration... OK
+Git configuration:
+file:C:/Program Files/Git/etc/gitconfig	diff.astextplain.textconv=astextplain
+file:C:/Program Files/Git/etc/gitconfig	filter.lfs.clean=git-lfs clean -- %f
+file:C:/Program Files/Git/etc/gitconfig	filter.lfs.smudge=git-lfs smudge -- %f
+file:C:/Program Files/Git/etc/gitconfig	filter.lfs.process=git-lfs filter-process
+file:C:/Program Files/Git/etc/gitconfig	filter.lfs.required=true
+file:C:/Program Files/Git/etc/gitconfig	http.sslbackend=schannel
+file:C:/Program Files/Git/etc/gitconfig	core.autocrlf=true
+file:C:/Program Files/Git/etc/gitconfig	core.fscache=true
+file:C:/Program Files/Git/etc/gitconfig	core.symlinks=false
+file:C:/Program Files/Git/etc/gitconfig	pull.rebase=false
+file:C:/Program Files/Git/etc/gitconfig	credential.helper=manager
+file:C:/Program Files/Git/etc/gitconfig	credential.https://dev.azure.com.usehttppath=true
+file:C:/Program Files/Git/etc/gitconfig	init.defaultbranch=master
+file:C:/Users/Kamil/.gitconfig	user.email=kamil.c1chy.krajewski@gmail.com
+file:C:/Users/Kamil/.gitconfig	user.name=Kamil Krajewski
+file:.git/config	core.repositoryformatversion=0
+file:.git/config	core.filemode=false
+file:.git/config	core.bare=false
+file:.git/config	core.logallrefupdates=true
+file:.git/config	core.symlinks=false
+file:.git/config	core.ignorecase=true
+file:.git/config	remote.origin.url=https://github.com/C1chutki/DeathCounter.git
+file:.git/config	remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+file:.git/config	branch.main.remote=origin
+file:.git/config	branch.main.merge=refs/heads/main
+
+
+------------
+Diagnostic: Credential storage
+Skipped: False
+Success: False
+Exception:
+GitCredentialManager.Interop.InteropException: Failed to write item to store. ---> System.ComponentModel.Win32Exception: Not enough memory resources are available to process this command
+   --- End of inner exception stack trace ---
+   at GitCredentialManager.Interop.Windows.Native.Win32Error.ThrowIfError(Int32 error, String defaultErrorMessage, ITrace2 trace2)
+   at GitCredentialManager.Interop.Windows.WindowsCredentialManager.AddOrUpdate(String service, String account, String secret)
+   at GitCredentialManager.Diagnostics.CredentialStoreDiagnostic.RunInternalAsync(StringBuilder log, IList`1 additionalFiles)
+   at GitCredentialManager.Diagnostics.Diagnostic.<RunAsync>d__6.MoveNext()
+Log:
+ICredentialStore instance is of type: CredentialStore
+Writing test credential...Deleting test credential... OK
+
+------------
+Diagnostic: Microsoft authentication (AAD/MSA)
+Skipped: False
+Success: True
+Exception: None
+Log:
+Broker is not enabled.
+Flow type is: Auto
+Gathering MSAL token cache data... OK
+CacheDirectory: C:\Users\Kamil\AppData\Local\.IdentityService
+CacheFileName: msal.cache
+CacheFilePath: C:\Users\Kamil\AppData\Local\.IdentityService\msal.cache
+Creating cache helper... OK
+Verifying MSAL token cache persistence... OK
+
+------------
+Diagnostic: GitHub API
+Skipped: False
+Success: True
+Exception: None
+Log:
+Using 'https://github.com/' as API target.
+Querying '/meta' endpoint... OK
+

@@ -1,0 +1,1445 @@
+<Window x:Class="EldenDeathCounter.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Elden Ring Death Counter"
+        Width="1400"
+        Height="997"
+        MinWidth="1040"
+        MinHeight="720"
+        WindowStartupLocation="CenterScreen"
+        Background="#0B0B0B"
+        FontFamily="{DynamicResource AppFontFamily}">
+    <Window.Resources>
+        <SolidColorBrush x:Key="Ink" Color="#F1EEE7" />
+        <SolidColorBrush x:Key="MutedInk" Color="#B8B1A6" />
+        <SolidColorBrush x:Key="Gold" Color="#EAC36D" />
+        <SolidColorBrush x:Key="Panel" Color="#141414" />
+        <SolidColorBrush x:Key="PanelAlt" Color="#191815" />
+        <SolidColorBrush x:Key="Secondary" Color="#191919" />
+        <SolidColorBrush x:Key="Neutral" Color="#0B0B0B" />
+        <SolidColorBrush x:Key="HeaderSurface" Color="#111111" />
+        <SolidColorBrush x:Key="HoverSurface" Color="#2D2518" />
+        <SolidColorBrush x:Key="AccentBorder" Color="#6F5B36" />
+        <SolidColorBrush x:Key="Separator" Color="#3A3122" />
+        <SolidColorBrush x:Key="ThumbSurface" Color="#8B744A" />
+        <SolidColorBrush x:Key="HistoryCard" Color="#191919" />
+        <SolidColorBrush x:Key="DimBorder" Color="#26231E" />
+        <SolidColorBrush x:Key="StatusBarSurface" Color="#10100F" />
+        <SolidColorBrush x:Key="BorderGold" Color="#4A3D27" />
+        <SolidColorBrush x:Key="Danger" Color="#940E0C" />
+        <SolidColorBrush x:Key="MonitorGreen" Color="#6EAF7A" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+        </Style>
+
+        <Style x:Key="LabelText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource Gold}" />
+            <Setter Property="FontFamily" Value="{DynamicResource HeaderFontFamily}" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+        </Style>
+
+        <Style x:Key="MutedText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource MutedInk}" />
+            <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+
+        <Style x:Key="PanelBorder" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource Panel}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderGold}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="24" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#171717" />
+            <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBorder}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="18,10" />
+            <Setter Property="MinHeight" Value="40" />
+            <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource HoverSurface}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Gold}" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.45" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="GoldButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="{DynamicResource Gold}" />
+            <Setter Property="Foreground" Value="#20160D" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Gold}" />
+        </Style>
+
+        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="#260C0C" />
+            <Setter Property="BorderBrush" Value="#C64B42" />
+            <Setter Property="Foreground" Value="#FFD1C9" />
+        </Style>
+
+        <Style x:Key="MiniEditButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Padding" Value="7,2" />
+            <Setter Property="MinHeight" Value="22" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="#D2A099" />
+            <Setter Property="BorderBrush" Value="#5D403C" />
+            <Setter Property="Background" Value="#1A1414" />
+        </Style>
+
+        <Style x:Key="GameShortcutButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="MinHeight" Value="34" />
+            <Setter Property="MinWidth" Value="48" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Margin" Value="8,0,0,0" />
+        </Style>
+
+        <Style x:Key="MonitorToggleButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Content" Value="START" />
+            <Setter Property="Background" Value="#17301F" />
+            <Setter Property="BorderBrush" Value="{StaticResource MonitorGreen}" />
+            <Setter Property="Foreground" Value="#D8FFE0" />
+            <Setter Property="MinHeight" Value="54" />
+            <Setter Property="FontSize" Value="18" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#21462C" />
+                </Trigger>
+                <DataTrigger Binding="{Binding IsDetectionRunning}" Value="True">
+                    <Setter Property="Content" Value="STOP" />
+                    <Setter Property="Background" Value="#3A1010" />
+                    <Setter Property="BorderBrush" Value="#D9574F" />
+                    <Setter Property="Foreground" Value="#FFD6D1" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="MonitorStatusDot" TargetType="Ellipse">
+            <Setter Property="Width" Value="14" />
+            <Setter Property="Height" Value="14" />
+            <Setter Property="Fill" Value="#665E52" />
+            <Setter Property="Stroke" Value="#95866F" />
+            <Setter Property="StrokeThickness" Value="1" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsDetectionRunning}" Value="True">
+                    <Setter Property="Fill" Value="{StaticResource MonitorGreen}" />
+                    <Setter Property="Stroke" Value="#B9E7BE" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="{DynamicResource HeaderSurface}" />
+            <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Gold}" />
+            <Setter Property="BorderThickness" Value="0,0,0,1" />
+            <Setter Property="Padding" Value="8" />
+            <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+            <Setter Property="CaretBrush" Value="{DynamicResource Gold}" />
+            <Setter Property="SelectionBrush" Value="{DynamicResource AccentBorder}" />
+        </Style>
+
+        <Style x:Key="DarkComboBoxItem" TargetType="{x:Type ComboBoxItem}">
+            <Setter Property="Background" Value="#050505" />
+            <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                        <Border x:Name="ItemBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="Left"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource HoverSurface}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Gold}" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#171717" />
+                                <Setter Property="Foreground" Value="{DynamicResource Gold}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.45" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="DarkComboBox" TargetType="{x:Type ComboBox}">
+            <Setter Property="Background" Value="#050505" />
+            <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Gold}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+            <Setter Property="Padding" Value="8" />
+            <Setter Property="ItemContainerStyle" Value="{StaticResource DarkComboBoxItem}" />
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ComboBox}">
+                        <Grid>
+                            <ToggleButton x:Name="ToggleButton"
+                                          ClickMode="Press"
+                                          Focusable="False"
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                        <Border x:Name="ToggleBorder"
+                                                Background="#050505"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                SnapsToDevicePixels="True">
+                                            <Grid>
+                                                <ContentPresenter x:Name="ContentSite"
+                                                                  Margin="{TemplateBinding Padding}"
+                                                                  HorizontalAlignment="Left"
+                                                                  VerticalAlignment="Center"
+                                                                  Content="{TemplateBinding Content}"
+                                                                  ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                                  RecognizesAccessKey="True" />
+                                                <Path Data="M 0 0 L 4 4 L 8 0 Z"
+                                                      Fill="{DynamicResource Ink}"
+                                                      Width="8"
+                                                      Height="4"
+                                                      HorizontalAlignment="Right"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0,0,10,0"
+                                                      Stretch="Fill" />
+                                            </Grid>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="ToggleBorder" Property="Background" Value="{DynamicResource HeaderSurface}" />
+                                                <Setter TargetName="ToggleBorder" Property="BorderBrush" Value="{DynamicResource Gold}" />
+                                            </Trigger>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter TargetName="ToggleBorder" Property="Background" Value="{DynamicResource HeaderSurface}" />
+                                                <Setter TargetName="ToggleBorder" Property="BorderBrush" Value="{DynamicResource Gold}" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <ContentPresenter x:Name="ContentSite"
+                                              Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"
+                                              Content="{TemplateBinding SelectionBoxItem}"
+                                              ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                              IsHitTestVisible="False" />
+                            <Popup x:Name="Popup"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   Placement="Bottom"
+                                   PopupAnimation="Fade">
+                                <Grid MinWidth="{TemplateBinding ActualWidth}"
+                                      MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                                      Background="#050505"
+                                      SnapsToDevicePixels="True">
+                                    <Border Background="#050505"
+                                            BorderBrush="{DynamicResource Gold}"
+                                            BorderThickness="1">
+                                        <ScrollViewer>
+                                            <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                                        </ScrollViewer>
+                                    </Border>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasItems" Value="False">
+                                <Setter TargetName="Popup" Property="MinHeight" Value="36" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.45" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#050505" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#050505" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#2D2518" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#EAC36D" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="#F1EEE7" />
+            </Style.Resources>
+        </Style>
+
+        <Style x:Key="ModernScrollBarButton" TargetType="{x:Type RepeatButton}">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                        <Border Background="Transparent" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type Thumb}">
+            <Setter Property="Background" Value="{DynamicResource ThumbSurface}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Gold}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="MinHeight" Value="44" />
+            <Setter Property="MinWidth" Value="44" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Border x:Name="ThumbBorder"
+                                Margin="3"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
+                                SnapsToDevicePixels="True">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="8"
+                                                  Direction="270"
+                                                  Opacity="0.22"
+                                                  ShadowDepth="0"
+                                                  Color="#EAC36D" />
+                            </Border.Effect>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ThumbBorder" Property="Background" Value="#C09B5A" />
+                                <Setter TargetName="ThumbBorder" Property="BorderBrush" Value="#FFD98A" />
+                            </Trigger>
+                            <Trigger Property="IsDragging" Value="True">
+                                <Setter TargetName="ThumbBorder" Property="Background" Value="{DynamicResource Gold}" />
+                                <Setter TargetName="ThumbBorder" Property="BorderBrush" Value="#FFE7A8" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type ScrollBar}">
+            <Setter Property="Background" Value="#11100E" />
+            <Setter Property="BorderBrush" Value="#2D281E" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Width" Value="16" />
+            <Setter Property="MinWidth" Value="16" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8"
+                                Margin="3"
+                                SnapsToDevicePixels="True">
+                            <Grid>
+                                <Border Width="2"
+                                        Background="#3A3122"
+                                        CornerRadius="1"
+                                        HorizontalAlignment="Center"
+                                        Margin="0,8" />
+                                <Track x:Name="PART_Track"
+                                       IsDirectionReversed="True"
+                                       Margin="0,4">
+                                    <Track.DecreaseRepeatButton>
+                                        <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}"
+                                                      Style="{StaticResource ModernScrollBarButton}" />
+                                    </Track.DecreaseRepeatButton>
+                                    <Track.Thumb>
+                                        <Thumb />
+                                    </Track.Thumb>
+                                    <Track.IncreaseRepeatButton>
+                                        <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}"
+                                                      Style="{StaticResource ModernScrollBarButton}" />
+                                    </Track.IncreaseRepeatButton>
+                                </Track>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="Orientation" Value="Horizontal">
+                    <Setter Property="Width" Value="Auto" />
+                    <Setter Property="MinWidth" Value="0" />
+                    <Setter Property="Height" Value="16" />
+                    <Setter Property="MinHeight" Value="16" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ScrollBar}">
+                                <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="8"
+                                        Margin="3"
+                                        SnapsToDevicePixels="True">
+                                    <Grid>
+                                        <Border Height="2"
+                                                Background="#3A3122"
+                                                CornerRadius="1"
+                                                VerticalAlignment="Center"
+                                                Margin="8,0" />
+                                        <Track x:Name="PART_Track"
+                                               Margin="4,0">
+                                            <Track.DecreaseRepeatButton>
+                                                <RepeatButton Command="{x:Static ScrollBar.PageLeftCommand}"
+                                                              Style="{StaticResource ModernScrollBarButton}" />
+                                            </Track.DecreaseRepeatButton>
+                                            <Track.Thumb>
+                                                <Thumb />
+                                            </Track.Thumb>
+                                            <Track.IncreaseRepeatButton>
+                                                <RepeatButton Command="{x:Static ScrollBar.PageRightCommand}"
+                                                              Style="{StaticResource ModernScrollBarButton}" />
+                                            </Track.IncreaseRepeatButton>
+                                        </Track>
+                                    </Grid>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#171510" />
+                    <Setter Property="BorderBrush" Value="#4A3D27" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+            <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Margin" Value="0,8,0,0" />
+        </Style>
+
+        <Style TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="24,18" />
+            <Setter Property="Margin" Value="0,0,0,0" />
+            <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="ItemBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="0,0,4,0"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#3A3020" />
+                                <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{DynamicResource Gold}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Gold}" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#241F17" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5" />
+                                <Setter Property="Cursor" Value="Arrow" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="255" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="34" />
+        </Grid.RowDefinitions>
+
+        <Border x:Name="SidebarBorder" Grid.RowSpan="3" Background="{DynamicResource Secondary}" BorderBrush="{DynamicResource DimBorder}" BorderThickness="0,0,1,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Margin="24,28,24,44">
+                    <TextBlock Text="Tarnished Utility"
+                               Foreground="{DynamicResource Gold}"
+                               FontFamily="{DynamicResource HeaderFontFamily}"
+                               FontSize="16"
+                               FontWeight="Bold" />
+                    <TextBlock Text="v1.0.4-stable"
+                               FontFamily="{DynamicResource AppFontFamily}"
+                               FontSize="14"
+                               Foreground="{DynamicResource Ink}" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Margin="0,12,0,0">
+                    <RadioButton Content="▦  Dashboard"
+                                 GroupName="Navigation"
+                                 IsChecked="True"
+                                 Tag="0"
+                                 Checked="NavigationRadio_Checked" />
+                    <RadioButton Content="◎  Detection"
+                                 GroupName="Navigation"
+                                 Tag="1"
+                                 Checked="NavigationRadio_Checked" />
+                    <RadioButton Content="⚔  Bosses"
+                                 GroupName="Navigation"
+                                 Tag="2"
+                                 Checked="NavigationRadio_Checked" />
+                    <RadioButton Content="⚙  Settings"
+                                 GroupName="Navigation"
+                                 Tag="3"
+                                 Checked="NavigationRadio_Checked" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Margin="20,0,20,28">
+                    <Button Content="TOGGLE OVERLAY"
+                            Command="{Binding ToggleOverlayCommand}"
+                            Margin="0,0,0,28" />
+                    <Separator Background="{DynamicResource Separator}" Margin="0,0,0,24" />
+                    <Button Content="▰  OPEN DATA FOLDER"
+                            Command="{Binding OpenDataFolderCommand}"
+                            BorderThickness="0"
+                            HorizontalContentAlignment="Left"
+                            Background="Transparent" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border x:Name="HeaderBorder" Grid.Column="1" Grid.Row="0" Background="{DynamicResource HeaderSurface}" BorderBrush="{DynamicResource Separator}" BorderThickness="0,0,0,1" Padding="22,16">
+            <DockPanel LastChildFill="True">
+                <StackPanel DockPanel.Dock="Right"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <Button Content="DS"
+                            Style="{StaticResource GameShortcutButton}" />
+                    <Button Content="DS2"
+                            Style="{StaticResource GameShortcutButton}" />
+                    <Button x:Name="DarkSouls3Button"
+                            Content="DS3"
+                            Style="{StaticResource GameShortcutButton}"
+                            Background="#E65100"
+                            BorderBrush="#E65100"
+                            Foreground="#0A0A0A"
+                            Click="DarkSouls3Button_Click" />
+                    <Button Content="ER"
+                            Style="{StaticResource GameShortcutButton}"
+                            Click="EldenRingButton_Click" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="☠"
+                               FontSize="22"
+                               Foreground="{DynamicResource Gold}"
+                               VerticalAlignment="Center"
+                               Margin="0,0,18,0" />
+                    <TextBlock x:Name="AppTitleTextBlock"
+                               Text="Elden Ring Death Counter"
+                               FontFamily="{DynamicResource HeaderFontFamily}"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource Gold}" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <TabControl x:Name="MainTabs"
+                    Grid.Column="1"
+                    Grid.Row="1"
+                    Background="{DynamicResource Neutral}"
+                    BorderThickness="0">
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </Style>
+            </TabControl.Resources>
+
+            <TabItem Header="Dashboard">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="34">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource PanelBorder}" Margin="0,0,24,12" MinHeight="395">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="CURRENT TALLY"
+                                           Style="{StaticResource LabelText}"
+                                           HorizontalAlignment="Center" />
+                                <StackPanel Grid.Row="1" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding CounterText}"
+                                               FontFamily="{DynamicResource HeaderFontFamily}"
+                                               FontSize="92"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource Gold}"
+                                               HorizontalAlignment="Center"
+                                               TextAlignment="Center" />
+                                </StackPanel>
+                                <Grid Grid.Row="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button Content="-"
+                                            Command="{Binding SubtractDeathCommand}"
+                                            Width="58"
+                                            Height="58"
+                                            FontSize="28"
+                                            BorderBrush="{DynamicResource AccentBorder}" />
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Button Content="RESET COUNTER"
+                                                Command="{Binding ResetCounterCommand}"
+                                                MinWidth="150"
+                                                Margin="0,0,16,0"
+                                                BorderBrush="#B2594E" />
+                                        <Button Content="SET COUNTER"
+                                                Command="{Binding SetCounterCommand}"
+                                                MinWidth="150" />
+                                    </StackPanel>
+                                    <Button Grid.Column="2"
+                                            Content="+"
+                                            Command="{Binding AddDeathCommand}"
+                                            Width="58"
+                                            Height="58"
+                                            FontSize="28"
+                                            BorderBrush="{DynamicResource AccentBorder}" />
+                                </Grid>
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource PanelBorder}" Margin="0,0,0,12" MinHeight="395">
+                            <StackPanel>
+                                <TextBlock Text="◎ Monitor Status"
+                                           FontFamily="{DynamicResource HeaderFontFamily}"
+                                           FontSize="24"
+                                           FontWeight="Bold"
+                                           Margin="0,0,0,42" />
+                                <Border BorderBrush="#3F3A30" BorderThickness="1" Background="#181714" Padding="18" Margin="0,0,0,24">
+                                    <StackPanel>
+                                        <Grid Margin="0,0,0,18">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Ellipse Style="{StaticResource MonitorStatusDot}" VerticalAlignment="Center" Margin="0,0,12,0" />
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="DETECTION" Style="{StaticResource LabelText}" />
+                                                <TextBlock Text="{Binding DetectionStatus}"
+                                                           Foreground="{DynamicResource Ink}"
+                                                           FontFamily="{DynamicResource HeaderFontFamily}"
+                                                           FontSize="22"
+                                                           FontWeight="Bold"
+                                                           TextWrapping="Wrap"
+                                                           Margin="0,6,0,0" />
+                                            </StackPanel>
+                                        </Grid>
+                                        <Border BorderBrush="#342F27" BorderThickness="0,1,0,0" Padding="0,14,0,0">
+                                            <StackPanel>
+                                                <TextBlock Text="LAST DEATH" Style="{StaticResource LabelText}" />
+                                                <TextBlock Text="{Binding LastDetectedDeathText}"
+                                                           FontFamily="{DynamicResource AppFontFamily}"
+                                                           Foreground="{DynamicResource MutedInk}"
+                                                           FontSize="15"
+                                                           Margin="0,8,0,0" />
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+                                <Button Command="{Binding ToggleDetectionCommand}"
+                                        Style="{StaticResource MonitorToggleButton}" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Row="1" Grid.ColumnSpan="2" Style="{StaticResource PanelBorder}" Margin="0,0,0,12">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="74" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="ACTIVE ENCOUNTER" Style="{StaticResource LabelText}" />
+                                    <DockPanel Margin="0,10,0,0">
+                                        <TextBlock DockPanel.Dock="Right"
+                                                   Text="{Binding ActiveBossDeathCountText}"
+                                                   FontFamily="{DynamicResource HeaderFontFamily}"
+                                                   FontSize="26"
+                                                   FontWeight="Bold"
+                                                   Foreground="{DynamicResource Gold}"
+                                                   Margin="12,0,0,0"
+                                                   VerticalAlignment="Center" />
+                                        <TextBox Text="{Binding BossNameText, UpdateSourceTrigger=PropertyChanged}"
+                                                 FontFamily="{DynamicResource AppFontFamily}"
+                                                 FontSize="26"
+                                                 FontWeight="Bold"
+                                                 Padding="0,2,8,6"
+                                                 BorderThickness="0,0,0,1" />
+                                    </DockPanel>
+                                </StackPanel>
+                                <Button Grid.Column="1"
+                                        Content="-"
+                                        Command="{Binding SubtractDeathCommand}"
+                                        Width="58"
+                                        Height="58"
+                                        FontSize="28"
+                                        Margin="20,0,8,0" />
+                                <Button Grid.Column="2"
+                                        Content="+"
+                                        Command="{Binding AddDeathCommand}"
+                                        Width="58"
+                                        Height="58"
+                                        FontSize="28"
+                                        Margin="0,0,16,0" />
+                                <Button Grid.Column="3"
+                                        Content="✦  BOSS DEFEATED"
+                                        Command="{Binding BossDefeatedCommand}"
+                                        Style="{StaticResource GoldButton}"
+                                        MinWidth="230"
+                                        Margin="0,0,16,0" />
+                                <Button Grid.Column="4"
+                                        Content="✎"
+                                        Command="{Binding SetActiveBossCommand}"
+                                        FontSize="22" />
+                            </Grid>
+                        </Border>
+
+                        <Grid Grid.Row="2" Grid.ColumnSpan="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="24" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Style="{StaticResource PanelBorder}">
+                                <StackPanel>
+                                    <TextBlock Text="⚙ Quick Settings" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="23" FontWeight="Bold" Margin="0,0,0,22" />
+                                    <CheckBox Content="Start detection on app launch" IsChecked="{Binding DetectionEnabledOnStartup}" />
+                                    <CheckBox Content="Auto-read boss name" IsChecked="{Binding AutoDetectBossNames}" />
+                                    <TextBlock Text="Manual counter" Style="{StaticResource LabelText}" Margin="0,24,0,8" />
+                                    <TextBox Text="{Binding ManualCounterText, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="2" Style="{StaticResource PanelBorder}">
+                                <StackPanel>
+                                    <TextBlock Text="▤ Binding Reminders" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="23" FontWeight="Bold" Margin="0,0,0,18" />
+                                    <Border Background="{DynamicResource HistoryCard}" BorderBrush="{DynamicResource DimBorder}" BorderThickness="1" Padding="14" Margin="0,0,0,12">
+                                        <DockPanel>
+                                            <TextBlock DockPanel.Dock="Right" Text="{Binding ManualAddHotkeyText}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource AppFontFamily}" />
+                                            <TextBlock Text="Increment Counter" Style="{StaticResource MutedText}" />
+                                        </DockPanel>
+                                    </Border>
+                                    <Border Background="{DynamicResource HistoryCard}" BorderBrush="{DynamicResource DimBorder}" BorderThickness="1" Padding="14" Margin="0,0,0,12">
+                                        <DockPanel>
+                                            <TextBlock DockPanel.Dock="Right" Text="{Binding ManualSubtractHotkeyText}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource AppFontFamily}" />
+                                            <TextBlock Text="Decrement Counter" Style="{StaticResource MutedText}" />
+                                        </DockPanel>
+                                    </Border>
+                                    <Border Background="{DynamicResource HistoryCard}" BorderBrush="{DynamicResource DimBorder}" BorderThickness="1" Padding="14">
+                                        <DockPanel>
+                                            <TextBlock DockPanel.Dock="Right" Text="{Binding ManualBossDefeatedHotkeyText}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource AppFontFamily}" />
+                                            <TextBlock Text="Boss Defeated" Style="{StaticResource MutedText}" />
+                                        </DockPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Detection">
+                <Grid Margin="30">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Border Style="{StaticResource PanelBorder}" BorderThickness="1,3,1,1" Margin="0,0,0,30">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Border Width="98" Height="98" BorderBrush="#5A4B31" BorderThickness="3" CornerRadius="49" Margin="0,0,28,0">
+                                    <TextBlock Text="◎" FontSize="44" Foreground="{DynamicResource Gold}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="SYSTEM ENGINE" Style="{StaticResource LabelText}" />
+                                    <TextBlock Text="{Binding DetectionStatus}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="38" FontWeight="Bold" Margin="0,4,0,4" />
+                                    <TextBlock Text="Monitoring video stream for configured death patterns..." Style="{StaticResource MutedText}" FontSize="18" />
+                                </StackPanel>
+                                <Button Grid.Column="2"
+                                        Command="{Binding ToggleDetectionCommand}"
+                                        Style="{StaticResource MonitorToggleButton}"
+                                        Width="236"
+                                        Height="64"
+                                        VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.85*" />
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="1.15*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Style="{StaticResource PanelBorder}">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <StackPanel>
+                                    <DockPanel Margin="0,0,0,28">
+                                        <TextBlock DockPanel.Dock="Right" Text="☷" FontSize="22" Foreground="{DynamicResource MutedInk}" />
+                                        <TextBlock Text="Configuration" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="30" FontWeight="Bold" />
+                                    </DockPanel>
+                                    <Grid Margin="0,0,0,18">
+                                        <TextBlock Text="THRESHOLD SENSITIVITY" Style="{StaticResource LabelText}" />
+                                        <TextBlock Text="{Binding DetectionSensitivityText}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" HorizontalAlignment="Right" />
+                                    </Grid>
+                                    <TextBox Text="{Binding DetectionSensitivityText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,18" />
+                                    <TextBlock Text="Lower values reduce false positives from background elements." Style="{StaticResource MutedText}" FontStyle="Italic" Margin="0,0,0,36" />
+                                    <Separator Background="#29251D" Margin="0,0,0,36" />
+                                    <Grid Margin="0,0,0,16">
+                                        <TextBlock Text="SCAN INTERVAL" Style="{StaticResource LabelText}" />
+                                        <TextBlock Text="{Binding DetectionIntervalMsText, StringFormat={}{0}ms}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" HorizontalAlignment="Right" />
+                                    </Grid>
+                                    <TextBox Text="{Binding DetectionIntervalMsText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,34" />
+                                    <TextBlock Text="CAPTURE REGION" Style="{StaticResource LabelText}" Margin="0,0,0,12" />
+                                    <ComboBox ItemsSource="{Binding CaptureTargetOptions}"
+                                              SelectedValue="{Binding SelectedCaptureTargetValue, UpdateSourceTrigger=PropertyChanged}"
+                                              SelectedValuePath="Value"
+                                              DisplayMemberPath="DisplayName"
+                                              Style="{StaticResource DarkComboBox}"
+                                              FontSize="16"
+                                              Margin="0,0,0,4" />
+                                </StackPanel>
+                                </ScrollViewer>
+                            </Border>
+
+                            <Border Grid.Column="2" Style="{StaticResource PanelBorder}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <DockPanel Margin="0,0,0,26">
+                                        <Button DockPanel.Dock="Right"
+                                                Content="CLEAR"
+                                                Command="{Binding ClearDetectionLogCommand}"
+                                                Padding="10,4"
+                                                MinHeight="28"
+                                                BorderThickness="0" />
+                                        <Button DockPanel.Dock="Right"
+                                                Content="DIAG 10M"
+                                                Command="{Binding StartDiagnosticsCommand}"
+                                                Padding="10,4"
+                                                MinHeight="28"
+                                                Margin="0,0,8,0"
+                                                BorderThickness="0" />
+                                        <TextBlock Text="▰ Detection Log" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="30" FontWeight="Bold" />
+                                    </DockPanel>
+                                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                                        <ItemsControl ItemsSource="{Binding DetectionLogEntries}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border x:Name="LogEntryBorder"
+                                                            Background="Transparent"
+                                                            BorderThickness="0"
+                                                            Padding="0"
+                                                            Margin="0,0,0,14">
+                                                        <TextBlock x:Name="LogEntryText"
+                                                                   Text="{Binding DisplayText}"
+                                                                   FontFamily="{DynamicResource AppFontFamily}"
+                                                                   Foreground="{DynamicResource MutedInk}"
+                                                                   TextWrapping="Wrap" />
+                                                    </Border>
+                                                    <DataTemplate.Triggers>
+                                                        <DataTrigger Binding="{Binding IsEvent}" Value="True">
+                                                            <Setter TargetName="LogEntryBorder" Property="Background" Value="#211D17" />
+                                                            <Setter TargetName="LogEntryBorder" Property="BorderBrush" Value="{DynamicResource Gold}" />
+                                                            <Setter TargetName="LogEntryBorder" Property="BorderThickness" Value="3,0,0,0" />
+                                                            <Setter TargetName="LogEntryBorder" Property="Padding" Value="14,8" />
+                                                            <Setter TargetName="LogEntryText" Property="Foreground" Value="{DynamicResource Gold}" />
+                                                            <Setter TargetName="LogEntryText" Property="FontWeight" Value="Bold" />
+                                                        </DataTrigger>
+                                                    </DataTemplate.Triggers>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <Grid Grid.Row="2" Margin="0,30,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Style="{StaticResource PanelBorder}">
+                                <StackPanel>
+                                    <TextBlock Text="ACTIVE DETECTION PHRASES" Style="{StaticResource LabelText}" Margin="0,0,0,16" />
+                                    <TextBox Text="{Binding DetectionPhrasesText, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Height="86" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="2" Style="{StaticResource PanelBorder}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="GLOBAL HOTKEYS" Style="{StaticResource LabelText}" />
+                                        <TextBlock Text="Active even when the window is hidden" Style="{StaticResource MutedText}" Margin="0,8,0,0" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding ManualAddHotkeyText}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" Margin="0,0,22,0" />
+                                        <TextBlock Text="{Binding ManualSubtractHotkeyText}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" Margin="0,0,22,0" />
+                                        <TextBlock Text="{Binding ManualBossDefeatedHotkeyText}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Bosses">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="48,38">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Margin="0,0,0,42">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="360" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Great Enemy Felled"
+                                           FontFamily="{DynamicResource HeaderFontFamily}"
+                                           FontSize="48"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource Gold}" />
+                                <TextBlock Text="Every major encounter across the Lands Between."
+                                           Style="{StaticResource MutedText}"
+                                           FontSize="20"
+                                           TextWrapping="Wrap"
+                                           Margin="0,12,0,0" />
+                                <TextBlock Text="Every attempt and victory, written in blood."
+                                           Style="{StaticResource MutedText}"
+                                           FontSize="20"
+                                           TextWrapping="Wrap"
+                                           Margin="0,8,0,0" />
+                            </StackPanel>
+                            <Border Grid.Column="1"
+                                    Background="{DynamicResource HeaderSurface}"
+                                    BorderBrush="{DynamicResource BorderGold}"
+                                    BorderThickness="0,0,0,1"
+                                    Padding="16,10"
+                                    VerticalAlignment="Top">
+                                <Grid>
+                                    <TextBox Text="{Binding BossSearchText, UpdateSourceTrigger=PropertyChanged}"
+                                             BorderThickness="0"
+                                             Padding="0"
+                                             FontSize="18" />
+                                    <TextBlock Text="Search Boss Name..."
+                                               FontFamily="{DynamicResource AppFontFamily}"
+                                               FontSize="18"
+                                               Foreground="#6F675D"
+                                               IsHitTestVisible="False">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding BossSearchText}" Value="">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <StackPanel Grid.Row="1" Margin="0,0,0,46">
+                            <TextBlock Text="CURRENT ENCOUNTER"
+                                       Style="{StaticResource LabelText}"
+                                       Margin="0,0,0,20" />
+                            <Border Background="{DynamicResource PanelAlt}"
+                                    BorderBrush="#7C653A"
+                                    BorderThickness="2"
+                                    Padding="34">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="250" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="ACTIVE ENCOUNTER"
+                                                   Style="{StaticResource LabelText}"
+                                                   Margin="0,0,0,22" />
+                                        <TextBlock Text="{Binding BossesActiveName}"
+                                                   FontFamily="{DynamicResource HeaderFontFamily}"
+                                                   FontSize="42"
+                                                   FontWeight="Bold"
+                                                   TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding BossesActiveStartedText}"
+                                                   Style="{StaticResource MutedText}"
+                                                   FontStyle="Italic"
+                                                   FontSize="16"
+                                                   Margin="0,18,0,0" />
+                                    </StackPanel>
+                                    <Border Grid.Column="1"
+                                            Background="#232220"
+                                            BorderBrush="#3F382B"
+                                            BorderThickness="1"
+                                            Padding="26"
+                                            HorizontalAlignment="Stretch">
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <TextBlock Text="DEATHS RECORDED"
+                                                       FontFamily="{DynamicResource AppFontFamily}"
+                                                       FontSize="15"
+                                                       FontWeight="Bold"
+                                                       Foreground="{DynamicResource Ink}"
+                                                       Margin="0,0,0,14" />
+                                            <TextBlock Text="{Binding BossesActiveAttemptsText}"
+                                                       Foreground="{DynamicResource Gold}"
+                                                       FontFamily="{DynamicResource HeaderFontFamily}"
+                                                       FontSize="34"
+                                                       FontWeight="Bold"
+                                                       HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="2">
+                            <TextBlock Text="CONQUERED FOES"
+                                       Style="{StaticResource LabelText}"
+                                       Margin="0,0,0,20" />
+                            <TextBlock Text="{Binding DefeatedBossesEmptyText}"
+                                       Style="{StaticResource MutedText}"
+                                       FontStyle="Italic"
+                                       Margin="0,0,0,16" />
+                            <ItemsControl ItemsSource="{Binding DefeatedBosses}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel HorizontalAlignment="Center" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Width="315"
+                                                MinHeight="168"
+                                                Background="{DynamicResource Panel}"
+                                                BorderBrush="#2D281E"
+                                                BorderThickness="1"
+                                                Padding="18"
+                                                Margin="0,0,18,18">
+                                            <StackPanel>
+                                                <DockPanel Margin="0,0,0,22">
+                                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding NumberText}"
+                                                                   FontFamily="{DynamicResource AppFontFamily}"
+                                                                   FontSize="14"
+                                                                   FontWeight="Bold"
+                                                                   Foreground="#D2A099"
+                                                                   VerticalAlignment="Center" />
+                                                        <Button Content="EDIT"
+                                                                Command="{Binding DataContext.OpenBossHistoryEditorCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                                CommandParameter="{Binding}"
+                                                                Style="{StaticResource MiniEditButton}"
+                                                                Margin="8,0,0,0"
+                                                                VerticalAlignment="Center" />
+                                                    </StackPanel>
+                                                    <TextBlock Text="{Binding CompletedBy}"
+                                                               Style="{StaticResource LabelText}"
+                                                               Foreground="#8F877A" />
+                                                </DockPanel>
+                                                <TextBlock Text="{Binding Name}"
+                                                           FontFamily="{DynamicResource HeaderFontFamily}"
+                                                           FontSize="24"
+                                                           FontWeight="Bold"
+                                                           Foreground="{DynamicResource Ink}"
+                                                           TextWrapping="Wrap" />
+                                                <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                                                    <TextBlock Text="{Binding AttemptsText}"
+                                                               FontFamily="{DynamicResource AppFontFamily}"
+                                                               FontSize="15"
+                                                               FontWeight="Bold"
+                                                               Foreground="{DynamicResource Ink}" />
+                                                    <TextBlock Text="  |  "
+                                                               FontFamily="{DynamicResource AppFontFamily}"
+                                                               FontSize="13"
+                                                               Foreground="#5E5548"
+                                                               VerticalAlignment="Center" />
+                                                    <TextBlock Text="{Binding FightDurationText}"
+                                                               FontFamily="{DynamicResource AppFontFamily}"
+                                                               FontSize="13"
+                                                               Foreground="#A27A72"
+                                                               VerticalAlignment="Center" />
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding RecordedText}"
+                                                           FontFamily="{DynamicResource AppFontFamily}"
+                                                           FontSize="12"
+                                                           Foreground="#A27A72"
+                                                           Margin="0,8,0,0" />
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Settings">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="48,38">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,34">
+                            <TextBlock Text="System Configurations"
+                                       FontFamily="{DynamicResource HeaderFontFamily}"
+                                       FontSize="30"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource Gold}"
+                                       Margin="0,0,22,0" />
+                            <TextBlock Text="Configure core behaviors and detection parameters"
+                                       Style="{StaticResource MutedText}"
+                                       FontFamily="{DynamicResource AppFontFamily}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <Grid Grid.Row="1" Margin="0,0,0,48">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="32" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Style="{StaticResource PanelBorder}">
+                                <StackPanel>
+                                    <TextBlock Text="| DETECTION ENGINE" Style="{StaticResource LabelText}" Margin="0,0,0,24" />
+                                    <TextBlock Text="Detection Interval (ms)" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
+                                    <TextBox Text="{Binding DetectionIntervalMsText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,18" />
+                                    <TextBlock Text="Cooldown Period (seconds)" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
+                                    <TextBox Text="{Binding DetectionCooldownSecondsText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,18" />
+                                    <TextBlock Text="Detection Sensitivity" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
+                                    <TextBox Text="{Binding DetectionSensitivityText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,18" />
+                                    <TextBlock Text="Capture Region" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
+                                    <ComboBox ItemsSource="{Binding CaptureTargetOptions}"
+                                              SelectedValue="{Binding SelectedCaptureTargetValue, UpdateSourceTrigger=PropertyChanged}"
+                                              SelectedValuePath="Value"
+                                              DisplayMemberPath="DisplayName"
+                                              Style="{StaticResource DarkComboBox}"
+                                              Margin="0,6,0,18" />
+                                    <TextBlock Text="Game Language" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
+                                    <ComboBox ItemsSource="{Binding GameLanguageOptions}"
+                                              SelectedValue="{Binding SelectedGameLanguageValue, UpdateSourceTrigger=PropertyChanged}"
+                                              SelectedValuePath="Value"
+                                              DisplayMemberPath="DisplayName"
+                                              Style="{StaticResource DarkComboBox}"
+                                              Margin="0,6,0,0" />
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="2" Style="{StaticResource PanelBorder}">
+                                <StackPanel>
+                                    <TextBlock Text="| INTERFACE &amp; OVERLAY" Style="{StaticResource LabelText}" Margin="0,0,0,24" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="18" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="Overlay X Position" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
+                                            <TextBox Text="{Binding OverlayXText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,18" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Overlay Y Position" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
+                                            <TextBox Text="{Binding OverlayYText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,18" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <CheckBox Content="Show overlay" IsChecked="{Binding OverlayEnabled}" />
+                                    <CheckBox Content="Start detection on app launch" IsChecked="{Binding DetectionEnabledOnStartup}" />
+                                    <CheckBox Content="Auto-read boss name" IsChecked="{Binding AutoDetectBossNames}" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <Grid Grid.Row="2" Margin="0,0,0,48">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.35*" />
+                                <ColumnDefinition Width="32" />
+                                <ColumnDefinition Width="0.65*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Style="{StaticResource PanelBorder}">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <StackPanel>
+                                    <TextBlock Text="| DETECTION PHRASES" Style="{StaticResource LabelText}" Margin="0,0,0,18" />
+                                    <TextBlock Text="Enter phrases to trigger a death count. One per line." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
+                                    <TextBox Text="{Binding DetectionPhrasesText, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Height="82" TextWrapping="Wrap" />
+                                    <TextBlock Text="| BOSS VICTORY PHRASES" Style="{StaticResource LabelText}" Margin="0,24,0,18" />
+                                    <TextBlock Text="Enter phrases to mark the active boss defeated. One per line." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
+                                    <TextBox Text="{Binding BossVictoryPhrasesText, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Height="118" TextWrapping="Wrap" />
+                                </StackPanel>
+                                </ScrollViewer>
+                            </Border>
+                            <Border Grid.Column="2" Style="{StaticResource PanelBorder}">
+                                <StackPanel>
+                                    <TextBlock Text="| HOTKEYS" Style="{StaticResource LabelText}" Margin="0,0,0,20" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="84" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Text="Add Death" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
+                                        <TextBox Grid.Column="1" Text="{Binding ManualAddHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
+                                        <TextBlock Grid.Row="1" Text="Subtract Death" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
+                                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ManualSubtractHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
+                                        <TextBlock Grid.Row="2" Text="Boss Kill" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
+                                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding ManualBossDefeatedHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <Border Grid.Row="3" Style="{StaticResource PanelBorder}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="200" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="| DATA FOLDER PATH" Style="{StaticResource LabelText}" Margin="0,0,0,16" />
+                                    <TextBox Text="{Binding DataFolderPathText, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+                                <Button Grid.Column="1"
+                                        Content="SAVE SETTINGS"
+                                        Command="{Binding SaveSettingsCommand}"
+                                        Style="{StaticResource GoldButton}"
+                                        Margin="24,28,0,0"
+                                        VerticalAlignment="Bottom" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <Border Grid.Column="1"
+                Grid.Row="1"
+                Background="#A0000000"
+                Visibility="{Binding IsBossHistoryEditorOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border Width="430"
+                    Background="{DynamicResource Panel}"
+                    BorderBrush="{DynamicResource BorderGold}"
+                    BorderThickness="1"
+                    Padding="24"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <StackPanel>
+                    <TextBlock Text="EDIT FELLED RECORD"
+                               Style="{StaticResource LabelText}"
+                               Margin="0,0,0,18" />
+                    <TextBlock Text="Name"
+                               Style="{StaticResource MutedText}"
+                               FontFamily="{DynamicResource AppFontFamily}"
+                               FontWeight="Bold" />
+                    <TextBox Text="{Binding BossEditNameText, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,6,0,14" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="18" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Attempts"
+                                       Style="{StaticResource MutedText}"
+                                       FontFamily="{DynamicResource AppFontFamily}"
+                                       FontWeight="Bold" />
+                            <TextBox Text="{Binding BossEditAttemptsText, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,6,0,14" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Duration"
+                                       Style="{StaticResource MutedText}"
+                                       FontFamily="{DynamicResource AppFontFamily}"
+                                       FontWeight="Bold" />
+                            <TextBox Text="{Binding BossEditDurationText, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,6,0,14" />
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock Text="Recorded at"
+                               Style="{StaticResource MutedText}"
+                               FontFamily="{DynamicResource AppFontFamily}"
+                               FontWeight="Bold" />
+                    <TextBox Text="{Binding BossEditRecordedAtText, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,6,0,14" />
+                    <TextBlock Text="Completed by"
+                               Style="{StaticResource MutedText}"
+                               FontFamily="{DynamicResource AppFontFamily}"
+                               FontWeight="Bold" />
+                    <TextBox Text="{Binding BossEditCompletedByText, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,6,0,22" />
+                    <DockPanel LastChildFill="False">
+                        <Button Content="DELETE"
+                                Command="{Binding DeleteBossHistoryEditorCommand}"
+                                Style="{StaticResource DangerButton}"
+                                MinWidth="100"
+                                Margin="0,0,12,0" />
+                        <Button Content="CANCEL"
+                                Command="{Binding CancelBossHistoryEditorCommand}"
+                                MinWidth="100"
+                                Margin="0,0,12,0" />
+                        <Button DockPanel.Dock="Right"
+                                Content="SAVE"
+                                Command="{Binding SaveBossHistoryEditorCommand}"
+                                IsDefault="True"
+                                Style="{StaticResource GoldButton}"
+                                MinWidth="118" />
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+        </Border>
+
+        <Border x:Name="BottomStatusBar"
+                Grid.ColumnSpan="2"
+                Grid.Row="2"
+                Background="{DynamicResource StatusBarSurface}"
+                BorderBrush="{DynamicResource Separator}"
+                BorderThickness="0,1,0,0"
+                Padding="26,0"
+                SnapsToDevicePixels="True">
+            <Border.Resources>
+                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+                    <Setter Property="FontSize" Value="12" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                </Style>
+            </Border.Resources>
+            <DockPanel LastChildFill="False"
+                       VerticalAlignment="Center">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="HOTKEYS: F7/F8/F9"
+                               Foreground="{DynamicResource Ink}"
+                               Margin="0,0,28,0" />
+                    <TextBlock Text="DOCUMENTATION"
+                               Foreground="{DynamicResource Ink}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="STATUS:"
+                               Foreground="{DynamicResource Ink}"
+                               Margin="0,0,10,0" />
+                    <TextBlock Text="ŚMIERCI:"
+                               Foreground="{DynamicResource Ink}"
+                               Margin="0,0,8,0" />
+                    <TextBlock Text="{Binding StatusDeathCountText}"
+                               Foreground="{DynamicResource Gold}"
+                               Margin="0,0,16,0" />
+                    <TextBlock Text="|"
+                               Foreground="{DynamicResource Gold}"
+                               Margin="0,0,16,0" />
+                    <TextBlock Text="OVERLAY:"
+                               Foreground="{DynamicResource Ink}"
+                               Margin="0,0,8,0" />
+                    <TextBlock Text="{Binding StatusOverlayStateText}"
+                               Foreground="{DynamicResource Gold}"
+                               Margin="0,0,16,0" />
+                    <TextBlock Text="|"
+                               Foreground="{DynamicResource Gold}"
+                               Margin="0,0,16,0" />
+                    <TextBlock Text="DETECTION:"
+                               Foreground="{DynamicResource Ink}"
+                               Margin="0,0,8,0" />
+                    <TextBlock Text="{Binding StatusDetectionStateText}"
+                               Foreground="{DynamicResource Gold}" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>

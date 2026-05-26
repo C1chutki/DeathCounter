@@ -1,0 +1,138 @@
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Threading;
+using System.Reflection;
+using EldenDeathCounter.Core.Configuration;
+using EldenDeathCounter.Core.Storage;
+using EldenDeathCounter.Interop;
+
+namespace EldenDeathCounter;
+
+public partial class OverlayWindow : Window
+{
+    private readonly DispatcherTimer _bossTimer;
+    private string _gameLanguage;
+    private ActiveBossState? _activeBoss;
+    private bool _isDetectionRunning;
+
+    public OverlayWindow(AppSettings settings)
+    {
+        InitializeComponent();
+        Left = settings.OverlayX;
+        Top = settings.OverlayY;
+        _gameLanguage = settings.GameLanguage;
+        _bossTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(1)
+        };
+        _bossTimer.Tick += (_, _) => UpdateBossTimerText();
+        VersionTextBlock.Text = GetApplicationVersionText();
+        UpdateDetectionState(false);
+    }
+
+    public void UpdateCount(int count, ActiveBossState? activeBoss = null, string? gameLanguage = null)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            if (!string.IsNullOrWhiteSpace(gameLanguage))
+            {
+                _gameLanguage = gameLanguage;
+            }
+
+            CounterTextBlock.Text = DeathCounterText.FormatGlobalCount(count, _gameLanguage);
+            _activeBoss = activeBoss;
+            if (activeBoss is null)
+            {
+                BossTextBlock.Text = string.Empty;
+                BossDeathTextBlock.Text = string.Empty;
+                TimerTextBlock.Text = string.Empty;
+                BossPanel.Visibility = Visibility.Collapsed;
+                _bossTimer.Stop();
+                return;
+            }
+
+            BossTextBlock.Text = DeathCounterText.FormatBossOverlayName(activeBoss.Name);
+            BossDeathTextBlock.Text = $"{DeathCounterText.FormatDeathLabel(_gameLanguage)}: {activeBoss.DeathCount}";
+            BossPanel.Visibility = Visibility.Visible;
+            UpdateBossTimerText();
+            if (activeBoss.IsTimerRunning && !_bossTimer.IsEnabled)
+            {
+                _bossTimer.Start();
+            }
+            else if (!activeBoss.IsTimerRunning)
+            {
+                _bossTimer.Stop();
+            }
+        });
+    }
+
+    public void UpdateDetectionState(bool isRunning)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            _isDetectionRunning = isRunning;
+            DetectionStatusTextBlock.Text = isRunning ? "DETECTION RUNNING" : "DETECTION STOPPED";
+            DetectionDot.Fill = BrushFromHex(isRunning ? "#8DA46D" : "#6E6253");
+        });
+    }
+
+    public void ApplyPosition(double x, double y)
+    {
+        Left = x;
+        Top = y;
+    }
+
+    public void ApplyTheme(AppGameTheme theme)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            OverlayChrome.Background = BrushFromHex(theme.OverlayBackground);
+            OverlayChrome.BorderBrush = BrushFromHex(theme.OverlayBorder);
+            CounterTextBlock.Foreground = BrushFromHex(theme.OverlayText);
+            BossTextBlock.Foreground = BrushFromHex(theme.OverlayText);
+            BossDeathTextBlock.Foreground = BrushFromHex(theme.Primary);
+            TimerTextBlock.Foreground = BrushFromHex(theme.Tertiary);
+            DetectionStatusTextBlock.Foreground = BrushFromHex(theme.Primary);
+            TotalDeathsLabelTextBlock.Foreground = BrushFromHex(theme.Primary);
+            VersionTextBlock.Foreground = BrushFromHex(theme.MutedInk);
+            DividerBorder.Background = BrushFromHex(theme.Border);
+            TimerChrome.BorderBrush = BrushFromHex(theme.Border);
+            DetectionDot.Fill = BrushFromHex(_isDetectionRunning ? theme.Primary : theme.MutedInk);
+        });
+    }
+
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+        ClickThroughWindow.Enable(this);
+    }
+
+    private void UpdateBossTimerText()
+    {
+        if (_activeBoss is null)
+        {
+            return;
+        }
+
+        TimerTextBlock.Text = FormatDuration(_activeBoss.GetElapsedDuration(DateTimeOffset.Now));
+    }
+
+    private static string FormatDuration(TimeSpan duration)
+    {
+        var safeDuration = duration < TimeSpan.Zero ? TimeSpan.Zero : duration;
+        return $"{(int)safeDuration.TotalHours:00}:{safeDuration.Minutes:00}:{safeDuration.Seconds:00}";
+    }
+
+    private static SolidColorBrush BrushFromHex(string color)
+    {
+        return new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(color));
+    }
+
+    private static string GetApplicationVersionText()
+    {
+        var version = Assembly.GetExecutingAssembly().GetName().Version;
+        return version is null
+            ? "v1.0.0"
+            : $"v{version.Major}.{version.Minor}.{version.Build}";
+    }
+}
