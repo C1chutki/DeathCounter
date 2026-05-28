@@ -8,6 +8,8 @@ namespace EldenDeathCounter;
 public partial class MainWindow : Window
 {
     private readonly MainWindowViewModel _viewModel;
+    private bool _shutdownStarted;
+    private bool _shutdownComplete;
 
     public MainWindow(MainWindowViewModel viewModel)
     {
@@ -21,6 +23,30 @@ public partial class MainWindow : Window
     {
         base.OnSourceInitialized(e);
         _viewModel.AttachWindow(this);
+    }
+
+    protected override async void OnClosing(System.ComponentModel.CancelEventArgs e)
+    {
+        // Run graceful async shutdown while the dispatcher is still pumping, then close for real.
+        // Cancelling the first close keeps the message pump alive so UI-affined continuations from
+        // the detection/save tasks can resume, avoiding the sync-over-async deadlock that left the
+        // process running in the background.
+        if (_shutdownComplete)
+        {
+            base.OnClosing(e);
+            return;
+        }
+
+        e.Cancel = true;
+        if (_shutdownStarted)
+        {
+            return;
+        }
+
+        _shutdownStarted = true;
+        await _viewModel.ShutdownAsync();
+        _shutdownComplete = true;
+        Close();
     }
 
     private void NavigationRadio_Checked(object sender, RoutedEventArgs e)

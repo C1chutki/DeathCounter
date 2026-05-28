@@ -119,20 +119,53 @@ public partial class App : System.Windows.Application
 
     protected override void OnExit(ExitEventArgs e)
     {
-        if (_counterService is not null)
+        // Graceful shutdown (stop detection, pause timer, save state, close overlay) runs in
+        // MainWindow.OnClosing while the dispatcher is still pumping. By the time OnExit runs we
+        // only perform synchronous final disposal. Never block the UI thread on UI-affined async
+        // continuations here: the dispatcher pump has stopped during shutdown, so awaiting them
+        // would deadlock and leave the process alive with the mutex held.
+        try
         {
-            _counterService.PauseActiveBossTimerAsync().GetAwaiter().GetResult();
+            // Fallback for abnormal exits (e.g. startup failure) where graceful shutdown never ran.
+            // Bounded and executed off the UI sync-context to avoid the sync-over-async deadlock.
+            if (_detectionService is { IsRunning: true })
+            {
+                Task.Run(() => _detectionService.StopAsync()).Wait(TimeSpan.FromSeconds(5));
+            }
+
+            _hotkeyService?.Dispose();
+            _log?.Info("App stopped.");
+        }
+        catch (Exception exception)
+        {
+            _log?.Error("Error during application exit.", exception);
+        }
+        finally
+        {
+            ReleaseSingleInstanceMutex();
+            base.OnExit(e);
+        }
+    }
+
+    private void ReleaseSingleInstanceMutex()
+    {
+        if (_singleInstanceMutex is null)
+        {
+            return;
         }
 
-        if (_detectionService is not null)
+        try
         {
-            _detectionService.StopAsync().GetAwaiter().GetResult();
+            _singleInstanceMutex.ReleaseMutex();
         }
-
-        _hotkeyService?.Dispose();
-        _log?.Info("App stopped.");
-        _singleInstanceMutex?.ReleaseMutex();
-        _singleInstanceMutex?.Dispose();
-        base.OnExit(e);
+        catch (ApplicationException)
+        {
+            // The mutex was not owned by this thread; disposing still releases the handle.
+        }
+        finally
+        {
+            _singleInstanceMutex.Dispose();
+            _singleInstanceMutex = null;
+        }
     }
 }

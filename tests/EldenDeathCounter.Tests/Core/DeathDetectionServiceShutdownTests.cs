@@ -18,9 +18,35 @@ public sealed class DeathDetectionServiceShutdownTests
         service.Start(AppSettings.CreateDefault(Environment.CurrentDirectory, AppGameProfile.EldenRing));
         await captureService.CaptureStarted.Task.WaitAsync(TimeSpan.FromSeconds(2));
 
-        await service.StopAsync();
+        await service.StopAsync().WaitAsync(TimeSpan.FromSeconds(5));
 
         Assert.True(captureService.CaptureCancelled.Task.IsCompleted);
+        Assert.False(service.IsRunning);
+    }
+
+    [Fact]
+    public async Task StopAsyncIsIdempotentAndSafeToCallRepeatedly()
+    {
+        var captureService = new BlockingCaptureService();
+        var service = CreateService(captureService);
+
+        service.Start(AppSettings.CreateDefault(Environment.CurrentDirectory, AppGameProfile.EldenRing));
+        await captureService.CaptureStarted.Task.WaitAsync(TimeSpan.FromSeconds(2));
+
+        await service.StopAsync().WaitAsync(TimeSpan.FromSeconds(5));
+        await service.StopAsync().WaitAsync(TimeSpan.FromSeconds(5));
+        await service.StopAsync().WaitAsync(TimeSpan.FromSeconds(5));
+
+        Assert.False(service.IsRunning);
+    }
+
+    [Fact]
+    public async Task StopAsyncReturnsImmediatelyWhenNeverStarted()
+    {
+        var service = CreateService(new BlockingCaptureService());
+
+        await service.StopAsync().WaitAsync(TimeSpan.FromSeconds(5));
+
         Assert.False(service.IsRunning);
     }
 

@@ -39,9 +39,21 @@ public static class JsonFileWriter
         }
         finally
         {
-            if (File.Exists(tempPath))
+            // After a successful replace/move the temp file is already gone; this only fires when a
+            // write failed before the swap. Swallow delete failures so they cannot mask the original
+            // exception (e.g. when the temp file is briefly locked by antivirus).
+            try
             {
-                File.Delete(tempPath);
+                if (File.Exists(tempPath))
+                {
+                    File.Delete(tempPath);
+                }
+            }
+            catch (IOException)
+            {
+            }
+            catch (UnauthorizedAccessException)
+            {
             }
         }
     }

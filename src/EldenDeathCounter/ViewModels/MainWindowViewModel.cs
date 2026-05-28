@@ -44,6 +44,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private string _bossEditRecordedAtText = string.Empty;
     private string _bossEditCompletedByText = string.Empty;
     private bool _isDetectionRunning;
+    private bool _isShuttingDown;
     private DateTimeOffset? _lastDetectedDeath;
 
     public MainWindowViewModel(
@@ -491,6 +492,38 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         await _counterService.PauseActiveBossTimerAsync();
         await _detectionService.StopAsync();
         ConfigureDetectionDiagnostics();
+    }
+
+    public async Task ShutdownAsync()
+    {
+        if (_isShuttingDown)
+        {
+            return;
+        }
+
+        _isShuttingDown = true;
+        try
+        {
+            IsDetectionRunning = false;
+            await _detectionService.StopAsync();
+            await _counterService.PauseActiveBossTimerAsync();
+        }
+        catch (Exception exception)
+        {
+            _log.Error("Error while stopping detection and saving state during shutdown.", exception);
+        }
+
+        try
+        {
+            _hotkeyService.Dispose();
+            _overlayWindow.Close();
+        }
+        catch (Exception exception)
+        {
+            _log.Error("Error while releasing UI resources during shutdown.", exception);
+        }
+
+        _log.Info("Application shutdown completed.");
     }
 
     private void StartDiagnosticsSession()

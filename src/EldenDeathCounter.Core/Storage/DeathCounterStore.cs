@@ -17,6 +17,7 @@ public sealed class DeathCounterStore
         try
         {
             EnsureParentDirectory(dataFilePath);
+            CleanupStaleTempFiles(dataFilePath);
             if (!File.Exists(dataFilePath))
             {
                 var cleanState = new DeathCounterState();
@@ -56,6 +57,52 @@ public sealed class DeathCounterStore
         {
             _log.Error($"Failed to save death data to {dataFilePath}.", exception);
             throw;
+        }
+    }
+
+    public void CleanupStaleTempFiles(string dataFilePath)
+    {
+        try
+        {
+            var directory = Path.GetDirectoryName(dataFilePath);
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            var fileName = Path.GetFileName(dataFilePath);
+            // Only files matching this app's own atomic-write naming pattern are removed:
+            //   deaths.json.<guid>.tmp  (orphaned in-flight writes)
+            //   deaths.json.progression (legacy/abandoned progression temp)
+            // The live data file and *.corrupt-*.json backups never match these patterns.
+            var patterns = new[] { $"{fileName}.*.tmp", $"{fileName}.progression" };
+            foreach (var pattern in patterns)
+            {
+                foreach (var file in Directory.EnumerateFiles(directory, pattern))
+                {
+                    if (string.Equals(Path.GetFileName(file), fileName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    try
+                    {
+                        File.Delete(file);
+                        _log.Info($"Removed stale storage temp file '{file}'.");
+                    }
+                    catch (IOException)
+                    {
+                        // Likely locked by an in-flight write; leave it for next startup.
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                    }
+                }
+            }
+        }
+        catch (Exception exception)
+        {
+            _log.Error("Failed to clean up stale storage temp files.", exception);
         }
     }
 

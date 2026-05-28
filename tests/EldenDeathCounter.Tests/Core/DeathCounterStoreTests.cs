@@ -78,6 +78,82 @@ public sealed class DeathCounterStoreTests
         Assert.Empty(Directory.GetFiles(folder, "*.tmp"));
     }
 
+    [Fact]
+    public async Task SaveAsyncLeavesNoTempFilesAfterSuccess()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var dataFile = Path.Combine(folder, "deaths.json");
+        var store = new DeathCounterStore(new InMemoryLogService());
+        var state = new DeathCounterState { CurrentDeathCount = 5 };
+
+        await store.SaveAsync(dataFile, state);
+        await store.SaveAsync(dataFile, state);
+
+        Assert.True(File.Exists(dataFile));
+        Assert.Empty(Directory.GetFiles(folder, "deaths.json.*.tmp"));
+        Assert.Empty(Directory.GetFiles(folder, "*.tmp"));
+    }
+
+    [Fact]
+    public void CleanupStaleTempFilesRemovesAppTempAndProgressionFiles()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var dataFile = Path.Combine(folder, "deaths.json");
+        var staleTemp = Path.Combine(folder, $"deaths.json.{Guid.NewGuid():N}.tmp");
+        var progression = Path.Combine(folder, "deaths.json.progression");
+        File.WriteAllText(staleTemp, "partial");
+        File.WriteAllText(progression, "old-progression");
+        var store = new DeathCounterStore(new InMemoryLogService());
+
+        store.CleanupStaleTempFiles(dataFile);
+
+        Assert.False(File.Exists(staleTemp));
+        Assert.False(File.Exists(progression));
+    }
+
+    [Fact]
+    public void CleanupStaleTempFilesPreservesDataFileAndCorruptBackups()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var dataFile = Path.Combine(folder, "deaths.json");
+        var backup = Path.Combine(folder, "deaths.corrupt-20260101-101010101.json");
+        var unrelated = Path.Combine(folder, "notes.txt");
+        File.WriteAllText(dataFile, """{"currentDeathCount":7}""");
+        File.WriteAllText(backup, """{"currentDeathCount":3}""");
+        File.WriteAllText(unrelated, "user notes");
+        var store = new DeathCounterStore(new InMemoryLogService());
+
+        store.CleanupStaleTempFiles(dataFile);
+
+        Assert.True(File.Exists(dataFile));
+        Assert.True(File.Exists(backup));
+        Assert.True(File.Exists(unrelated));
+    }
+
+    [Fact]
+    public async Task LoadAsyncRemovesStaleTempFilesButKeepsValidData()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var dataFile = Path.Combine(folder, "deaths.json");
+        await File.WriteAllTextAsync(dataFile, """{"currentDeathCount":9}""");
+        var staleTemp = Path.Combine(folder, $"deaths.json.{Guid.NewGuid():N}.tmp");
+        var progression = Path.Combine(folder, "deaths.json.progression");
+        await File.WriteAllTextAsync(staleTemp, "partial");
+        await File.WriteAllTextAsync(progression, "old-progression");
+        var store = new DeathCounterStore(new InMemoryLogService());
+
+        var state = await store.LoadAsync(dataFile);
+
+        Assert.Equal(9, state.CurrentDeathCount);
+        Assert.True(File.Exists(dataFile));
+        Assert.False(File.Exists(staleTemp));
+        Assert.False(File.Exists(progression));
+    }
+
     private sealed class InMemoryLogService : ILogService
     {
         public List<string> Messages { get; } = [];
