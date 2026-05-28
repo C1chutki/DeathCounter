@@ -34,6 +34,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private string _detectionStatus = "Detection stopped";
     private string _hotkeyStatus = "Hotkeys not registered yet.";
     private string _bossSearchText = string.Empty;
+    private BossHistorySortMode _selectedBossSortMode = BossHistorySortMode.Default;
+    private BossHistorySortDirection _selectedBossSortDirection = BossHistorySortDirection.Descending;
     private BossHistoryEntry? _editingBossHistoryEntry;
     private bool _isBossHistoryEditorOpen;
     private string _bossEditNameText = string.Empty;
@@ -79,6 +81,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         foreach (var option in CreateGameLanguageOptions())
         {
             GameLanguageOptions.Add(option);
+        }
+
+        foreach (var option in CreateBossSortModeOptions())
+        {
+            BossSortModeOptions.Add(option);
+        }
+
+        foreach (var option in CreateBossSortDirectionOptions())
+        {
+            BossSortDirectionOptions.Add(option);
         }
 
         SelectedCaptureTargetValue = string.Empty;
@@ -329,6 +341,30 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    public BossHistorySortMode SelectedBossSortMode
+    {
+        get => _selectedBossSortMode;
+        set
+        {
+            if (SetField(ref _selectedBossSortMode, value))
+            {
+                RefreshBosses();
+            }
+        }
+    }
+
+    public BossHistorySortDirection SelectedBossSortDirection
+    {
+        get => _selectedBossSortDirection;
+        set
+        {
+            if (SetField(ref _selectedBossSortDirection, value))
+            {
+                RefreshBosses();
+            }
+        }
+    }
+
     public string FooterText => "Use borderless fullscreen or windowed mode for Elden Ring. Exclusive fullscreen may hide the overlay. F8 adds a death, F9 subtracts one, and F7 marks the active boss defeated by default.";
 
     public ICommand StartDetectionCommand { get; }
@@ -378,6 +414,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ObservableCollection<CaptureTargetOption> CaptureTargetOptions { get; } = [];
 
     public ObservableCollection<GameLanguageOption> GameLanguageOptions { get; } = [];
+
+    public ObservableCollection<BossSortModeOption> BossSortModeOptions { get; } = [];
+
+    public ObservableCollection<BossSortDirectionOption> BossSortDirectionOptions { get; } = [];
 
     public void AttachWindow(Window window)
     {
@@ -908,7 +948,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private void RefreshBosses()
     {
         DefeatedBosses.Clear();
-        foreach (var numberedBoss in BossHistoryDisplayOrder.CreateNumberedEntries(_counterService.State.BossHistory, BossSearchText))
+        foreach (var numberedBoss in BossHistoryDisplayOrder.CreateNumberedEntries(
+                     _counterService.State.BossHistory,
+                     BossSearchText,
+                     SelectedBossSortMode,
+                     SelectedBossSortDirection))
         {
             var boss = numberedBoss.Entry;
             DefeatedBosses.Add(new BossDisplayItem(
@@ -973,6 +1017,25 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         [
             new("PL", "Polski"),
             new("ENG", "English")
+        ];
+    }
+
+    private static IReadOnlyList<BossSortModeOption> CreateBossSortModeOptions()
+    {
+        return
+        [
+            new(BossHistorySortMode.Default, "Default"),
+            new(BossHistorySortMode.Time, "Time"),
+            new(BossHistorySortMode.Deaths, "Deaths")
+        ];
+    }
+
+    private static IReadOnlyList<BossSortDirectionOption> CreateBossSortDirectionOptions()
+    {
+        return
+        [
+            new(BossHistorySortDirection.Descending, "Descending"),
+            new(BossHistorySortDirection.Ascending, "Ascending")
         ];
     }
 
@@ -1044,3 +1107,7 @@ public sealed record BossDisplayItem(
 public sealed record CaptureTargetOption(string Value, string DisplayName);
 
 public sealed record GameLanguageOption(string Value, string DisplayName);
+
+public sealed record BossSortModeOption(BossHistorySortMode Value, string DisplayName);
+
+public sealed record BossSortDirectionOption(BossHistorySortDirection Value, string DisplayName);

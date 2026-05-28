@@ -1089,6 +1089,36 @@
                             <TextBlock Text="CONQUERED FOES"
                                        Style="{StaticResource LabelText}"
                                        Margin="0,0,0,20" />
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Center"
+                                        Margin="0,0,0,24">
+                                <TextBlock Text="Sort by"
+                                           Style="{StaticResource MutedText}"
+                                           FontFamily="{DynamicResource AppFontFamily}"
+                                           FontWeight="Bold"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,10,0" />
+                                <ComboBox ItemsSource="{Binding BossSortModeOptions}"
+                                          SelectedValue="{Binding SelectedBossSortMode, UpdateSourceTrigger=PropertyChanged}"
+                                          SelectedValuePath="Value"
+                                          DisplayMemberPath="DisplayName"
+                                          Style="{StaticResource DarkComboBox}"
+                                          FontSize="16"
+                                          Width="170" />
+                                <TextBlock Text="Direction"
+                                           Style="{StaticResource MutedText}"
+                                           FontFamily="{DynamicResource AppFontFamily}"
+                                           FontWeight="Bold"
+                                           VerticalAlignment="Center"
+                                           Margin="24,0,10,0" />
+                                <ComboBox ItemsSource="{Binding BossSortDirectionOptions}"
+                                          SelectedValue="{Binding SelectedBossSortDirection, UpdateSourceTrigger=PropertyChanged}"
+                                          SelectedValuePath="Value"
+                                          DisplayMemberPath="DisplayName"
+                                          Style="{StaticResource DarkComboBox}"
+                                          FontSize="16"
+                                          Width="170" />
+                            </StackPanel>
                             <TextBlock Text="{Binding DefeatedBossesEmptyText}"
                                        Style="{StaticResource MutedText}"
                                        FontStyle="Italic"
