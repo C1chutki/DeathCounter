@@ -111,7 +111,14 @@ public sealed class DeathDetectionServiceShutdownTests
 
     private sealed class EmptyBossNameDetector : IBossNameDetector
     {
-        public Task<string?> DetectBossNameAsync(Bitmap bitmap, CancellationToken cancellationToken) => Task.FromResult<string?>(null);
+        public IReadOnlyList<BossHealthBarRegion> AnalyzeBars(Bitmap screenshot) => Array.Empty<BossHealthBarRegion>();
+
+        public Task<BossNameDetectionResult> ReadBossNamesAsync(
+            Bitmap screenshot,
+            IReadOnlyList<BossHealthBarRegion> bars,
+            BossNameMatcher matcher,
+            CancellationToken cancellationToken) =>
+            Task.FromResult(BossNameDetectionResult.FromMatches(0, Array.Empty<BossNameCandidate>()));
     }
 
     private sealed class InMemoryLogService : ILogService

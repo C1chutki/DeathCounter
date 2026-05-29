@@ -10,7 +10,7 @@ namespace EldenDeathCounter.Detection;
 public sealed partial class BossNameDetector : IBossNameDetector
 {
     private static readonly Regex WhitespaceRegex = new(@"\s+", RegexOptions.Compiled);
-    private static readonly Regex AllowedTextRegex = new(@"[^\p{L}\p{N}'’\-\s,]+", RegexOptions.Compiled);
+    private static readonly Regex AllowedTextRegex = new(@"[^\p{L}\p{N}'’\-\s,()]+", RegexOptions.Compiled);
     private readonly ITextRecognitionService _textRecognitionService;
     private readonly ILogService _log;
     private readonly BossHealthBarAnalyzer _analyzer = new();
@@ -21,50 +21,19 @@ public sealed partial class BossNameDetector : IBossNameDetector
         _log = log;
     }
 
-    public async Task<string?> DetectBossNameAsync(Bitmap screenshot, CancellationToken cancellationToken)
-    {
-        var bars = AnalyzeBars(screenshot);
-        if (bars.Count == 0)
-        {
-            return null;
-        }
-
-        var names = new List<string>();
-        foreach (var bar in bars.Take(2))
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            using var nameBitmap = Crop(screenshot, bar.NameRegion);
-            var ocrText = await _textRecognitionService.RecognizeTextAsync(nameBitmap, cancellationToken);
-            var name = ExtractBossName(ocrText);
-            if (!string.IsNullOrWhiteSpace(name))
-            {
-                names.Add(name);
-            }
-            else
-            {
-                _log.Info($"Boss bar found, but OCR did not return a usable boss name. Region={bar.NameRegion}.");
-            }
-        }
-
-        var distinctNames = names
-            .Distinct(StringComparer.CurrentCultureIgnoreCase)
-            .ToList();
-        return distinctNames.Count == 0 ? null : string.Join(" + ", distinctNames);
-    }
-
-    private IReadOnlyList<BossHealthBarRegion> AnalyzeBars(Bitmap bitmap)
+    public IReadOnlyList<BossHealthBarRegion> AnalyzeBars(Bitmap screenshot)
     {
         try
         {
-            var rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-            var data = bitmap.LockBits(rectangle, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            var rectangle = new Rectangle(0, 0, screenshot.Width, screenshot.Height);
+            var data = screenshot.LockBits(rectangle, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             try
             {
                 var byteCount = Math.Abs(data.Stride) * data.Height;
                 var bytes = new byte[byteCount];
                 Marshal.Copy(data.Scan0, bytes, 0, byteCount);
 
-                return _analyzer.Analyze(bitmap.Width, bitmap.Height, (x, y) =>
+                return _analyzer.Analyze(screenshot.Width, screenshot.Height, (x, y) =>
                 {
                     var row = data.Stride > 0 ? y : data.Height - 1 - y;
                     var offset = row * Math.Abs(data.Stride) + x * 4;
@@ -73,7 +42,7 @@ public sealed partial class BossNameDetector : IBossNameDetector
             }
             finally
             {
-                bitmap.UnlockBits(data);
+                screenshot.UnlockBits(data);
             }
         }
         catch (Exception exception)
@@ -81,6 +50,28 @@ public sealed partial class BossNameDetector : IBossNameDetector
             _log.Error("Boss health bar analysis error.", exception);
             return [];
         }
+    }
+
+    public async Task<BossNameDetectionResult> ReadBossNamesAsync(
+        Bitmap screenshot,
+        IReadOnlyList<BossHealthBarRegion> bars,
+        BossNameMatcher matcher,
+        CancellationToken cancellationToken)
+    {
+        var candidates = new List<BossNameCandidate>();
+        foreach (var bar in bars.Take(3))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            using var nameBitmap = Crop(screenshot, bar.NameRegion);
+            var ocrText = await _textRecognitionService.RecognizeTextAsync(nameBitmap, cancellationToken);
+            var rawName = ExtractBossName(ocrText) ?? string.Empty;
+            var match = string.IsNullOrWhiteSpace(rawName)
+                ? BossNameMatch.None
+                : matcher.Match(rawName);
+            candidates.Add(new BossNameCandidate(rawName, match));
+        }
+
+        return BossNameDetectionResult.FromMatches(bars.Count, candidates);
     }
 
     private static Bitmap Crop(Bitmap source, PixelRect rect)

@@ -2,6 +2,8 @@
 
 ## 2026-05-29
 
+- Przebudowano wykrywanie nazwy bossa, aby usunac falszywe trafienia i zepsute napisy. OCR nazwy uruchamia sie teraz tylko w obszarze nad wykrytym paskiem HP bossa, a kandydat zostaje przyjety dopiero po dopasowaniu (fuzzy) do listy bossow z `Assets/ENG_BossList.txt` lub `Assets/PL_BossList.txt`, wiec teksty typu `Talk`, `Sit`, `Rest`, `Read message`, `Bloody Slash` oraz smieci OCR sa odrzucane. Nazwa jest publikowana i zamrazana raz na walke (maszyna stanow enkountera), obsluguje 1-3 paski bossow laczone przez ` + ` i nie nadpisuje recznie ustawionej nazwy; dodano liste PL, testy regresyjne i podniesiono wersje do 1.2.0.
+
 - Odswiezono wyglad overlaya dla motywu Elden Ring: widoczna zlota ramka 1px (`OverlayBorder` = `#EAC36D`) oraz tlo bardziej przezroczyste (`OverlayBackground` = `#7F000000`, alpha ~0.50). Tlo overlaya rysuje teraz subtelny pionowy gradient generowany z koloru motywu w `ApplyTheme`, wiec pozostale motywy (np. Dark Souls 3) dzialaja bez zmian; wersje podniesiono do 1.1.2.
 
 - Naprawiono zamykanie aplikacji: graceful shutdown (zatrzymanie detekcji, pauza timera, zapis stanu, zamkniecie overlaya) biegnie teraz w `MainWindow.OnClosing` przy zywym dispatcherze, co usuwa zakleszczenie sync-over-async w `App.OnExit`, ktore zostawialo proces w tle, niezwolniony mutex single-instance i osierocone pliki `deaths.json.<guid>.tmp`. `DeathCounterStore` czysci przy starcie stare pliki tymczasowe pasujace do wzorca aplikacji (`deaths.json.*.tmp`, `deaths.json.progression`) bez ruszania `deaths.json` ani backupow `*.corrupt-*.json`; dodano testy i podniesiono wersje do 1.1.1.

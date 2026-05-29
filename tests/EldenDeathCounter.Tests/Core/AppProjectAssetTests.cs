@@ -1,9 +1,42 @@
 using System.Xml.Linq;
+using EldenDeathCounter.Core.Detection;
 
 namespace EldenDeathCounter.Tests.Core;
 
 public sealed class AppProjectAssetTests
 {
+    [Fact]
+    public void AppProjectCopiesBossListsAndMultiBossReferenceImages()
+    {
+        var projectPath = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory, "..", "..", "..", "..", "..",
+            "src", "EldenDeathCounter", "EldenDeathCounter.csproj"));
+        var project = XDocument.Load(projectPath);
+        var includes = project
+            .Descendants("Content")
+            .Select(element => element.Attribute("Include")?.Value)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        // The wildcard Assets include copies the boss lists and reference images to the build output.
+        Assert.Contains(@"..\..\Assets\*.*", includes);
+
+        var assetRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(projectPath)!, "..", "..", "Assets"));
+        foreach (var file in new[]
+                 {
+                     "ENG_BossList.txt", "PL_BossList.txt",
+                     "ENG_DoubleBoss.jpg", "ENG_DoubleBoss_02.jpg",
+                     "ENG_TrippleBoss.jpg", "ENG_TrippleBoss_02.jpg",
+                 })
+        {
+            Assert.True(File.Exists(Path.Combine(assetRoot, file)), $"Missing asset: {file}");
+        }
+
+        // Both boss lists must provide a source of truth for the matcher.
+        Assert.True(BossNameMatcher.ParseList(File.ReadAllLines(Path.Combine(assetRoot, "ENG_BossList.txt"))).Count > 100);
+        Assert.True(BossNameMatcher.ParseList(File.ReadAllLines(Path.Combine(assetRoot, "PL_BossList.txt"))).Count > 100);
+    }
+
     [Fact]
     public void AppProjectCopiesAllDefaultDeathScreenTemplates()
     {

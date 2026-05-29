@@ -25,7 +25,11 @@ public sealed class DeathDetectionService
     private readonly DeathDetectionGate _bossVictoryDetectionGate = new(clearFramesRequired: 3);
     private readonly DeathSignalStabilizer _deathSignalStabilizer = new(requiredConsecutiveFrames: 2);
     private readonly DeathSignalStabilizer _bossVictorySignalStabilizer = new(requiredConsecutiveFrames: 2);
-    private readonly BossNameStabilizer _bossNameStabilizer = new();
+    private readonly BossEncounterNameTracker _bossEncounterTracker = new();
+    private BossNameMatcher? _bossNameMatcher;
+    private string? _bossNameMatcherLanguage;
+    private string? _lastAutoPublishedBossName;
+    private DateTimeOffset _lastBossNameRejectionLog = DateTimeOffset.MinValue;
     private CancellationTokenSource? _cancellationTokenSource;
     private Task? _loopTask;
     private DateTimeOffset? _lastDetectedDeath;
@@ -74,6 +78,8 @@ public sealed class DeathDetectionService
 
         _cancellationTokenSource = new CancellationTokenSource();
         _lastSettings = settings;
+        _bossEncounterTracker.Reset();
+        _lastAutoPublishedBossName = null;
         _loopTask = Task.Run(() => RunAsync(settings, _cancellationTokenSource.Token));
         ConfigureDiagnostics(settings, detectionRunning: true);
         _log.Info("Detection started.");
@@ -569,13 +575,16 @@ public sealed class DeathDetectionService
         StatusChanged?.Invoke(this, new DetectionStatusChangedEventArgs(status, lastDetectedDeath));
     }
 
-    private async Task UpdateBossNameFromScreenAsync(AppSettings settings, bool hasDeathSignal, CancellationToken cancellationToken)
+    private async Task UpdateBossNameFromScreenAsync(AppSettings settings, bool hasDeathOrVictorySignal, CancellationToken cancellationToken)
     {
         try
         {
-            if (hasDeathSignal)
+            if (hasDeathOrVictorySignal)
             {
-                _bossNameStabilizer.Reset();
+                // A death or boss-victory signal ends/changes the encounter; re-arm name detection.
+                // _lastAutoPublishedBossName is intentionally preserved: the active boss survives a
+                // death, so it still reflects a name we set (not a manual edit).
+                _bossEncounterTracker.Reset();
                 return;
             }
 
@@ -587,21 +596,50 @@ public sealed class DeathDetectionService
 
             _lastBossNameDetectionAttempt = now;
 
+            var matcher = GetBossNameMatcher(settings);
             using var screenshot = await _captureService.CaptureBossHealthBarAsync(settings.CaptureTarget, cancellationToken);
-            var bossName = await _bossNameDetector.DetectBossNameAsync(screenshot.Bitmap, cancellationToken);
-            if (string.IsNullOrWhiteSpace(bossName))
+
+            // 1) Detect boss HP bars first (cheap). Boss-name OCR is gated entirely on this.
+            var bars = _bossNameDetector.AnalyzeBars(screenshot.Bitmap);
+            var decision = _bossEncounterTracker.BeginFrame(bars.Count);
+            if (decision.Rearmed)
             {
-                _bossNameStabilizer.ObserveMissing();
+                _log.Info("Boss bars cleared; boss-name detection re-armed for the next encounter.");
+            }
+
+            if (!decision.ShouldReadNames)
+            {
+                // No stable bar yet, or the name is already frozen for this encounter.
                 return;
             }
 
-            var stableBossName = _bossNameStabilizer.Observe(bossName, settings.BossNameCorrections);
-            if (string.IsNullOrWhiteSpace(stableBossName))
+            // 2) Only now run OCR, restricted to each detected bar's name region.
+            var result = await _bossNameDetector.ReadBossNamesAsync(screenshot.Bitmap, bars, matcher, cancellationToken);
+            var proposed = _bossEncounterTracker.SubmitNames(result.BarCount, result.MatchedCount, result.CombinedName);
+            if (proposed is null)
             {
+                LogRejectedBossNameCandidates(result);
                 return;
             }
 
-            await _counterService.SetActiveBossAsync(stableBossName, resetIfChanged: false);
+            // 3) Never overwrite a manually edited active boss name during an encounter.
+            var activeName = _counterService.State.ActiveBoss?.Name;
+            switch (BossNamePublishDecision.Decide(proposed, activeName, _lastAutoPublishedBossName))
+            {
+                case BossNamePublishOutcome.KeepManual:
+                    _log.Info($"Auto-detected boss '{proposed}' suppressed; keeping manually set boss '{activeName}'.");
+                    _lastAutoPublishedBossName = activeName;
+                    return;
+                case BossNamePublishOutcome.Publish:
+                    await _counterService.SetActiveBossAsync(proposed, resetIfChanged: false);
+                    _lastAutoPublishedBossName = proposed;
+                    _log.Info(
+                        $"Boss name detected and frozen: '{proposed}' " +
+                        $"(bars={result.BarCount}, matched={result.MatchedCount}, confidence={FormatBossConfidences(result)}).");
+                    return;
+                default:
+                    return;
+            }
         }
         catch (OperationCanceledException)
         {
@@ -611,6 +649,77 @@ public sealed class DeathDetectionService
         {
             _log.Error("Boss name auto-detection error.", exception);
         }
+    }
+
+    private BossNameMatcher GetBossNameMatcher(AppSettings settings)
+    {
+        var language = string.IsNullOrWhiteSpace(settings.GameLanguage) ? "ENG" : settings.GameLanguage.Trim();
+        if (_bossNameMatcher is not null &&
+            string.Equals(_bossNameMatcherLanguage, language, StringComparison.OrdinalIgnoreCase))
+        {
+            return _bossNameMatcher;
+        }
+
+        var fileName = ResolveBossListFileName(language);
+        var path = Path.Combine(AppContext.BaseDirectory, "Assets", fileName);
+        IReadOnlyList<string> names;
+        try
+        {
+            names = File.Exists(path)
+                ? BossNameMatcher.ParseList(File.ReadAllLines(path))
+                : Array.Empty<string>();
+            if (!File.Exists(path))
+            {
+                _log.Error($"Boss list file '{fileName}' was not found at '{path}'. Boss-name auto-detection is disabled until it exists.");
+            }
+        }
+        catch (Exception exception)
+        {
+            _log.Error($"Failed to load boss list '{fileName}'.", exception);
+            names = Array.Empty<string>();
+        }
+
+        _bossNameMatcher = new BossNameMatcher(names);
+        _bossNameMatcherLanguage = language;
+        _log.Info($"Boss-name matcher loaded {names.Count} boss names for language '{language}' from '{fileName}'.");
+        return _bossNameMatcher;
+    }
+
+    private static string ResolveBossListFileName(string language)
+    {
+        return language.StartsWith("PL", StringComparison.OrdinalIgnoreCase)
+            ? "PL_BossList.txt"
+            : "ENG_BossList.txt";
+    }
+
+    private void LogRejectedBossNameCandidates(BossNameDetectionResult result)
+    {
+        var rejected = result.Candidates
+            .Where(candidate => !candidate.Match.IsMatch && !string.IsNullOrWhiteSpace(candidate.RawText))
+            .ToList();
+        if (rejected.Count == 0)
+        {
+            return;
+        }
+
+        var now = DateTimeOffset.Now;
+        if (now - _lastBossNameRejectionLog < TimeSpan.FromSeconds(15))
+        {
+            return;
+        }
+
+        _lastBossNameRejectionLog = now;
+        var details = string.Join(
+            "; ",
+            rejected.Select(candidate => $"'{Compact(candidate.RawText, 60)}' -> no-match (confidence={FormatScore(candidate.Match.Confidence)})"));
+        _log.Info($"Boss-name OCR candidates rejected (bars={result.BarCount}): {details}.");
+    }
+
+    private static string FormatBossConfidences(BossNameDetectionResult result)
+    {
+        return string.Join(
+            ",",
+            result.Candidates.Where(candidate => candidate.Match.IsMatch).Select(candidate => FormatScore(candidate.Match.Confidence)));
     }
 
     private void LogWeakImageSignal(ImageDeathSignalMatch match)

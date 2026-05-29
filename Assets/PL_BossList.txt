@@ -1,0 +1,156 @@
+# Polish boss list (PL_BossList.txt)
+# Best-effort translations, aligned line-for-line with ENG_BossList.txt for easy correction.
+# Lines starting with '#' are ignored. Wrong entries are harmless (they simply will not match
+# on-screen text) - verify against the in-game Polish names and edit as needed.
+# Confirmed correct: "Strażnik Drzewa" (Tree Sentinel).
+Dziewice Porywaczki
+Adan, Złodziej Ognia
+Alabastrowy Lord
+Alecto, Przywódczyni Czarnych Sztyletów
+Duch Przodek
+Pradawny Smok Lansseax
+Pradawny Smok Senessax
+Pradawny Smoczłowiek
+Pradawny Bohater Zamoru
+Astel, Zrodzony z Pustki
+Astel, Gwiazdy Ciemności
+Pierwotny Wąż Messmer
+Bojowy Mag Hugues
+Bayle Groźny
+Bestialski Duchowny
+Bestioczłowiek z Farum Azula
+Łowca Dzwonków
+Pobratymiec Czarnego Ostrza
+Czarny Rycerz Edredd
+Czarny Rycerz Garrew
+Zabójca z Czarnym Sztyletem
+Rycerz z Czarnego Lochu
+Rycerz Krwawej Sfory
+Rycerz Krwawej Sfory Darriwil
+Bols, Rycerz Caria
+Borealis, Mroźna Mgła
+Cmentarny Cień
+Wódz Krwiożerców
+Rycerz Czystej Zgnilizny
+Dowódca Gaius
+Dowódca Niall
+Dowódca O'Neil
+Hrabia Ymir, Matka Palców
+Rycerz Tygla
+Rycerz Tygla Ordovis
+Rycerz Tygla Siluria
+Kryształowiec
+Przeklęte Ostrze Labirith
+Tancerka z Ranah
+Rycerz Śmierci
+Ptak Obrzędu Śmierci
+Ptak Śmierci
+Gnijący Ekzykes
+Wódz Półludzi
+Królowa Półludzi Gilika
+Królowa Półludzi Maggie
+Królowa Półludzi Margot
+Królowa Półludzi Marigga
+Mistrz Miecza Półludzi Onze
+Boska Bestia Tańczący Lew
+Żołnierz Smoczego Rodu
+Żołnierz Smoczego Rodu z Nokstelli
+Władca Smoków Placidusax
+Smoczy Strażnik Drzewa
+Bestia Elden
+Elemer z Cierni
+Awatar Drzewa Erdy
+Grobowy Strażnik Drzewa Erdy
+Esgar, Kapłan Krwi
+Bestia Spadającej Gwiazdy
+Złowrogie Bliźnięta
+Obrońcy Fii
+Ognisty Olbrzym
+Latający Smok Agheel
+Latający Smok Greyll
+Oszalały Pojedynkowicz
+Dorosła Bestia Spadającej Gwiazdy
+Smok Upiornego Płomienia
+Smok Migotliwego Kamienia Adula
+Smok Migotliwego Kamienia Smarag
+Godefroy Naszczepiony
+Wąż Pożeracz Bogów
+Godfrey, Pierwszy Lord Elden
+Godrick Naszczepiony
+Apostoł Boskiej Skóry
+Duet Boskiej Skóry
+Możny Boskiej Skóry
+Złoty Hipopotam
+Naszczepiony Potomek
+Pojedynkowicz Strażnik Grobu
+Wielki Smok Theodorix
+Golem Strażnik
+Hoarah Loux, Wojownik
+Smok ze Szczerbatego Szczytu
+Jori, Starszy Inkwizytor
+Pobratymiec Zgnilizny
+Rycerz Samotnego Lochu
+Lamentujący
+Lwi Wyrodek
+Smoczy Licz Fortissax
+Loretta, Rycerz Świętego Drzewa
+Szalona Dyniogłowa
+Smok Magmy
+Smok Magmy Makar
+Malenia, Ostrze Miquelli
+Maliketh, Czarne Ostrze
+Margit, Plugawy Omen
+Messmer Nabijacz na Pal
+Metyr, Matka Palców
+Midra, Władca Szalonego Płomienia
+Łza Mimik
+Kwiat Mirandy
+Miranda, Zaraźliwy Kwiat
+Wyrodny Krzyżowiec
+Wyrodny Wojownik
+Mohg, Władca Krwi
+Mohg, Omen
+Morgott, Król Omenów
+Nekromanta Garris
+Nocna Konnica
+Szermierka Nox i Mnich Nox
+Zabójca Omenów
+Onyksowy Lord
+Patches
+Perfumiarka Tricia
+Obiecany Małżonek Radahn
+Gnijący Rycerz
+Plugawy Awatar
+Plugawy Kryształowiec
+Plugawy Pojedynkowicz Strażnik Grobu
+Plugawy Duch Drzewa
+Radagon Złotego Porządku
+Radahn, Małżonek Miquelli
+Rakszasa
+Ralva Wielki Czerwony Niedźwiedź
+Czerwony Niedźwiedź
+Czerwony Wilk Radagona
+Czerwony Wilk Mistrza
+Królewski Duch Przodek
+Rellana, Rycerz Bliźniaczego Księżyca
+Rennala, Królowa Pełni Księżyca
+Romina, Święta Pąka
+Rycerz Okrągłego Stołu Vyke
+Królewski Rycerz Loretta
+Królewski Powracający
+Rugalea Wielki Czerwony Niedźwiedź
+Runiczny Niedźwiedź
+Rykard, Władca Bluźnierstwa
+Awatar Drzewa Cienia
+Łuskowaty Wyrodek
+Sir Gideon Ofnir, Wszechwiedzący
+Żołnierz Godricka
+Ślimak Przyzywacz Duchów
+Radahn Plaga Gwiazd
+Troll Kopacz Kamieni
+Zbłąkana Łza Mimik
+Żeglarz Tibia
+Strażnik Drzewa
+Owrzodziały Duch Drzewa
+Waleczny Gargulec
+Robaczywa Twarz
