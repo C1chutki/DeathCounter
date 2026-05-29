@@ -2,6 +2,8 @@
 
 ## 2026-05-29
 
+- Odswiezono wyglad overlaya dla motywu Elden Ring: widoczna zlota ramka 1px (`OverlayBorder` = `#EAC36D`) oraz tlo bardziej przezroczyste (`OverlayBackground` = `#7F000000`, alpha ~0.50). Tlo overlaya rysuje teraz subtelny pionowy gradient generowany z koloru motywu w `ApplyTheme`, wiec pozostale motywy (np. Dark Souls 3) dzialaja bez zmian; wersje podniesiono do 1.1.2.
+
 - Naprawiono zamykanie aplikacji: graceful shutdown (zatrzymanie detekcji, pauza timera, zapis stanu, zamkniecie overlaya) biegnie teraz w `MainWindow.OnClosing` przy zywym dispatcherze, co usuwa zakleszczenie sync-over-async w `App.OnExit`, ktore zostawialo proces w tle, niezwolniony mutex single-instance i osierocone pliki `deaths.json.<guid>.tmp`. `DeathCounterStore` czysci przy starcie stare pliki tymczasowe pasujace do wzorca aplikacji (`deaths.json.*.tmp`, `deaths.json.progression`) bez ruszania `deaths.json` ani backupow `*.corrupt-*.json`; dodano testy i podniesiono wersje do 1.1.1.
 
 - Dodano sortowanie historii bossow w zakladce Bosses: pola `Sort by` (Default/Time/Deaths) oraz `Direction` (Descending/Ascending). Domyslny tryb zachowuje dotychczasowa kolejnosc od najnowszych, sortowanie dziala razem z wyszukiwarka, a rekordy bez czasu walki trafiaja na koniec listy. Logika trafila do `BossHistoryDisplayOrder` z testami regresyjnymi; wersja aplikacji podniesiona do 1.1.0.

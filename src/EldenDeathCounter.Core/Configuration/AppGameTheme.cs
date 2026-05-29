@@ -26,8 +26,8 @@ public sealed record AppGameTheme(
         "#141414",
         "#191815",
         "#4A3D27",
-        "#99000000",
-        "#00000000",
+        "#7F000000",
+        "#EAC36D",
         "#FFFFFF");
 
     public static AppGameTheme DarkSouls3 { get; } = new(

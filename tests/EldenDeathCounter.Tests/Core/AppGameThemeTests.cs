@@ -15,4 +15,14 @@ public sealed class AppGameThemeTests
         Assert.Equal("#CFD8DC", theme.Tertiary);
         Assert.Equal("#0A0A0A", theme.Neutral);
     }
+
+    [Fact]
+    public void EldenRingThemeUsesGoldBorderAndTransparentBackground()
+    {
+        var theme = AppGameTheme.EldenRing;
+
+        Assert.Equal("#EAC36D", theme.OverlayBorder);
+        Assert.Equal(theme.Primary, theme.OverlayBorder);
+        Assert.Equal("#7F000000", theme.OverlayBackground);
+    }
 }

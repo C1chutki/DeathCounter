@@ -86,7 +86,7 @@ public partial class OverlayWindow : Window
     {
         Dispatcher.Invoke(() =>
         {
-            OverlayChrome.Background = BrushFromHex(theme.OverlayBackground);
+            OverlayChrome.Background = BuildOverlayGradient(theme.OverlayBackground);
             OverlayChrome.BorderBrush = BrushFromHex(theme.OverlayBorder);
             CounterTextBlock.Foreground = BrushFromHex(theme.OverlayText);
             BossTextBlock.Foreground = BrushFromHex(theme.OverlayText);
@@ -126,6 +126,31 @@ public partial class OverlayWindow : Window
     private static SolidColorBrush BrushFromHex(string color)
     {
         return new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(color));
+    }
+
+    private static LinearGradientBrush BuildOverlayGradient(string color)
+    {
+        var top = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(color);
+        var bottom = LiftColor(top, 16);
+        return new LinearGradientBrush
+        {
+            StartPoint = new System.Windows.Point(0, 0),
+            EndPoint = new System.Windows.Point(0, 1),
+            GradientStops =
+            {
+                new GradientStop(top, 0.0),
+                new GradientStop(bottom, 1.0)
+            }
+        };
+    }
+
+    private static System.Windows.Media.Color LiftColor(System.Windows.Media.Color color, byte amount)
+    {
+        return System.Windows.Media.Color.FromArgb(
+            color.A,
+            (byte)Math.Min(255, color.R + amount),
+            (byte)Math.Min(255, color.G + amount),
+            (byte)Math.Min(255, color.B + amount));
     }
 
     private static string GetApplicationVersionText()

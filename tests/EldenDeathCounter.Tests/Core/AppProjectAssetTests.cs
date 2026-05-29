@@ -94,7 +94,7 @@ public sealed class AppProjectAssetTests
         var overlayCode = File.ReadAllText(Path.Combine(appProjectPath, "OverlayWindow.xaml.cs"));
         var formatterCode = File.ReadAllText(Path.Combine(appProjectPath, "..", "EldenDeathCounter.Core", "Configuration", "DeathCounterText.cs"));
 
-        Assert.Contains("Œmierci: 0", overlayXaml, StringComparison.Ordinal);
+        Assert.Contains("Åšmierci: 0", overlayXaml, StringComparison.Ordinal);
         Assert.Contains("DeathCounterText.FormatGlobalCount(count, _gameLanguage)", overlayCode, StringComparison.Ordinal);
         Assert.Contains("\"Deaths\"", formatterCode, StringComparison.Ordinal);
         Assert.Contains("\\u015Amierci", formatterCode, StringComparison.Ordinal);
@@ -257,7 +257,7 @@ public sealed class AppProjectAssetTests
         Assert.Contains("Grid.ColumnSpan=\"2\"", statusBar, StringComparison.Ordinal);
         Assert.Contains("Background=\"{DynamicResource StatusBarSurface}\"", statusBar, StringComparison.Ordinal);
         Assert.Contains("BorderBrush=\"{DynamicResource Separator}\"", statusBar, StringComparison.Ordinal);
-        Assert.Contains("Value=\"Consolas\"", statusBar, StringComparison.Ordinal);
+        Assert.Contains("Value=\"{DynamicResource AppFontFamily}\"", statusBar, StringComparison.Ordinal);
         Assert.Contains("Value=\"12\"", statusBar, StringComparison.Ordinal);
         Assert.Contains("Value=\"Bold\"", statusBar, StringComparison.Ordinal);
         Assert.Contains("StatusDeathCountText", statusBar, StringComparison.Ordinal);
