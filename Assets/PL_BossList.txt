@@ -3,154 +3,154 @@
 # Lines starting with '#' are ignored. Wrong entries are harmless (they simply will not match
 # on-screen text) - verify against the in-game Polish names and edit as needed.
 # Confirmed correct: "Strażnik Drzewa" (Tree Sentinel).
-Dziewice Porywaczki
+Dziewice-porywaczki
 Adan, Złodziej Ognia
-Alabastrowy Lord
-Alecto, Przywódczyni Czarnych Sztyletów
-Duch Przodek
-Pradawny Smok Lansseax
-Pradawny Smok Senessax
-Pradawny Smoczłowiek
-Pradawny Bohater Zamoru
+Alabastrowy Władca
+Alecto, Przywódczyni Czarnych Noży
+Duch Przodka
+Starożytny Smok Lansseax
+Starożytny Smok Senessax
+Starożytny Smokowiec
+Pradawny Bohater z Zamor
 Astel, Zrodzony z Pustki
-Astel, Gwiazdy Ciemności
-Pierwotny Wąż Messmer
-Bojowy Mag Hugues
-Bayle Groźny
-Bestialski Duchowny
-Bestioczłowiek z Farum Azula
-Łowca Dzwonków
-Pobratymiec Czarnego Ostrza
+Astel, Gwiazdy Mroku
+Messmer, Złośliwy Wąż
+Mag Bitewny Hugues
+Bayle Groza
+Bestialny Duchowny
+Człowiek Bestia z Farum Azula
+Łowca Dzwonków Kulistych
+Pobratymiec Czarnej Klingi
 Czarny Rycerz Edredd
 Czarny Rycerz Garrew
-Zabójca z Czarnym Sztyletem
-Rycerz z Czarnego Lochu
-Rycerz Krwawej Sfory
-Rycerz Krwawej Sfory Darriwil
-Bols, Rycerz Caria
-Borealis, Mroźna Mgła
+Zabójca Czarnego Noża
+Rycerz Czarnego Więzienia
+Wasalny Rycerz
+Darriwil, Wasalny Rycerz
+Bols, Karyjski Rycerz
+Borealis, Polarna Mgła
 Cmentarny Cień
 Wódz Krwiożerców
 Rycerz Czystej Zgnilizny
-Dowódca Gaius
+Dowódca Gajusz
 Dowódca Niall
 Dowódca O'Neil
 Hrabia Ymir, Matka Palców
 Rycerz Tygla
-Rycerz Tygla Ordovis
-Rycerz Tygla Siluria
-Kryształowiec
-Przeklęte Ostrze Labirith
-Tancerka z Ranah
+Ordovis, Rycerz Tygla
+Siluria, Rycerz Tygla
+Krysztalnik
+Labirith, Przeklęte Ostrze
+Tancerz Ranah
 Rycerz Śmierci
-Ptak Obrzędu Śmierci
+Ptak Rytuału Śmierci
 Ptak Śmierci
-Gnijący Ekzykes
+Rozkładający się Ekzykes
 Wódz Półludzi
-Królowa Półludzi Gilika
-Królowa Półludzi Maggie
-Królowa Półludzi Margot
-Królowa Półludzi Marigga
-Mistrz Miecza Półludzi Onze
-Boska Bestia Tańczący Lew
-Żołnierz Smoczego Rodu
-Żołnierz Smoczego Rodu z Nokstelli
-Władca Smoków Placidusax
+Gilika, Królowa Półludzi
+Maggie, Królowa Półludzi
+Margot, Królowa Półludzi
+Marigga, Królowa Półludzi
+Onze, Szermierz-Półczłowiek
+Boska Bestia, Tańczący Lew
+Żołnierz Drakonidów
+Żołnierz Drakonidów z Nokstelli
+Placidusax, Władca Smoków
 Smoczy Strażnik Drzewa
-Bestia Elden
-Elemer z Cierni
-Awatar Drzewa Erdy
-Grobowy Strażnik Drzewa Erdy
-Esgar, Kapłan Krwi
+Bestia Eldeńska
+Elemer od Głogu
+Awatar Złotego Drzewa
+Ogar Pogrzebowego Złotego Drzewa
+Esgar, Krwawy Duchowny
 Bestia Spadającej Gwiazdy
-Złowrogie Bliźnięta
-Obrońcy Fii
+Upadły Bliźniak
+Czempioni Fii
 Ognisty Olbrzym
 Latający Smok Agheel
 Latający Smok Greyll
-Oszalały Pojedynkowicz
+Szalony Duelista
 Dorosła Bestia Spadającej Gwiazdy
-Smok Upiornego Płomienia
-Smok Migotliwego Kamienia Adula
-Smok Migotliwego Kamienia Smarag
-Godefroy Naszczepiony
-Wąż Pożeracz Bogów
-Godfrey, Pierwszy Lord Elden
-Godrick Naszczepiony
+Smok Ognia Duchów
+Adula, Błyskamienny Smok
+Smarag, Błyskamienny Smok
+Godefroy, Zszywaniec
+Wężowy Pożeracz Bogów
+Godfrey, Pierwszy Eldeński Władca
+Godrick, Zszywaniec
 Apostoł Boskiej Skóry
 Duet Boskiej Skóry
-Możny Boskiej Skóry
+Szlachcic Boskiej Skóry
 Złoty Hipopotam
-Naszczepiony Potomek
-Pojedynkowicz Strażnik Grobu
-Wielki Smok Theodorix
-Golem Strażnik
+Pozszywany Potomek
+Strażnik Grobów
+Wielki Żmij Theodorix
+Strażnik Golem
 Hoarah Loux, Wojownik
-Smok ze Szczerbatego Szczytu
+Smok Wyszczerbionego Szczytu
 Jori, Starszy Inkwizytor
-Pobratymiec Zgnilizny
-Rycerz Samotnego Lochu
-Lamentujący
-Lwi Wyrodek
-Smoczy Licz Fortissax
+Członek Klanu Zgnilizny
+Rycerz Samotnego Więzienia
+Płaczka
+Lwi Wynaturzeniec
+Drakolicz Fortissax
 Loretta, Rycerz Świętego Drzewa
-Szalona Dyniogłowa
-Smok Magmy
-Smok Magmy Makar
+Szalony Dyniogłowy
+Magmowy Żmij
+Magmowy Żmij Makar
 Malenia, Ostrze Miquelli
-Maliketh, Czarne Ostrze
-Margit, Plugawy Omen
-Messmer Nabijacz na Pal
+Maliketh, Czarna Klinga
+Margit, Upadły Omen
+Messmer Palownik
 Metyr, Matka Palców
-Midra, Władca Szalonego Płomienia
-Łza Mimik
-Kwiat Mirandy
-Miranda, Zaraźliwy Kwiat
-Wyrodny Krzyżowiec
-Wyrodny Wojownik
-Mohg, Władca Krwi
+Midra, Władca Oszalałego Płomienia
+Łza Naśladowcy
+Miranda
+Miranda, Splugawiony Kwiat
+Wynaturzony Krzyżowiec
+Wynaturzony Wojownik
+Mohg, Pan Krwi
 Mohg, Omen
 Morgott, Król Omenów
-Nekromanta Garris
-Nocna Konnica
-Szermierka Nox i Mnich Nox
+Garris, Nekromanta
+Nocna Kawaleria
+Szermierczyni Noxu i Nox, Kapłan
 Zabójca Omenów
-Onyksowy Lord
-Patches
-Perfumiarka Tricia
-Obiecany Małżonek Radahn
+Onyksowy Władca
+Łata
+Tricia, Perfumiarz
+Radahn, Obiecany Małżonek
 Gnijący Rycerz
-Plugawy Awatar
-Plugawy Kryształowiec
-Plugawy Pojedynkowicz Strażnik Grobu
-Plugawy Duch Drzewa
-Radagon Złotego Porządku
+Zgniły Awatar
+Zgniły Krysztalnik
+Zgniły Strażnik Grobów
+Zgniły Duch Drzewa
+Radagon ze Złotego Porządku
 Radahn, Małżonek Miquelli
-Rakszasa
-Ralva Wielki Czerwony Niedźwiedź
+Rakshasa
+Ralva, Wielki Rudy Niedźwiedź
 Czerwony Niedźwiedź
-Czerwony Wilk Radagona
-Czerwony Wilk Mistrza
-Królewski Duch Przodek
-Rellana, Rycerz Bliźniaczego Księżyca
+Rudy Wilk Radagona
+Rudy Wilk Czempiona
+Duch Królewskiego Przodka
+Rellana, Rycerz Bliźniaczych Księżyców
 Rennala, Królowa Pełni Księżyca
-Romina, Święta Pąka
-Rycerz Okrągłego Stołu Vyke
-Królewski Rycerz Loretta
-Królewski Powracający
-Rugalea Wielki Czerwony Niedźwiedź
+Romina, Święta Patronka Pąków
+Vyke, Rycerz Okrągłego Stołu
+Loretta, Królewski Rycerz
+Królewski Revenant
+Rugalea, Wielki Rudy Niedźwiedź
 Runiczny Niedźwiedź
-Rykard, Władca Bluźnierstwa
-Awatar Drzewa Cienia
-Łuskowaty Wyrodek
+Rykard, Pan Bluźnierstwa
+Awatar Ostrodrzewa
+Łuskowaty Wynaturzeniec
 Sir Gideon Ofnir, Wszechwiedzący
 Żołnierz Godricka
-Ślimak Przyzywacz Duchów
-Radahn Plaga Gwiazd
-Troll Kopacz Kamieni
-Zbłąkana Łza Mimik
-Żeglarz Tibia
-Strażnik Drzewa
-Owrzodziały Duch Drzewa
-Waleczny Gargulec
-Robaczywa Twarz
+Ślimak, Przywoływacz Duchów
+Radahn, Gwiezdna Plaga
+Troll Kamienny Kopacz
+Zbłąkana Łza Naśladowcy
+Kościej Marynarz
+Obrońca Drzewa
+Duch Owrzodzonego Drzewa
+Nieustraszony Gargulec
+Robaczywa Gęba

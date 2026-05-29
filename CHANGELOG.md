@@ -2,6 +2,8 @@
 
 ## 2026-05-29
 
+- Zawezono pionowy pas przechwytywania uzywany do wykrywania napisow smierci i pokonania bossa: frakcja `captureHeight` w `DeathTextCaptureRegionCalculator` spadla z 0.32 do 0.26 (centerY 0.51, szerokosc 0.66 i progi malego ekranu bez zmian). Na 2560x1440 pas to teraz 547..921 px (~19% mniej wierszy), nadal z marginesem ~72/86 px wokol znanego pasma tekstu 619..835; dodano test blokujacy ciasniejszy pas i podniesiono wersje do 1.2.1.
+
 - Przebudowano wykrywanie nazwy bossa, aby usunac falszywe trafienia i zepsute napisy. OCR nazwy uruchamia sie teraz tylko w obszarze nad wykrytym paskiem HP bossa, a kandydat zostaje przyjety dopiero po dopasowaniu (fuzzy) do listy bossow z `Assets/ENG_BossList.txt` lub `Assets/PL_BossList.txt`, wiec teksty typu `Talk`, `Sit`, `Rest`, `Read message`, `Bloody Slash` oraz smieci OCR sa odrzucane. Nazwa jest publikowana i zamrazana raz na walke (maszyna stanow enkountera), obsluguje 1-3 paski bossow laczone przez ` + ` i nie nadpisuje recznie ustawionej nazwy; dodano liste PL, testy regresyjne i podniesiono wersje do 1.2.0.
 
 - Odswiezono wyglad overlaya dla motywu Elden Ring: widoczna zlota ramka 1px (`OverlayBorder` = `#EAC36D`) oraz tlo bardziej przezroczyste (`OverlayBackground` = `#7F000000`, alpha ~0.50). Tlo overlaya rysuje teraz subtelny pionowy gradient generowany z koloru motywu w `ApplyTheme`, wiec pozostale motywy (np. Dark Souls 3) dzialaja bez zmian; wersje podniesiono do 1.1.2.
