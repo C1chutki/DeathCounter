@@ -2,6 +2,8 @@
 
 ## 2026-05-29
 
+- Zmieniono nazwe aplikacji w panelu bocznym z `Tarnished Utility` na `Death Counter` i zsynchronizowano etykiete wersji w pasku bocznym z wersja pokazywana na overlay. Dodano do `AGENTS.md` regule wersjonowania (kazda zmiana podnosi wersje). Wersje podniesiono do 1.2.2.
+
 - Zawezono pionowy pas przechwytywania uzywany do wykrywania napisow smierci i pokonania bossa: frakcja `captureHeight` w `DeathTextCaptureRegionCalculator` spadla z 0.32 do 0.26 (centerY 0.51, szerokosc 0.66 i progi malego ekranu bez zmian). Na 2560x1440 pas to teraz 547..921 px (~19% mniej wierszy), nadal z marginesem ~72/86 px wokol znanego pasma tekstu 619..835; dodano test blokujacy ciasniejszy pas i podniesiono wersje do 1.2.1.
 
 - Przebudowano wykrywanie nazwy bossa, aby usunac falszywe trafienia i zepsute napisy. OCR nazwy uruchamia sie teraz tylko w obszarze nad wykrytym paskiem HP bossa, a kandydat zostaje przyjety dopiero po dopasowaniu (fuzzy) do listy bossow z `Assets/ENG_BossList.txt` lub `Assets/PL_BossList.txt`, wiec teksty typu `Talk`, `Sit`, `Rest`, `Read message`, `Bloody Slash` oraz smieci OCR sa odrzucane. Nazwa jest publikowana i zamrazana raz na walke (maszyna stanow enkountera), obsluguje 1-3 paski bossow laczone przez ` + ` i nie nadpisuje recznie ustawionej nazwy; dodano liste PL, testy regresyjne i podniesiono wersje do 1.2.0.

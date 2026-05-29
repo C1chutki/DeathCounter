@@ -515,12 +515,12 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel Margin="24,28,24,44">
-                    <TextBlock Text="Tarnished Utility"
+                    <TextBlock Text="Death Counter"
                                Foreground="{DynamicResource Gold}"
                                FontFamily="{DynamicResource HeaderFontFamily}"
                                FontSize="16"
                                FontWeight="Bold" />
-                    <TextBlock Text="v1.0.4-stable"
+                    <TextBlock Text="v1.2.2"
                                FontFamily="{DynamicResource AppFontFamily}"
                                FontSize="14"
                                Foreground="{DynamicResource Ink}" />
