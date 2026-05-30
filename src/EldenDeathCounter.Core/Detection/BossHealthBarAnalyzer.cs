@@ -57,12 +57,18 @@ public sealed class BossHealthBarAnalyzer
             .ToList();
     }
 
+    // Tolerate a small horizontal gap of non-red pixels (anti-aliasing, noise, a cursor/effect crossing
+    // the bar) so a dim or slightly noisy bar stays a single run instead of fragmenting below the span
+    // thresholds. currentRight only advances on real red pixels, so a trailing gap never inflates a run.
+    private const int MaxRedRunGap = 12;
+
     private static (int Left, int Right)? FindRedRunOnRow(int left, int right, int y, Func<int, int, RgbPixel> getPixel)
     {
         var bestLeft = 0;
         var bestRight = 0;
         var currentLeft = -1;
         var currentRight = -1;
+        var gap = 0;
 
         for (var x = left; x < right; x += 2)
         {
@@ -74,10 +80,22 @@ public sealed class BossHealthBarAnalyzer
                 }
 
                 currentRight = x;
+                gap = 0;
                 continue;
             }
 
-            if (currentLeft >= 0 && currentRight - currentLeft > bestRight - bestLeft)
+            if (currentLeft < 0)
+            {
+                continue;
+            }
+
+            gap += 2;
+            if (gap <= MaxRedRunGap)
+            {
+                continue;
+            }
+
+            if (currentRight - currentLeft > bestRight - bestLeft)
             {
                 bestLeft = currentLeft;
                 bestRight = currentRight;
@@ -85,6 +103,7 @@ public sealed class BossHealthBarAnalyzer
 
             currentLeft = -1;
             currentRight = -1;
+            gap = 0;
         }
 
         if (currentLeft >= 0 && currentRight - currentLeft > bestRight - bestLeft)
@@ -134,13 +153,17 @@ public sealed class BossHealthBarAnalyzer
         return new BossHealthBarRegion(bar, nameRegion);
     }
 
+    // Boss HP bars are a saturated dark crimson. We gate on red strongly dominating green/blue using
+    // *relative* ceilings (a fraction of R) rather than absolute ones, so the same bar is recognised
+    // across machines/brightness/gamma: a bright (180,40,30) and a dim (70,8,5) red both qualify,
+    // while orange fire (220,150,60) and grey (120,120,120) are rejected because green sits too close
+    // to red. The downstream boss-list OCR match (0.82 threshold) is the final guard against any
+    // non-bar red that still slips through.
     private static bool IsBossBarRed(RgbPixel pixel)
     {
-        return pixel.R >= 80 &&
-               pixel.R >= pixel.G * 1.7 &&
-               pixel.R >= pixel.B * 1.5 &&
-               pixel.G <= 75 &&
-               pixel.B <= 85;
+        return pixel.R >= 60 &&
+               pixel.G <= pixel.R * 0.55 &&
+               pixel.B <= pixel.R * 0.60;
     }
 
     private readonly record struct RowCandidate(int Left, int Right, int Y);
