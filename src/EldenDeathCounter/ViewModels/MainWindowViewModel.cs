@@ -103,6 +103,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ManualAddHotkeyText = string.Empty;
         ManualSubtractHotkeyText = string.Empty;
         ManualBossDefeatedHotkeyText = string.Empty;
+        OverlayToggleHotkeyText = string.Empty;
         DataFolderPathText = string.Empty;
         ManualCounterText = string.Empty;
         BossNameText = string.Empty;
@@ -264,6 +265,30 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    public const double OverlayFontScaleMin = 0.6;
+
+    public const double OverlayFontScaleMax = 1.6;
+
+    public string OverlayFontScaleInput
+    {
+        get => Settings.OverlayFontScale.ToString("0.0", CultureInfo.InvariantCulture);
+        set
+        {
+            if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
+            {
+                var clamped = Math.Clamp(parsed, OverlayFontScaleMin, OverlayFontScaleMax);
+                if (Math.Abs(Settings.OverlayFontScale - clamped) > 0.0001)
+                {
+                    Settings.OverlayFontScale = clamped;
+                    _overlayWindow.ApplyFontScale(clamped);
+                    _ = _settingsStore.SaveAsync(_settingsPath, Settings);
+                }
+            }
+
+            OnPropertyChanged();
+        }
+    }
+
     public string DetectionIntervalMsText { get; set; }
 
     public string DetectionCooldownSecondsText { get; set; }
@@ -287,6 +312,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public string ManualSubtractHotkeyText { get; set; }
 
     public string ManualBossDefeatedHotkeyText { get; set; }
+
+    public string OverlayToggleHotkeyText { get; set; }
 
     public string DataFolderPathText { get; set; }
 
@@ -846,6 +873,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return false;
         }
 
+        var overlayToggleHotkey = HotkeyDefinition.Parse(OverlayToggleHotkeyText);
+        if (!overlayToggleHotkey.IsValid)
+        {
+            error = $"Overlay toggle hotkey is invalid: {overlayToggleHotkey.Error}";
+            return false;
+        }
+
         var dataFolderPath = Environment.ExpandEnvironmentVariables(DataFolderPathText.Trim());
         if (string.IsNullOrWhiteSpace(dataFolderPath))
         {
@@ -867,6 +901,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         Settings.ManualAddHotkey = ManualAddHotkeyText.Trim();
         Settings.ManualSubtractHotkey = ManualSubtractHotkeyText.Trim();
         Settings.BossDefeatedHotkey = ManualBossDefeatedHotkeyText.Trim();
+        Settings.OverlayToggleHotkey = OverlayToggleHotkeyText.Trim();
         Settings.DataFolderPath = dataFolderPath;
         return true;
     }
@@ -894,7 +929,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         var add = _hotkeyService.Register(_window, Settings.ManualAddHotkey, "manual-add");
         var subtract = _hotkeyService.Register(_window, Settings.ManualSubtractHotkey, "manual-subtract");
         var bossDefeated = _hotkeyService.Register(_window, Settings.BossDefeatedHotkey, "boss-defeated");
-        HotkeyStatus = $"Hotkeys: {add}; {subtract}; {bossDefeated}";
+        var overlayToggle = _hotkeyService.Register(_window, Settings.OverlayToggleHotkey, "overlay-toggle");
+        HotkeyStatus = $"Hotkeys: {add}; {subtract}; {bossDefeated}; {overlayToggle}";
     }
 
     private void HandleHotkey(string name)
@@ -912,6 +948,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             else if (name == "boss-defeated")
             {
                 await MarkBossDefeatedAsync("manual-hotkey");
+            }
+            else if (name == "overlay-toggle")
+            {
+                await ToggleOverlayAsync();
             }
         });
     }
@@ -949,6 +989,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ManualAddHotkeyText = Settings.ManualAddHotkey;
         ManualSubtractHotkeyText = Settings.ManualSubtractHotkey;
         ManualBossDefeatedHotkeyText = Settings.BossDefeatedHotkey;
+        OverlayToggleHotkeyText = Settings.OverlayToggleHotkey;
         DataFolderPathText = Settings.DataFolderPath;
 
         OnPropertyChanged(nameof(DetectionIntervalMsText));
@@ -963,10 +1004,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(ManualAddHotkeyText));
         OnPropertyChanged(nameof(ManualSubtractHotkeyText));
         OnPropertyChanged(nameof(ManualBossDefeatedHotkeyText));
+        OnPropertyChanged(nameof(OverlayToggleHotkeyText));
         OnPropertyChanged(nameof(DataFolderPathText));
         OnPropertyChanged(nameof(OverlayEnabled));
         OnPropertyChanged(nameof(DetectionEnabledOnStartup));
         OnPropertyChanged(nameof(AutoDetectBossNames));
+        OnPropertyChanged(nameof(OverlayFontScaleInput));
         OnPropertyChanged(nameof(StatusOverlayStateText));
     }
 

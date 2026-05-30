@@ -34,7 +34,38 @@ public sealed class AppSettingsTests
         Assert.Equal("F8", settings.ManualAddHotkey);
         Assert.Equal("F9", settings.ManualSubtractHotkey);
         Assert.Equal("F7", settings.BossDefeatedHotkey);
+        Assert.Equal("Ctrl+Shift+O", settings.OverlayToggleHotkey);
         Assert.Equal("Strażnik Drzewa", settings.BossNameCorrections["STRAINIK DRZEWA"]);
+    }
+
+    [Fact]
+    public async Task LoadingSettingsWithoutOverlayToggleHotkeyAppliesDefault()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var settingsPath = Path.Combine(folder, "appsettings.json");
+        await File.WriteAllTextAsync(settingsPath, """{"dataFolderPath":"C:\\Temp\\Counter","detectionPhrases":["YOU DIED"],"bossVictoryPhrases":["ENEMY FELLED"]}""");
+        var store = new AppSettingsStore(new FileLogService(Path.Combine(folder, "log.txt")));
+
+        var settings = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop");
+
+        Assert.Equal("Ctrl+Shift+O", settings.OverlayToggleHotkey);
+    }
+
+    [Fact]
+    public async Task SavedOverlayToggleHotkeySurvivesRoundTrip()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var settingsPath = Path.Combine(folder, "appsettings.json");
+        var store = new AppSettingsStore(new FileLogService(Path.Combine(folder, "log.txt")));
+        var settings = AppSettings.CreateDefault(@"C:\Users\TestUser\Desktop");
+        settings.OverlayToggleHotkey = "Alt+F10";
+
+        await store.SaveAsync(settingsPath, settings);
+        var reloaded = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop");
+
+        Assert.Equal("Alt+F10", reloaded.OverlayToggleHotkey);
     }
     [Fact]
     public async Task LoadingOldSettingsAddsDiagnosticsDefaults()

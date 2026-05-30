@@ -44,6 +44,10 @@ public sealed class AppSettings
 
     public string BossDefeatedHotkey { get; set; } = "F7";
 
+    public string OverlayToggleHotkey { get; set; } = "Ctrl+Shift+O";
+
+    public double OverlayFontScale { get; set; } = 1.0;
+
     public static AppSettings CreateDefault(string desktopPath)
     {
         return CreateDefault(desktopPath, AppGameProfile.EldenRing);
@@ -87,7 +91,9 @@ public sealed class AppSettings
             BossNameCorrections = CreateDefaultBossNameCorrections(),
             ManualAddHotkey = "F8",
             ManualSubtractHotkey = "F9",
-            BossDefeatedHotkey = "F7"
+            BossDefeatedHotkey = "F7",
+            OverlayToggleHotkey = "Ctrl+Shift+O",
+            OverlayFontScale = 1.0
         };
     }
 
