@@ -1,0 +1,176 @@
+Plan: Automatyczny build i dystrybucja EldenDeathCounter
+Context
+Projekt jest aplikacją WPF (.NET 9, win-x64). Folder `bin/` jest w `.gitignore`, przez co zewnętrzni użytkownicy nie mają jak pobrać ani uruchomić aplikacji.
+Użytkownik rozważał: `master` z kodem + folderem z gotowym exe, `beta` do testów z lokalnym `bin/`. Zamiast tego proponuję GitHub Releases workflow — to branżowy standard i działa lepiej:
+---
+Proponowany workflow (zamiast trzymania exe w git)
+Dlaczego NIE trzymać exe w repozytorium
+Git jest zaprojektowany do tekstu, nie binarek — każda zmiana exe dodaje do historii kilkadziesiąt MB
+Clone repo staje się coraz wolniejszy z czasem
+Nie da się zrobiić `git diff` na binarce
+Standardem jest GitHub Releases do dystrybucji binarek
+Jak to będzie wyglądać
+```
+master (main)
+│  Kod źródłowy, gotowy do buildu
+│  Tagi: v1.2.0, v1.3.0...
+│  GitHub Actions: push tagu → automatyczny build → GitHub Release z zipem
+│
+└─ beta / develop
+   Kod w trakcie zmian, testy nowych featurów
+   bin/ nadal w .gitignore (lokalne builde wystarczą)
+   Opcjonalnie: ręczny trigger workflow → pre-release build do pobrania
+```
+Dla zewnętrznych użytkowników
+Wchodzą na stronę repo → zakładka Releases
+Pobierają `EldenDeathCounter-v1.2.0-win-x64.zip`
+Wypakowują, klikają exe — koniec, .NET nie potrzebny
+Dla Ciebie (dev workflow)
+Testujesz na `beta`: budujesz lokalnie, `bin/` jest gitignorowany jak teraz
+Gotowe? Merge `beta` → `master`, tag `v1.3.0`, push → CI sam buduje release
+Chcesz dać komuś test build z bety bez oficjalnego release? Ręczny trigger workflow → pre-release
+---
+Decyzje architektoniczne
+Self-contained (`--self-contained true`): użytkownik nie musi instalować .NET 9
+Multi-file folder w zipie (nie single-file exe): OpenCvSharp4 ma natywne DLL-e; single-file może powodować fałszywe alarmy AV
+Testy w pipeline: runner `windows-latest` obsługuje `net9.0-windows10.0.19041.0`
+Wersja z tagu: `-p:Version=X.Y.Z` przekazywana do publish, żeby exe miał poprawny FileVersionInfo
+---
+Pliki do stworzenia / modyfikacji
+1. Nowy plik: `.github/workflows/release.yml`
+```yaml
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag (e.g. v1.2.0)'
+        required: true
+        default: 'v1.2.0'
+      prerelease:
+        description: 'Mark as pre-release (beta)?'
+        required: false
+        default: 'false'
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Determine version
+        id: version
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $tag = "${{ github.event.inputs.tag }}"
+            $pre = "${{ github.event.inputs.prerelease }}"
+          } else {
+            $tag = "${{ github.ref_name }}"
+            $pre = "false"
+          }
+          $version = $tag.TrimStart('v')
+          echo "tag=$tag" >> $env:GITHUB_OUTPUT
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+          echo "zip_name=EldenDeathCounter-${tag}-win-x64.zip" >> $env:GITHUB_OUTPUT
+          echo "prerelease=$pre" >> $env:GITHUB_OUTPUT
+
+      - name: Restore
+        run: dotnet restore EldenDeathCounter.sln
+
+      - name: Test
+        run: dotnet test EldenDeathCounter.sln --configuration Release --no-restore --logger "console;verbosity=normal"
+
+      - name: Publish
+        run: >
+          dotnet publish src/EldenDeathCounter/EldenDeathCounter.csproj
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          --output publish/EldenDeathCounter
+          -p:PublishSingleFile=false
+          -p:Version=${{ steps.version.outputs.version }}
+
+      - name: Zip
+        shell: pwsh
+        run: |
+          Compress-Archive -Path publish/EldenDeathCounter/* -DestinationPath "${{ steps.version.outputs.zip_name }}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: EldenDeathCounter ${{ steps.version.outputs.tag }}
+          prerelease: ${{ steps.version.outputs.prerelease == 'true' }}
+          body: |
+            ## EldenDeathCounter ${{ steps.version.outputs.tag }}
+
+            ### Instalacja
+            1. Pobierz `${{ steps.version.outputs.zip_name }}` poniżej.
+            2. Wypakuj zip do dowolnego folderu.
+            3. Uruchom `EldenDeathCounter.exe`.
+            4. .NET nie jest wymagany — runtime jest dołączony.
+
+            ### Wymagania
+            - Windows 10 w wersji 19041 (20H1) lub nowszy (64-bit)
+
+            ### Uwaga
+            Jeśli Windows SmartScreen wyświetli ostrzeżenie, kliknij "Więcej informacji" → "Uruchom mimo to".
+          files: ${{ steps.version.outputs.zip_name }}
+          draft: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+2. Modyfikacja: `README.md`
+Dodać sekcję Download zaraz po `# EldenDeathCounter` (przed `## Overview`):
+```markdown
+## Download
+
+Gotowe buildy dla Windows 10/11 (64-bit) są dostępne na stronie
+[Releases](../../releases/latest).
+
+1. Pobierz `EldenDeathCounter-vX.Y.Z-win-x64.zip` z najnowszego release'u.
+2. Wypakuj zip do dowolnego folderu.
+3. Uruchom `EldenDeathCounter.exe`.
+
+.NET nie jest wymagany — runtime .NET 9 jest dołączony do zipa.
+```
+Zmienić w sekcji Requirements linię `.NET 9 SDK.` na:
+```
+- .NET 9 SDK (wymagany tylko przy budowaniu ze źródeł; pre-built release nie wymaga .NET).
+```
+---
+Sekwencja implementacji
+Checkout lub utwórz branch `claude/app-build-distribution-0dNHu`
+Utwórz `.github/workflows/release.yml`
+Zaktualizuj `README.md`
+Commit i push
+Jak triggować release po implementacji
+```bash
+# Stabilny release z mastera:
+git tag v1.2.0
+git push origin v1.2.0
+# → pipeline odpali się automatycznie
+
+# Beta pre-release (ręcznie):
+# GitHub → Actions → Release → Run workflow → prerelease: true
+```
+---
+Weryfikacja
+Po pushu tagu: Actions → pipeline restore → test → publish → zip → release
+Releases page: pojawia się `EldenDeathCounter-v1.2.0-win-x64.zip`
+Pobrać zip, wypakować, uruchomić `EldenDeathCounter.exe` na Windows — startuje bez .NET
+Potencjalne problemy
+Uprawnienia GITHUB_TOKEN: jeśli release step zwróci 403 → Settings → Actions → General → Workflow permissions → "Read and write permissions"
+SmartScreen: exe bez podpisu kodu — ostrzeżenie przy pierwszym uruchomieniu (opisane w release notes)
