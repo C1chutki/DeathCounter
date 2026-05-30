@@ -64,7 +64,7 @@
             <TextBlock x:Name="CounterTextBlock"
                        Text="Śmierci: 0"
                        Foreground="#D6A1A6"
-                       FontSize="32"
+                       FontSize="26"
                        FontWeight="SemiBold"
                        FontFamily="{DynamicResource AppFontFamily}" />
 
@@ -78,18 +78,18 @@
                 <TextBlock x:Name="BossTextBlock"
                            Text=""
                            Foreground="#E8E3DA"
-                           FontSize="25"
+                           FontSize="20"
                            FontWeight="SemiBold"
                            FontFamily="{DynamicResource AppFontFamily}"
                            MaxWidth="620"
                            TextWrapping="Wrap"
                            TextTrimming="CharacterEllipsis"
-                           LineHeight="30" />
+                           LineHeight="25" />
                 <TextBlock x:Name="BossDeathTextBlock"
                            Text=""
                            Foreground="#D3B365"
                            FontFamily="{DynamicResource HeaderFontFamily}"
-                           FontSize="16"
+                           FontSize="14"
                            FontWeight="Bold"
                            Margin="0,6,0,0" />
                 <Border x:Name="TimerChrome"
@@ -129,7 +129,7 @@
                                    Text="00:00:00"
                                    Foreground="#D6DBDF"
                                    FontFamily="{DynamicResource AppFontFamily}"
-                                   FontSize="25"
+                                   FontSize="20"
                                    FontWeight="Bold"
                                    VerticalAlignment="Center" />
                     </Grid>

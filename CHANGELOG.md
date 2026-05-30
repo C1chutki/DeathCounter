@@ -1,6 +1,22 @@
 # Changelog
 
+## 2026-05-30
+
+- Podmieniono zestaw ikon w `Assets/` (Edit, Settings, Status, Detection, Detection_settings, Quick_Settings, Quick_Reminders, DashBoard, Open_Folder) z wypelnionych sylwetek na spojny zestaw outline (charcoal, jednolita grubosc linii ~18px @256px, zaokraglone konce, przezroczyste tlo, renderowane 256x256 z czytelnoscia w 16/24 px). `Logo.png` (sylwetka czaszki) i `PL_Death_Screen.png` (szablon detekcji) celowo nietkniete. Ikony nie sa referowane w XAML/kodzie, wiec build i zasoby pozostaja sprawne; dodano generator `tools/generate-icons.ps1`. Wersje podniesiono do 1.5.1.
+
+- Zmniejszono domyslny rozmiar czcionki overlaya (licznik 32→26, nazwa bossa 25→20, licznik bossa 16→14, timer 25→20) tak, by overlay byl mniej nachalny, ale wyraznie czytelny. Dodano pole `OverlayFontScale` w `AppSettings` (domyslnie 1.0, zakres 0.6–1.6, normalizowane/clampowane przez `AppSettingsStore`) oraz kontrolke "Overlay font size" w sekcji Quick Settings; zmiana jest stosowana na overlay na zywo (`OverlayWindow.ApplyFontScale`), zapisywana od razu i przezywa restart. Dodano testy zakresu/persistencji; wersje podniesiono do 1.5.0.
+
+- Naprawiono rozmieszczenie przycisku `OPEN DATA FOLDER` w pasku bocznym `MainWindow.xaml`. Stopka (Toggle Overlay + Open Data Folder) byla przyklejona do samego dolu okna przez wiersz `*` nad nia, co dawalo duza pusta przerwe i efekt "oderwania". Wiersz nawigacji zmieniono na `Auto`, a wiersz `*` przeniesiono pod stopke jako elastyczny odstep, wiec kontrolki sa zgrupowane pod nawigacja i poprawnie widoczne przy roznych rozmiarach okna. Wersje podniesiono do 1.4.1.
+
+- Przebudowano zakladke Settings na czytelnie pogrupowane sekcje (Overlay, Detection, OCR Language, Hotkeys, Profile / Save game) w istniejacym stylu paneli, bez zmiany logiki ani domyslnych progow. Wszystkie pola pozostaja podpiete do `AppSettings` i mechanizmu zapisu (`SaveSettingsCommand`), wiec przezywaja restart; rozmiar czcionki overlaya pominieto, bo overlay nie ma takiego pola w `AppSettings` (wartosci `FontSize` sa zaszyte w `OverlayWindow.xaml`). Wersje podniesiono do 1.4.0.
+
+- Dodano konfigurowalny globalny skrot przelaczajacy widocznosc overlaya (domyslnie `Ctrl+Shift+O`), rejestrowany przez istniejacy `GlobalHotkeyService` (WinAPI `RegisterHotKey`), wiec dziala niezaleznie od fokusu okna. Skrot `OverlayToggleHotkey` jest edytowalny w zakladce Settings (sekcja HOTKEYS), zapisywany przez `AppSettingsStore` i ponownie rejestrowany po zapisie bez restartu; dodano testy serializacji/normalizacji oraz pokrycia menu i podniesiono wersje do 1.3.0.
+
 ## 2026-05-29
+
+- Zmieniono nazwe aplikacji w panelu bocznym z `Tarnished Utility` na `Death Counter` i zsynchronizowano etykiete wersji w pasku bocznym z wersja pokazywana na overlay. Dodano do `AGENTS.md` regule wersjonowania (kazda zmiana podnosi wersje). Wersje podniesiono do 1.2.2.
+
+- Zawezono pionowy pas przechwytywania uzywany do wykrywania napisow smierci i pokonania bossa: frakcja `captureHeight` w `DeathTextCaptureRegionCalculator` spadla z 0.32 do 0.26 (centerY 0.51, szerokosc 0.66 i progi malego ekranu bez zmian). Na 2560x1440 pas to teraz 547..921 px (~19% mniej wierszy), nadal z marginesem ~72/86 px wokol znanego pasma tekstu 619..835; dodano test blokujacy ciasniejszy pas i podniesiono wersje do 1.2.1.
 
 - Przebudowano wykrywanie nazwy bossa, aby usunac falszywe trafienia i zepsute napisy. OCR nazwy uruchamia sie teraz tylko w obszarze nad wykrytym paskiem HP bossa, a kandydat zostaje przyjety dopiero po dopasowaniu (fuzzy) do listy bossow z `Assets/ENG_BossList.txt` lub `Assets/PL_BossList.txt`, wiec teksty typu `Talk`, `Sit`, `Rest`, `Read message`, `Bloody Slash` oraz smieci OCR sa odrzucane. Nazwa jest publikowana i zamrazana raz na walke (maszyna stanow enkountera), obsluguje 1-3 paski bossow laczone przez ` + ` i nie nadpisuje recznie ustawionej nazwy; dodano liste PL, testy regresyjne i podniesiono wersje do 1.2.0.
 
