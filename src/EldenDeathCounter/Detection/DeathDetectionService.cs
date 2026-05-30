@@ -41,6 +41,8 @@ public sealed class DeathDetectionService
     private DateTimeOffset _lastPendingSignalStatus = DateTimeOffset.MinValue;
     private DateTimeOffset _lastPendingBossVictorySignalStatus = DateTimeOffset.MinValue;
     private DateTimeOffset _lastBossNameDetectionAttempt = DateTimeOffset.MinValue;
+    private DateTimeOffset _lastBossBarDiagnosticLog = DateTimeOffset.MinValue;
+    private int _lastLoggedBossBarCount = -1;
     private DateTimeOffset? _fullDiagnosticsUntil;
     private AppSettings? _lastSettings;
     private long _detectionFrameIndex;
@@ -601,6 +603,7 @@ public sealed class DeathDetectionService
 
             // 1) Detect boss HP bars first (cheap). Boss-name OCR is gated entirely on this.
             var bars = _bossNameDetector.AnalyzeBars(screenshot.Bitmap);
+            LogBossBarDiagnostics(screenshot.Bitmap, bars, now);
             var decision = _bossEncounterTracker.BeginFrame(bars.Count);
             if (decision.Rearmed)
             {
@@ -690,6 +693,32 @@ public sealed class DeathDetectionService
         return language.StartsWith("PL", StringComparison.OrdinalIgnoreCase)
             ? "PL_BossList.txt"
             : "ENG_BossList.txt";
+    }
+
+    private void LogBossBarDiagnostics(Bitmap capture, IReadOnlyList<BossHealthBarRegion> bars, DateTimeOffset now)
+    {
+        // Always log the moment the detected bar count changes (e.g. 0 -> 1 when a fight starts), and
+        // otherwise throttle to one line every few seconds so an idle screen does not flood the log.
+        var countChanged = bars.Count != _lastLoggedBossBarCount;
+        if (!countChanged && now - _lastBossBarDiagnosticLog < TimeSpan.FromSeconds(3))
+        {
+            return;
+        }
+
+        _lastBossBarDiagnosticLog = now;
+        _lastLoggedBossBarCount = bars.Count;
+
+        if (bars.Count == 0)
+        {
+            _log.Info($"Boss bar diagnostics: bars=0 (no red HP bar passed color/width detection in capture {capture.Width}x{capture.Height}).");
+            return;
+        }
+
+        var geometry = string.Join(
+            "; ",
+            bars.Select((bar, index) =>
+                $"#{index}: bar={bar.Bar}, name={bar.NameRegion}"));
+        _log.Info($"Boss bar diagnostics: bars={bars.Count} in capture {capture.Width}x{capture.Height}: {geometry}.");
     }
 
     private void LogRejectedBossNameCandidates(BossNameDetectionResult result)
