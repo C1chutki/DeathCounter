@@ -28,6 +28,7 @@ public sealed class SettingsMenuCoverageTests
         Assert.Contains("ManualAddHotkeyText", settingsTab);
         Assert.Contains("ManualSubtractHotkeyText", settingsTab);
         Assert.Contains("ManualBossDefeatedHotkeyText", settingsTab);
+        Assert.Contains("OverlayToggleHotkeyText", settingsTab);
     }
 
     [Fact]

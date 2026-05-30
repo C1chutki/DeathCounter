@@ -134,6 +134,12 @@ public sealed class AppSettingsStore
         settings.BossDefeatedHotkey = string.IsNullOrWhiteSpace(settings.BossDefeatedHotkey)
             ? defaults.BossDefeatedHotkey
             : settings.BossDefeatedHotkey;
+        settings.OverlayToggleHotkey = string.IsNullOrWhiteSpace(settings.OverlayToggleHotkey)
+            ? defaults.OverlayToggleHotkey
+            : settings.OverlayToggleHotkey;
+        settings.OverlayFontScale = settings.OverlayFontScale <= 0
+            ? defaults.OverlayFontScale
+            : Math.Clamp(settings.OverlayFontScale, 0.6, 1.6);
 
         return settings;
     }

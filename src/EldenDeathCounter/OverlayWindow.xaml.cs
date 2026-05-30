@@ -10,6 +10,12 @@ namespace EldenDeathCounter;
 
 public partial class OverlayWindow : Window
 {
+    private const double CounterBaseFontSize = 26;
+    private const double BossBaseFontSize = 20;
+    private const double BossBaseLineHeight = 25;
+    private const double BossDeathBaseFontSize = 14;
+    private const double TimerBaseFontSize = 20;
+
     private readonly DispatcherTimer _bossTimer;
     private string _gameLanguage;
     private ActiveBossState? _activeBoss;
@@ -28,6 +34,30 @@ public partial class OverlayWindow : Window
         _bossTimer.Tick += (_, _) => UpdateBossTimerText();
         VersionTextBlock.Text = GetApplicationVersionText();
         UpdateDetectionState(false);
+        ApplyFontScale(settings.OverlayFontScale);
+    }
+
+    public void ApplyFontScale(double scale)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            var safeScale = Math.Clamp(scale <= 0 ? 1.0 : scale, 0.6, 1.6);
+            CounterTextBlock.FontSize = CounterBaseFontSize * safeScale;
+            BossTextBlock.FontSize = BossBaseFontSize * safeScale;
+            BossTextBlock.LineHeight = BossBaseLineHeight * safeScale;
+            BossTextBlock.MaxWidth = BossNameBaseMaxWidth * safeScale;
+            BossDeathTextBlock.FontSize = BossDeathBaseFontSize * safeScale;
+            TimerTextBlock.FontSize = TimerBaseFontSize * safeScale;
+            DetectionStatusTextBlock.FontSize = HeaderBaseFontSize * safeScale;
+            TotalDeathsLabelTextBlock.FontSize = HeaderBaseFontSize * safeScale;
+            VersionTextBlock.FontSize = HeaderBaseFontSize * safeScale;
+            OverlayChrome.MinWidth = ChromeBaseMinWidth * safeScale;
+            OverlayChrome.Padding = new Thickness(
+                ChromeBasePadding.Left * safeScale,
+                ChromeBasePadding.Top * safeScale,
+                ChromeBasePadding.Right * safeScale,
+                ChromeBasePadding.Bottom * safeScale);
+        });
     }
 
     public void UpdateCount(int count, ActiveBossState? activeBoss = null, string? gameLanguage = null)
