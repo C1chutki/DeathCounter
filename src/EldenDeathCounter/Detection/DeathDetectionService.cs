@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace EldenDeathCounter.Detection;
 
@@ -710,7 +711,8 @@ public sealed class DeathDetectionService
 
         if (bars.Count == 0)
         {
-            _log.Info($"Boss bar diagnostics: bars=0 (no red HP bar passed color/width detection in capture {capture.Width}x{capture.Height}).");
+            var probe = ProbeRedBand(capture);
+            _log.Info($"Boss bar diagnostics: bars=0 in capture {capture.Width}x{capture.Height}. {probe}");
             return;
         }
 
@@ -719,6 +721,129 @@ public sealed class DeathDetectionService
             bars.Select((bar, index) =>
                 $"#{index}: bar={bar.Bar}, name={bar.NameRegion}"));
         _log.Info($"Boss bar diagnostics: bars={bars.Count} in capture {capture.Width}x{capture.Height}: {geometry}.");
+    }
+
+    /// <summary>
+    /// Diagnostics-only probe used when the strict bar detector finds nothing. Re-scans the same band
+    /// with a deliberately loose "red-ish" rule (red is simply the dominant channel) and reports the
+    /// widest run it finds plus that run's average colour, so we can see exactly which strict gate the
+    /// real on-screen bar fails (e.g. green/blue too high from fire bloom or in-game brightness).
+    /// </summary>
+    private static string ProbeRedBand(Bitmap capture)
+    {
+        try
+        {
+            var width = capture.Width;
+            var height = capture.Height;
+            if (width <= 0 || height <= 0)
+            {
+                return "Red-band probe: empty capture.";
+            }
+
+            var rectangle = new Rectangle(0, 0, width, height);
+            var data = capture.LockBits(rectangle, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            try
+            {
+                var byteCount = Math.Abs(data.Stride) * data.Height;
+                var bytes = new byte[byteCount];
+                Marshal.Copy(data.Scan0, bytes, 0, byteCount);
+
+                var left = (int)(width * 0.16);
+                var right = (int)(width * 0.86);
+                var bottom = (int)(height * 0.92);
+
+                var bestRunLength = 0;
+                var bestRunY = -1;
+                long bestSumR = 0, bestSumG = 0, bestSumB = 0;
+                var bestCount = 0;
+
+                for (var y = 0; y < bottom; y += 2)
+                {
+                    var row = data.Stride > 0 ? y : data.Height - 1 - y;
+                    var rowOffset = row * Math.Abs(data.Stride);
+
+                    var runStart = -1;
+                    long sumR = 0, sumG = 0, sumB = 0;
+                    var count = 0;
+
+                    for (var x = left; x < right; x += 2)
+                    {
+                        var offset = rowOffset + x * 4;
+                        var b = bytes[offset];
+                        var g = bytes[offset + 1];
+                        var r = bytes[offset + 2];
+
+                        // Loose: red is the dominant channel and not too dark. No green/blue ceiling.
+                        if (r >= 50 && r >= g && r >= b)
+                        {
+                            if (runStart < 0)
+                            {
+                                runStart = x;
+                                sumR = sumG = sumB = 0;
+                                count = 0;
+                            }
+
+                            sumR += r;
+                            sumG += g;
+                            sumB += b;
+                            count++;
+                            continue;
+                        }
+
+                        if (runStart >= 0)
+                        {
+                            var runLength = x - runStart;
+                            if (runLength > bestRunLength)
+                            {
+                                bestRunLength = runLength;
+                                bestRunY = y;
+                                bestSumR = sumR;
+                                bestSumG = sumG;
+                                bestSumB = sumB;
+                                bestCount = count;
+                            }
+                        }
+
+                        runStart = -1;
+                    }
+
+                    if (runStart >= 0)
+                    {
+                        var runLength = right - runStart;
+                        if (runLength > bestRunLength)
+                        {
+                            bestRunLength = runLength;
+                            bestRunY = y;
+                            bestSumR = sumR;
+                            bestSumG = sumG;
+                            bestSumB = sumB;
+                            bestCount = count;
+                        }
+                    }
+                }
+
+                if (bestCount == 0)
+                {
+                    return $"Red-band probe: no red-dominant pixels found in scan band (x {left}..{right}, y 0..{bottom}).";
+                }
+
+                var avgR = bestSumR / bestCount;
+                var avgG = bestSumG / bestCount;
+                var avgB = bestSumB / bestCount;
+                var minSpan = (int)(width * 0.32);
+                return
+                    $"Red-band probe: widest red-ish run={bestRunLength}px (strict minSpan={minSpan}px) at cropY={bestRunY}, " +
+                    $"avg RGB=({avgR},{avgG},{avgB}). Strict needs R>=80, R>=G*1.7, R>=B*1.5, G<=75, B<=85.";
+            }
+            finally
+            {
+                capture.UnlockBits(data);
+            }
+        }
+        catch (Exception exception)
+        {
+            return $"Red-band probe failed: {exception.Message}";
+        }
     }
 
     private void LogRejectedBossNameCandidates(BossNameDetectionResult result)
