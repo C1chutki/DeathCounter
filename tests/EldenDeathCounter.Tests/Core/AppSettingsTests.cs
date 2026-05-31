@@ -55,6 +55,39 @@ public sealed class AppSettingsTests
     }
 
     [Fact]
+    public async Task SavedSettingsDoNotPersistHardcodedDetectionPhrases()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var settingsPath = Path.Combine(folder, "appsettings.json");
+        var store = new AppSettingsStore(new FileLogService(Path.Combine(folder, "log.txt")));
+        var settings = AppSettings.CreateDefault(@"C:\Users\TestUser\Desktop");
+
+        await store.SaveAsync(settingsPath, settings);
+        var json = await File.ReadAllTextAsync(settingsPath);
+
+        Assert.DoesNotContain("detectionPhrases", json);
+        Assert.DoesNotContain("bossVictoryPhrases", json);
+    }
+
+    [Fact]
+    public async Task LoadingOldSettingsIgnoresPersistedDetectionPhrases()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var settingsPath = Path.Combine(folder, "appsettings.json");
+        await File.WriteAllTextAsync(settingsPath, """{"dataFolderPath":"C:\\Temp\\Counter","detectionPhrases":["CUSTOM"],"bossVictoryPhrases":["CUSTOM WIN"]}""");
+        var store = new AppSettingsStore(new FileLogService(Path.Combine(folder, "log.txt")));
+
+        var settings = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop");
+
+        Assert.Contains("YOU DIED", settings.DetectionPhrases);
+        Assert.Contains("ENEMY FELLED", settings.BossVictoryPhrases);
+        Assert.DoesNotContain("CUSTOM", settings.DetectionPhrases);
+        Assert.DoesNotContain("CUSTOM WIN", settings.BossVictoryPhrases);
+    }
+
+    [Fact]
     public async Task SavedOverlayBackgroundOpacitySurvivesRoundTrip()
     {
         var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));

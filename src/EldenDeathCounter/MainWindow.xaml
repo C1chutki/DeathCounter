@@ -530,7 +530,7 @@
                                FontFamily="{DynamicResource HeaderFontFamily}"
                                FontSize="16"
                                FontWeight="Bold" />
-                    <TextBlock Text="v1.7.0"
+                    <TextBlock Text="v1.7.1"
                                FontFamily="{DynamicResource AppFontFamily}"
                                FontSize="14"
                                Foreground="{DynamicResource Ink}" />
@@ -1291,93 +1291,79 @@
 
                         <Grid Grid.Row="2" Margin="0,0,0,32">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1.35*" />
-                                <ColumnDefinition Width="32" />
-                                <ColumnDefinition Width="0.65*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="24" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="24" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- DETECTION PHRASES (part of detection) -->
+                            <!-- CHARACTER & SAVE GAME (placeholder selectors: graphical only, not yet wired to logic) -->
                             <Border Style="{StaticResource PanelBorder}">
-                                <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <StackPanel>
-                                    <TextBlock Text="| DETECTION PHRASES" Style="{StaticResource LabelText}" Margin="0,0,0,18" />
-                                    <TextBlock Text="Enter phrases to trigger a death count. One per line." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
-                                    <TextBox Text="{Binding DetectionPhrasesText, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Height="82" TextWrapping="Wrap" />
-                                    <TextBlock Text="| BOSS VICTORY PHRASES" Style="{StaticResource LabelText}" Margin="0,24,0,18" />
-                                    <TextBlock Text="Enter phrases to mark the active boss defeated. One per line." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
-                                    <TextBox Text="{Binding BossVictoryPhrasesText, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Height="118" TextWrapping="Wrap" />
+                                    <TextBlock Text="| CHARACTER &amp; SAVE GAME" Style="{StaticResource LabelText}" Margin="0,0,0,16" />
+                                    <TextBlock Text="Deaths and boss history will be tracked separately per character and save." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
+                                    <TextBlock Text="Character name" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" Margin="0,0,0,6" />
+                                    <ComboBox Style="{StaticResource DarkComboBox}" SelectedIndex="0" Margin="0,0,0,16">
+                                        <ComboBoxItem Content="Tarnished" />
+                                        <ComboBoxItem Content="Sellsword" />
+                                        <ComboBoxItem Content="Add character..." />
+                                    </ComboBox>
+                                    <TextBlock Text="Save game / profile" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" Margin="0,0,0,6" />
+                                    <ComboBox Style="{StaticResource DarkComboBox}" SelectedIndex="0">
+                                        <ComboBoxItem Content="Slot 1" />
+                                        <ComboBoxItem Content="Slot 2" />
+                                        <ComboBoxItem Content="Slot 3" />
+                                    </ComboBox>
                                 </StackPanel>
-                                </ScrollViewer>
                             </Border>
 
-                            <StackPanel Grid.Column="2">
-                                <!-- CHARACTER & SAVE GAME (placeholder selectors: graphical only, not yet wired to logic) -->
-                                <Border Style="{StaticResource PanelBorder}" Margin="0,0,0,32">
-                                    <StackPanel>
-                                        <TextBlock Text="| CHARACTER &amp; SAVE GAME" Style="{StaticResource LabelText}" Margin="0,0,0,16" />
-                                        <TextBlock Text="Deaths and boss history will be tracked separately per character and save." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
-                                        <TextBlock Text="Character name" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" Margin="0,0,0,6" />
-                                        <ComboBox Style="{StaticResource DarkComboBox}" SelectedIndex="0" Margin="0,0,0,16">
-                                            <ComboBoxItem Content="Tarnished" />
-                                            <ComboBoxItem Content="Sellsword" />
-                                            <ComboBoxItem Content="Add character..." />
-                                        </ComboBox>
-                                        <TextBlock Text="Save game / profile" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" Margin="0,0,0,6" />
-                                        <ComboBox Style="{StaticResource DarkComboBox}" SelectedIndex="0">
-                                            <ComboBoxItem Content="Slot 1" />
-                                            <ComboBoxItem Content="Slot 2" />
-                                            <ComboBoxItem Content="Slot 3" />
-                                        </ComboBox>
-                                    </StackPanel>
-                                </Border>
+                            <!-- LANGUAGE -->
+                            <Border Grid.Column="2" Style="{StaticResource PanelBorder}">
+                                <StackPanel>
+                                    <TextBlock Text="| LANGUAGE" Style="{StaticResource LabelText}" Margin="0,0,0,16" />
+                                    <TextBlock Text="Language used to recognise on-screen death and boss text." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
+                                    <ComboBox ItemsSource="{Binding GameLanguageOptions}"
+                                              SelectedValue="{Binding SelectedGameLanguageValue, UpdateSourceTrigger=PropertyChanged}"
+                                              SelectedValuePath="Value"
+                                              DisplayMemberPath="DisplayName"
+                                              Style="{StaticResource DarkComboBox}" />
+                                    <TextBlock Text="| APP LANGUAGE" Style="{StaticResource LabelText}" Margin="0,24,0,16" />
+                                    <TextBlock Text="Language of the application interface." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
+                                    <!-- Placeholder selector: graphical only, not yet wired to logic. -->
+                                    <ComboBox Style="{StaticResource DarkComboBox}" SelectedIndex="0">
+                                        <ComboBoxItem Content="English" />
+                                        <ComboBoxItem Content="Polski" />
+                                    </ComboBox>
+                                </StackPanel>
+                            </Border>
 
-                                <!-- OCR LANGUAGE -->
-                                <Border Style="{StaticResource PanelBorder}" Margin="0,0,0,32">
-                                    <StackPanel>
-                                        <TextBlock Text="| OCR LANGUAGE" Style="{StaticResource LabelText}" Margin="0,0,0,16" />
-                                        <TextBlock Text="Language used to recognise on-screen death and boss text." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
-                                        <ComboBox ItemsSource="{Binding GameLanguageOptions}"
-                                                  SelectedValue="{Binding SelectedGameLanguageValue, UpdateSourceTrigger=PropertyChanged}"
-                                                  SelectedValuePath="Value"
-                                                  DisplayMemberPath="DisplayName"
-                                                  Style="{StaticResource DarkComboBox}" />
-                                        <TextBlock Text="| APP LANGUAGE" Style="{StaticResource LabelText}" Margin="0,24,0,16" />
-                                        <TextBlock Text="Language of the application interface." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
-                                        <!-- Placeholder selector: graphical only, not yet wired to logic. -->
-                                        <ComboBox Style="{StaticResource DarkComboBox}" SelectedIndex="0">
-                                            <ComboBoxItem Content="English" />
-                                            <ComboBoxItem Content="Polski" />
-                                        </ComboBox>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- HOTKEYS -->
-                                <Border Style="{StaticResource PanelBorder}">
-                                    <StackPanel>
-                                        <TextBlock Text="| HOTKEYS" Style="{StaticResource LabelText}" Margin="0,0,0,20" />
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="84" />
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
-                                            <TextBlock Text="Add Death" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
-                                            <TextBox Grid.Column="1" Text="{Binding ManualAddHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
-                                            <TextBlock Grid.Row="1" Text="Subtract Death" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
-                                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ManualSubtractHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
-                                            <TextBlock Grid.Row="2" Text="Boss Kill" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
-                                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding ManualBossDefeatedHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
-                                            <TextBlock Grid.Row="3" Text="Toggle Overlay" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
-                                            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding OverlayToggleHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" />
-                                        </Grid>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
+                            <!-- HOTKEYS -->
+                            <Border Grid.Column="4" Style="{StaticResource PanelBorder}">
+                                <StackPanel>
+                                    <TextBlock Text="| HOTKEYS" Style="{StaticResource LabelText}" Margin="0,0,0,20" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="84" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Text="Add Death" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
+                                        <TextBox Grid.Column="1" Text="{Binding ManualAddHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
+                                        <TextBlock Grid.Row="1" Text="Subtract Death" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
+                                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ManualSubtractHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
+                                        <TextBlock Grid.Row="2" Text="Boss Kill" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
+                                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding ManualBossDefeatedHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
+                                        <TextBlock Grid.Row="3" Text="Toggle Overlay" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
+                                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding OverlayToggleHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
                         </Grid>
 
                         <!-- PROFILE / SAVE GAME -->

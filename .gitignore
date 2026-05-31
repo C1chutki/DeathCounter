@@ -63,3 +63,6 @@ TODO.md
 gcm-diagnose.log
 *.log
 diagnostics/
+PROMPT_change_template.md
+PROMPT_*.md
+build.log

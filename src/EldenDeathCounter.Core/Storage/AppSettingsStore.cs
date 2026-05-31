@@ -74,15 +74,8 @@ public sealed class AppSettingsStore
             settings.DataFolderPath = defaults.DataFolderPath;
         }
 
-        if (settings.DetectionPhrases is null || settings.DetectionPhrases.Count == 0)
-        {
-            settings.DetectionPhrases = defaults.DetectionPhrases;
-        }
-
-        if (settings.BossVictoryPhrases is null || settings.BossVictoryPhrases.Count == 0)
-        {
-            settings.BossVictoryPhrases = defaults.BossVictoryPhrases;
-        }
+        settings.DetectionPhrases = AppSettings.CreateDefaultDetectionPhrases();
+        settings.BossVictoryPhrases = AppSettings.CreateDefaultBossVictoryPhrases();
 
         if (settings.BossNameCorrections is null || settings.BossNameCorrections.Count == 0)
         {

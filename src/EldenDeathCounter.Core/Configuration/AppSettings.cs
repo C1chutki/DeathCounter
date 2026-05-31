@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace EldenDeathCounter.Core.Configuration;
 
 public sealed class AppSettings
@@ -34,9 +36,11 @@ public sealed class AppSettings
 
     public int DiagnosticsRetentionDays { get; set; } = 7;
 
-    public List<string> DetectionPhrases { get; set; } = [];
+    [JsonIgnore]
+    public List<string> DetectionPhrases { get; set; } = CreateDefaultDetectionPhrases();
 
-    public List<string> BossVictoryPhrases { get; set; } = [];
+    [JsonIgnore]
+    public List<string> BossVictoryPhrases { get; set; } = CreateDefaultBossVictoryPhrases();
 
     public string ManualAddHotkey { get; set; } = "F8";
 
@@ -78,22 +82,8 @@ public sealed class AppSettings
             DiagnosticsSessionMinutes = 10,
             DiagnosticsMaxEventLogMb = 5,
             DiagnosticsRetentionDays = 7,
-            DetectionPhrases = ["YOU DIED", "NIE ŻYJESZ"],
-            BossVictoryPhrases =
-            [
-                "POKONANO WROGA",
-                "POKONANO WIELKIEGO WROGA",
-                "POKONANO LEGENDE",
-                "POKONANO POLBOGA",
-                "ZABITO BOGA",
-                "WRÓG POWALONY",
-                "WIELKI WRÓG POWALONY",
-                "ENEMY FELLED",
-                "GREAT ENEMY FELLED",
-                "LEGEND FELLED",
-                "DEMIGOD FELLED",
-                "GOD SLAIN"
-            ],
+            DetectionPhrases = CreateDefaultDetectionPhrases(),
+            BossVictoryPhrases = CreateDefaultBossVictoryPhrases(),
             BossNameCorrections = CreateDefaultBossNameCorrections(),
             ManualAddHotkey = "F8",
             ManualSubtractHotkey = "F9",
@@ -102,6 +92,30 @@ public sealed class AppSettings
             OverlayFontScale = 1.0,
             OverlayBackgroundOpacity = 0.9
         };
+    }
+
+    public static List<string> CreateDefaultDetectionPhrases()
+    {
+        return ["YOU DIED", "NIE ŻYJESZ"];
+    }
+
+    public static List<string> CreateDefaultBossVictoryPhrases()
+    {
+        return
+        [
+            "POKONANO WROGA",
+            "POKONANO WIELKIEGO WROGA",
+            "POKONANO LEGENDE",
+            "POKONANO POLBOGA",
+            "ZABITO BOGA",
+            "WRÓG POWALONY",
+            "WIELKI WRÓG POWALONY",
+            "ENEMY FELLED",
+            "GREAT ENEMY FELLED",
+            "LEGEND FELLED",
+            "DEMIGOD FELLED",
+            "GOD SLAIN"
+        ];
     }
 
     private static Dictionary<string, string> CreateDefaultBossNameCorrections()

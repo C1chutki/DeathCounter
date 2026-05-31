@@ -23,79 +23,65 @@ public sealed class SettingsMenuCoverageTests
         Assert.Contains("SelectedCaptureTargetValue", settingsTab);
         Assert.Contains("SelectedGameLanguageValue", settingsTab);
         Assert.Contains("DataFolderPathText", settingsTab);
-        Assert.Contains("DetectionPhrasesText", settingsTab);
-        Assert.Contains("BossVictoryPhrasesText", settingsTab);
         Assert.Contains("ManualAddHotkeyText", settingsTab);
         Assert.Contains("ManualSubtractHotkeyText", settingsTab);
         Assert.Contains("ManualBossDefeatedHotkeyText", settingsTab);
         Assert.Contains("OverlayToggleHotkeyText", settingsTab);
+        Assert.DoesNotContain("DetectionPhrasesText", settingsTab);
+        Assert.DoesNotContain("BossVictoryPhrasesText", settingsTab);
     }
 
     [Fact]
-    public void SettingsDetectionPhrasesTextBoxUsesDarkTextBoxStyle()
+    public void SettingsTabUsesTwoThreeOnePanelLayout()
     {
         var xaml = File.ReadAllText(GetMainWindowXamlPath());
         var settingsTab = Regex.Match(
             xaml,
             """<TabItem Header="Settings">(?<content>[\s\S]*?)</TabItem>""",
             RegexOptions.CultureInvariant).Groups["content"].Value;
-        var detectionPhrasesTextBox = Regex.Match(
-            settingsTab,
-            """<TextBox[^>]*DetectionPhrasesText[^>]*/>""",
-            RegexOptions.CultureInvariant).Value;
 
-        Assert.NotEmpty(detectionPhrasesTextBox);
-        Assert.DoesNotContain("Background=\"#F3F3F3\"", detectionPhrasesTextBox);
-        Assert.DoesNotContain("Foreground=\"#222222\"", detectionPhrasesTextBox);
+        Assert.Contains("Grid.Row=\"1\"", settingsTab);
+        Assert.Contains("| OVERLAY", settingsTab);
+        Assert.Contains("| DETECTION", settingsTab);
+        Assert.Contains("Grid.Row=\"2\"", settingsTab);
+        Assert.Contains("| CHARACTER &amp; SAVE GAME", settingsTab);
+        Assert.Contains("| LANGUAGE", settingsTab);
+        Assert.Contains("| HOTKEYS", settingsTab);
+        Assert.Contains("Grid.Row=\"3\"", settingsTab);
+        Assert.Contains("| PROFILE / SAVE GAME", settingsTab);
     }
 
     [Fact]
-    public void SettingsBossVictoryPhrasesTextBoxUsesDarkTextBoxStyle()
+    public void SettingsDetectionPanelLivesBesideOverlay()
     {
         var xaml = File.ReadAllText(GetMainWindowXamlPath());
         var settingsTab = Regex.Match(
             xaml,
             """<TabItem Header="Settings">(?<content>[\s\S]*?)</TabItem>""",
             RegexOptions.CultureInvariant).Groups["content"].Value;
-        var bossVictoryPhrasesTextBox = Regex.Match(
+        var firstSettingsRow = Regex.Match(
             settingsTab,
-            """<TextBox[^>]*BossVictoryPhrasesText[^>]*/>""",
-            RegexOptions.CultureInvariant).Value;
-
-        Assert.NotEmpty(bossVictoryPhrasesTextBox);
-        Assert.DoesNotContain("Background=\"#F3F3F3\"", bossVictoryPhrasesTextBox);
-        Assert.DoesNotContain("Foreground=\"#222222\"", bossVictoryPhrasesTextBox);
-    }
-
-    [Fact]
-    public void DetectionConfigurationPanelScrollsWhenWindowIsShort()
-    {
-        var xaml = File.ReadAllText(GetMainWindowXamlPath());
-        var detectionTab = Regex.Match(
-            xaml,
-            """<TabItem Header="Detection">(?<content>[\s\S]*?)</TabItem>""",
-            RegexOptions.CultureInvariant).Groups["content"].Value;
-        var configurationPanel = Regex.Match(
-            detectionTab,
-            """<Border Style="\{StaticResource PanelBorder\}">(?<content>[\s\S]*?)<Border Grid\.Column="2" Style="\{StaticResource PanelBorder\}">""",
+            "<Grid Grid.Row=\"1\"(?<content>[\\s\\S]*?)</Grid>\\s*<Grid Grid.Row=\"2\"",
             RegexOptions.CultureInvariant).Groups["content"].Value;
 
-        Assert.NotEmpty(configurationPanel);
-        Assert.Contains("""<ScrollViewer VerticalScrollBarVisibility="Auto">""", configurationPanel);
+        Assert.NotEmpty(firstSettingsRow);
+        Assert.Contains("| OVERLAY", firstSettingsRow);
+        Assert.Contains("| DETECTION", firstSettingsRow);
+        Assert.Contains("CaptureTargetOptions", firstSettingsRow);
     }
 
     [Fact]
     public void DetectionConfigurationShowsCaptureTargetSelector()
     {
         var xaml = File.ReadAllText(GetMainWindowXamlPath());
-        var detectionTab = Regex.Match(
+        var settingsTab = Regex.Match(
             xaml,
-            """<TabItem Header="Detection">(?<content>[\s\S]*?)</TabItem>""",
+            """<TabItem Header="Settings">(?<content>[\s\S]*?)</TabItem>""",
             RegexOptions.CultureInvariant).Groups["content"].Value;
 
-        Assert.Contains("CaptureTargetOptions", detectionTab);
-        Assert.Contains("SelectedCaptureTargetValue", detectionTab);
-        Assert.DoesNotContain("EldenRing.exe (Main Window)", detectionTab);
+        Assert.Contains("CaptureTargetOptions", settingsTab);
+        Assert.Contains("SelectedCaptureTargetValue", settingsTab);
+        Assert.DoesNotContain("EldenRing.exe (Main Window)", settingsTab);
     }
 
     [Fact]
@@ -107,7 +93,7 @@ public sealed class SettingsMenuCoverageTests
             """<ComboBox[^>]*CaptureTargetOptions[\s\S]*?/>""",
             RegexOptions.CultureInvariant);
 
-        Assert.Equal(2, captureTargetComboBoxes.Count);
+        Assert.Single(captureTargetComboBoxes);
         Assert.Contains("x:Key=\"DarkComboBox\"", xaml);
         Assert.Contains("x:Key=\"DarkComboBoxItem\"", xaml);
         Assert.Contains("x:Name=\"ToggleBorder\"", xaml);

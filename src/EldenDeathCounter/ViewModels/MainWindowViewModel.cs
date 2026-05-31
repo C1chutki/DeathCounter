@@ -98,8 +98,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         SelectedGameLanguageValue = string.Empty;
         OverlayXText = string.Empty;
         OverlayYText = string.Empty;
-        DetectionPhrasesText = string.Empty;
-        BossVictoryPhrasesText = string.Empty;
         ManualAddHotkeyText = string.Empty;
         ManualSubtractHotkeyText = string.Empty;
         ManualBossDefeatedHotkeyText = string.Empty;
@@ -326,10 +324,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public string OverlayXText { get; set; }
 
     public string OverlayYText { get; set; }
-
-    public string DetectionPhrasesText { get; set; }
-
-    public string BossVictoryPhrasesText { get; set; }
 
     public string ManualAddHotkeyText { get; set; }
 
@@ -856,26 +850,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return false;
         }
 
-        var phrases = DetectionPhrasesText
-            .Split([Environment.NewLine, "\n", "\r", ";"], StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
-        if (phrases.Count == 0)
-        {
-            error = "At least one detection phrase is required.";
-            return false;
-        }
-
-        var bossVictoryPhrases = BossVictoryPhrasesText
-            .Split([Environment.NewLine, "\n", "\r", ";"], StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
-        if (bossVictoryPhrases.Count == 0)
-        {
-            error = "At least one boss victory phrase is required.";
-            return false;
-        }
-
         var addHotkey = HotkeyDefinition.Parse(ManualAddHotkeyText);
         if (!addHotkey.IsValid)
         {
@@ -920,8 +894,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         Settings.GameLanguage = NormalizeGameLanguage(SelectedGameLanguageValue, Settings.GameLanguage);
         Settings.OverlayX = overlayX;
         Settings.OverlayY = overlayY;
-        Settings.DetectionPhrases = phrases;
-        Settings.BossVictoryPhrases = bossVictoryPhrases;
+        Settings.DetectionPhrases = AppSettings.CreateDefaultDetectionPhrases();
+        Settings.BossVictoryPhrases = AppSettings.CreateDefaultBossVictoryPhrases();
         Settings.ManualAddHotkey = ManualAddHotkeyText.Trim();
         Settings.ManualSubtractHotkey = ManualSubtractHotkeyText.Trim();
         Settings.BossDefeatedHotkey = ManualBossDefeatedHotkeyText.Trim();
@@ -1008,8 +982,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         SelectedGameLanguageValue = NormalizeGameLanguage(Settings.GameLanguage, "PL");
         OverlayXText = Settings.OverlayX.ToString(CultureInfo.InvariantCulture);
         OverlayYText = Settings.OverlayY.ToString(CultureInfo.InvariantCulture);
-        DetectionPhrasesText = string.Join(Environment.NewLine, Settings.DetectionPhrases);
-        BossVictoryPhrasesText = string.Join(Environment.NewLine, Settings.BossVictoryPhrases);
         ManualAddHotkeyText = Settings.ManualAddHotkey;
         ManualSubtractHotkeyText = Settings.ManualSubtractHotkey;
         ManualBossDefeatedHotkeyText = Settings.BossDefeatedHotkey;
@@ -1023,8 +995,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(SelectedGameLanguageValue));
         OnPropertyChanged(nameof(OverlayXText));
         OnPropertyChanged(nameof(OverlayYText));
-        OnPropertyChanged(nameof(DetectionPhrasesText));
-        OnPropertyChanged(nameof(BossVictoryPhrasesText));
         OnPropertyChanged(nameof(ManualAddHotkeyText));
         OnPropertyChanged(nameof(ManualSubtractHotkeyText));
         OnPropertyChanged(nameof(ManualBossDefeatedHotkeyText));

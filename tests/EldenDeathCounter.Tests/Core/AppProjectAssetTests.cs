@@ -255,7 +255,7 @@ public sealed class AppProjectAssetTests
         var detectionHeaderStart = xaml.IndexOf("SYSTEM ENGINE", StringComparison.Ordinal);
         Assert.True(detectionHeaderStart >= 0);
 
-        var detectionHeaderEnd = xaml.IndexOf("<Grid Grid.Row=\"1\">", detectionHeaderStart, StringComparison.Ordinal);
+        var detectionHeaderEnd = xaml.IndexOf("<Border Grid.Row=\"1\"", detectionHeaderStart, StringComparison.Ordinal);
         Assert.True(detectionHeaderEnd > detectionHeaderStart);
         var detectionHeader = xaml[detectionHeaderStart..detectionHeaderEnd];
 
