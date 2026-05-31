@@ -15,6 +15,10 @@ public partial class OverlayWindow : Window
     private const double BossBaseLineHeight = 25;
     private const double BossDeathBaseFontSize = 14;
     private const double TimerBaseFontSize = 20;
+    private const double BossNameBaseMaxWidth = 620;
+    private const double HeaderBaseFontSize = 12;
+    private const double ChromeBaseMinWidth = 356;
+    private static readonly Thickness ChromeBasePadding = new Thickness(22, 20, 22, 18);
 
     private readonly DispatcherTimer _bossTimer;
     private string _gameLanguage;

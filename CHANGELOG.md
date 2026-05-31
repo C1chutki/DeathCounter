@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-05-31
+
+- Graficzna przebudowa UI (tylko XAML/layout, bez zmian logiki). Zakladka Detection oczyszczona z sekcji konfiguracyjnych (Configuration, Active Detection Phrases, Global Hotkeys) — pokazuje teraz wylacznie status, przycisk Toggle Detection oraz Detection Log/diagnostyke na pelnej szerokosci. Wszystkie ustawienia detekcji pozostaja dostepne w Settings (bez duplikatow).
+- W Settings dodano graficzne (placeholder, bez logiki) selektory Character name i Save game oraz selektor APP LANGUAGE pod istniejacym wyborem jezyka OCR. Okno poszerzono o 25px (`Width` 1400→1425, `MinWidth` 1040→1065).
+- Odswiezono zestaw ikon `Assets/` przez `tools/generate-icons.ps1` (spojny ciemny outline, te same nazwy i wymiary); dodano generowanie `Logo.png` (132x121). Screeny i listy bossow nietkniete. Wersje podniesiono do 1.6.0.
+
 ## 2026-05-30
 
 - Podmieniono zestaw ikon w `Assets/` (Edit, Settings, Status, Detection, Detection_settings, Quick_Settings, Quick_Reminders, DashBoard, Open_Folder) z wypelnionych sylwetek na spojny zestaw outline (charcoal, jednolita grubosc linii ~18px @256px, zaokraglone konce, przezroczyste tlo, renderowane 256x256 z czytelnoscia w 16/24 px). `Logo.png` (sylwetka czaszki) i `PL_Death_Screen.png` (szablon detekcji) celowo nietkniete. Ikony nie sa referowane w XAML/kodzie, wiec build i zasoby pozostaja sprawne; dodano generator `tools/generate-icons.ps1`. Wersje podniesiono do 1.5.1.
