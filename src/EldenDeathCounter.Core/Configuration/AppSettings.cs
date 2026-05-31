@@ -46,7 +46,13 @@ public sealed class AppSettings
 
     public string OverlayToggleHotkey { get; set; } = "Ctrl+Shift+O";
 
+    // Scale of the whole overlay window (text, spacing, borders, divider, timer).
+    // Kept under the original "OverlayFontScale" name so existing settings JSON keeps loading.
     public double OverlayFontScale { get; set; } = 1.0;
+
+    // Opacity of the overlay background only (0.0–1.0). Text stays fully opaque.
+    // Default 0.9 matches the previous look (background alpha 0xE6 ≈ 0.90).
+    public double OverlayBackgroundOpacity { get; set; } = 0.9;
 
     public static AppSettings CreateDefault(string desktopPath)
     {
@@ -93,7 +99,8 @@ public sealed class AppSettings
             ManualSubtractHotkey = "F9",
             BossDefeatedHotkey = "F7",
             OverlayToggleHotkey = "Ctrl+Shift+O",
-            OverlayFontScale = 1.0
+            OverlayFontScale = 1.0,
+            OverlayBackgroundOpacity = 0.9
         };
     }
 

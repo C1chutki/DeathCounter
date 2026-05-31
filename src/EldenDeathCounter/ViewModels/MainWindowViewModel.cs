@@ -269,6 +269,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public const double OverlayFontScaleMax = 1.6;
 
+    public const double OverlayBackgroundOpacityMin = 0.0;
+
+    public const double OverlayBackgroundOpacityMax = 1.0;
+
     public string OverlayFontScaleInput
     {
         get => Settings.OverlayFontScale.ToString("0.0", CultureInfo.InvariantCulture);
@@ -280,7 +284,27 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 if (Math.Abs(Settings.OverlayFontScale - clamped) > 0.0001)
                 {
                     Settings.OverlayFontScale = clamped;
-                    _overlayWindow.ApplyFontScale(clamped);
+                    _overlayWindow.ApplyScale(clamped);
+                    _ = _settingsStore.SaveAsync(_settingsPath, Settings);
+                }
+            }
+
+            OnPropertyChanged();
+        }
+    }
+
+    public string OverlayBackgroundOpacityInput
+    {
+        get => Settings.OverlayBackgroundOpacity.ToString("0.0", CultureInfo.InvariantCulture);
+        set
+        {
+            if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
+            {
+                var clamped = Math.Clamp(parsed, OverlayBackgroundOpacityMin, OverlayBackgroundOpacityMax);
+                if (Math.Abs(Settings.OverlayBackgroundOpacity - clamped) > 0.0001)
+                {
+                    Settings.OverlayBackgroundOpacity = clamped;
+                    _overlayWindow.ApplyBackgroundOpacity(clamped);
                     _ = _settingsStore.SaveAsync(_settingsPath, Settings);
                 }
             }
@@ -1010,6 +1034,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(DetectionEnabledOnStartup));
         OnPropertyChanged(nameof(AutoDetectBossNames));
         OnPropertyChanged(nameof(OverlayFontScaleInput));
+        OnPropertyChanged(nameof(OverlayBackgroundOpacityInput));
         OnPropertyChanged(nameof(StatusOverlayStateText));
     }
 

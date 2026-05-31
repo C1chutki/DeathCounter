@@ -10,20 +10,16 @@ namespace EldenDeathCounter;
 
 public partial class OverlayWindow : Window
 {
-    private const double CounterBaseFontSize = 26;
-    private const double BossBaseFontSize = 20;
-    private const double BossBaseLineHeight = 25;
-    private const double BossDeathBaseFontSize = 14;
-    private const double TimerBaseFontSize = 20;
-    private const double BossNameBaseMaxWidth = 620;
-    private const double HeaderBaseFontSize = 12;
-    private const double ChromeBaseMinWidth = 356;
-    private static readonly Thickness ChromeBasePadding = new Thickness(22, 20, 22, 18);
+    // Default overlay background color (matches OverlayWindow.xaml OverlayChrome.Background).
+    private static readonly System.Windows.Media.Color DefaultOverlayBackgroundColor =
+        (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#0A1014");
 
     private readonly DispatcherTimer _bossTimer;
     private string _gameLanguage;
     private ActiveBossState? _activeBoss;
     private bool _isDetectionRunning;
+    private System.Windows.Media.Color _overlayBackgroundColor = DefaultOverlayBackgroundColor;
+    private double _backgroundOpacity = 0.9;
 
     public OverlayWindow(AppSettings settings)
     {
@@ -38,29 +34,26 @@ public partial class OverlayWindow : Window
         _bossTimer.Tick += (_, _) => UpdateBossTimerText();
         VersionTextBlock.Text = GetApplicationVersionText();
         UpdateDetectionState(false);
-        ApplyFontScale(settings.OverlayFontScale);
+        ApplyScale(settings.OverlayFontScale);
+        ApplyBackgroundOpacity(settings.OverlayBackgroundOpacity);
     }
 
-    public void ApplyFontScale(double scale)
+    public void ApplyScale(double scale)
     {
         Dispatcher.Invoke(() =>
         {
             var safeScale = Math.Clamp(scale <= 0 ? 1.0 : scale, 0.6, 1.6);
-            CounterTextBlock.FontSize = CounterBaseFontSize * safeScale;
-            BossTextBlock.FontSize = BossBaseFontSize * safeScale;
-            BossTextBlock.LineHeight = BossBaseLineHeight * safeScale;
-            BossTextBlock.MaxWidth = BossNameBaseMaxWidth * safeScale;
-            BossDeathTextBlock.FontSize = BossDeathBaseFontSize * safeScale;
-            TimerTextBlock.FontSize = TimerBaseFontSize * safeScale;
-            DetectionStatusTextBlock.FontSize = HeaderBaseFontSize * safeScale;
-            TotalDeathsLabelTextBlock.FontSize = HeaderBaseFontSize * safeScale;
-            VersionTextBlock.FontSize = HeaderBaseFontSize * safeScale;
-            OverlayChrome.MinWidth = ChromeBaseMinWidth * safeScale;
-            OverlayChrome.Padding = new Thickness(
-                ChromeBasePadding.Left * safeScale,
-                ChromeBasePadding.Top * safeScale,
-                ChromeBasePadding.Right * safeScale,
-                ChromeBasePadding.Bottom * safeScale);
+            OverlayScaleTransform.ScaleX = safeScale;
+            OverlayScaleTransform.ScaleY = safeScale;
+        });
+    }
+
+    public void ApplyBackgroundOpacity(double opacity)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            _backgroundOpacity = Math.Clamp(opacity, 0.0, 1.0);
+            RefreshOverlayBackground();
         });
     }
 
@@ -120,7 +113,8 @@ public partial class OverlayWindow : Window
     {
         Dispatcher.Invoke(() =>
         {
-            OverlayChrome.Background = BuildOverlayGradient(theme.OverlayBackground);
+            _overlayBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(theme.OverlayBackground);
+            RefreshOverlayBackground();
             OverlayChrome.BorderBrush = BrushFromHex(theme.OverlayBorder);
             CounterTextBlock.Foreground = BrushFromHex(theme.OverlayText);
             BossTextBlock.Foreground = BrushFromHex(theme.OverlayText);
@@ -162,11 +156,14 @@ public partial class OverlayWindow : Window
         return new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(color));
     }
 
-    private static LinearGradientBrush BuildOverlayGradient(string color)
+    // Rebuilds the overlay background brush from the current theme color and background
+    // opacity. The opacity is applied to the brush alpha only, so overlay text stays opaque.
+    private void RefreshOverlayBackground()
     {
-        var top = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(color);
+        var alpha = (byte)Math.Round(Math.Clamp(_backgroundOpacity, 0.0, 1.0) * 255);
+        var top = System.Windows.Media.Color.FromArgb(alpha, _overlayBackgroundColor.R, _overlayBackgroundColor.G, _overlayBackgroundColor.B);
         var bottom = LiftColor(top, 16);
-        return new LinearGradientBrush
+        OverlayChrome.Background = new LinearGradientBrush
         {
             StartPoint = new System.Windows.Point(0, 0),
             EndPoint = new System.Windows.Point(0, 1),

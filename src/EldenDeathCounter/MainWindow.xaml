@@ -530,7 +530,7 @@
                                FontFamily="{DynamicResource HeaderFontFamily}"
                                FontSize="16"
                                FontWeight="Bold" />
-                    <TextBlock Text="v1.6.0"
+                    <TextBlock Text="v1.7.0"
                                FontFamily="{DynamicResource AppFontFamily}"
                                FontSize="14"
                                Foreground="{DynamicResource Ink}" />
@@ -793,8 +793,10 @@
                                     <CheckBox Content="Auto-read boss name" IsChecked="{Binding AutoDetectBossNames}" />
                                     <TextBlock Text="Manual counter" Style="{StaticResource LabelText}" Margin="0,24,0,8" />
                                     <TextBox Text="{Binding ManualCounterText, UpdateSourceTrigger=PropertyChanged}" />
-                                    <TextBlock Text="Overlay font size (0.6–1.6)" Style="{StaticResource LabelText}" Margin="0,24,0,8" />
+                                    <TextBlock Text="Skala overlay (0.6–1.6)" Style="{StaticResource LabelText}" Margin="0,24,0,8" />
                                     <TextBox Text="{Binding OverlayFontScaleInput}" />
+                                    <TextBlock Text="Przezroczystość tła (0.0–1.0)" Style="{StaticResource LabelText}" Margin="0,24,0,8" />
+                                    <TextBox Text="{Binding OverlayBackgroundOpacityInput}" />
                                 </StackPanel>
                             </Border>
                             <Border Grid.Column="2" Style="{StaticResource PanelBorder}">

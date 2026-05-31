@@ -140,6 +140,7 @@ public sealed class AppSettingsStore
         settings.OverlayFontScale = settings.OverlayFontScale <= 0
             ? defaults.OverlayFontScale
             : Math.Clamp(settings.OverlayFontScale, 0.6, 1.6);
+        settings.OverlayBackgroundOpacity = Math.Clamp(settings.OverlayBackgroundOpacity, 0.0, 1.0);
 
         return settings;
     }

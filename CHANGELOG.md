@@ -2,6 +2,7 @@
 
 ## 2026-05-31
 
+- Overlay skaluje sie teraz jako cala calosc przez `ScaleTransform` (`LayoutTransform` na `OverlayChrome`) zamiast recznego skalowania per-element, wiec tekst, odstepy, ramki, divider, sekcja bossa i timer skaluja sie proporcjonalnie; `OverlayFontScale` zachowuje nazwe pola (kompatybilnosc JSON), a `ApplyFontScale` zmieniono na `ApplyScale`. Dodano `AppSettings.OverlayBackgroundOpacity` (domyslnie 0.9, zakres 0.0–1.0) sterujace alfa tla overlaya bez wyblakniecia tekstu, z kontrolka „Przezroczystosc tla" w Quick Settings i zywa aktualizacja niezalezna od zmiany motywu. Dodano testy domyslnych/persistencji i podniesiono wersje do 1.7.0.
 - Graficzna przebudowa UI (tylko XAML/layout, bez zmian logiki). Zakladka Detection oczyszczona z sekcji konfiguracyjnych (Configuration, Active Detection Phrases, Global Hotkeys) — pokazuje teraz wylacznie status, przycisk Toggle Detection oraz Detection Log/diagnostyke na pelnej szerokosci. Wszystkie ustawienia detekcji pozostaja dostepne w Settings (bez duplikatow).
 - W Settings dodano graficzne (placeholder, bez logiki) selektory Character name i Save game oraz selektor APP LANGUAGE pod istniejacym wyborem jezyka OCR. Okno poszerzono o 25px (`Width` 1400→1425, `MinWidth` 1040→1065).
 - Odswiezono zestaw ikon `Assets/` przez `tools/generate-icons.ps1` (spojny ciemny outline, te same nazwy i wymiary); dodano generowanie `Logo.png` (132x121). Screeny i listy bossow nietkniete. Wersje podniesiono do 1.6.0.

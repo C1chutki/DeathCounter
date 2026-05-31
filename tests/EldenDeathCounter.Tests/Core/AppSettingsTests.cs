@@ -35,7 +35,39 @@ public sealed class AppSettingsTests
         Assert.Equal("F9", settings.ManualSubtractHotkey);
         Assert.Equal("F7", settings.BossDefeatedHotkey);
         Assert.Equal("Ctrl+Shift+O", settings.OverlayToggleHotkey);
+        Assert.Equal(1.0, settings.OverlayFontScale);
+        Assert.Equal(0.9, settings.OverlayBackgroundOpacity);
         Assert.Equal("Strażnik Drzewa", settings.BossNameCorrections["STRAINIK DRZEWA"]);
+    }
+
+    [Fact]
+    public async Task LoadingOldSettingsWithoutOverlayBackgroundOpacityAppliesDefault()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var settingsPath = Path.Combine(folder, "appsettings.json");
+        await File.WriteAllTextAsync(settingsPath, """{"dataFolderPath":"C:\\Temp\\Counter","detectionPhrases":["YOU DIED"],"bossVictoryPhrases":["ENEMY FELLED"]}""");
+        var store = new AppSettingsStore(new FileLogService(Path.Combine(folder, "log.txt")));
+
+        var settings = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop");
+
+        Assert.Equal(0.9, settings.OverlayBackgroundOpacity);
+    }
+
+    [Fact]
+    public async Task SavedOverlayBackgroundOpacitySurvivesRoundTrip()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var settingsPath = Path.Combine(folder, "appsettings.json");
+        var store = new AppSettingsStore(new FileLogService(Path.Combine(folder, "log.txt")));
+        var settings = AppSettings.CreateDefault(@"C:\Users\TestUser\Desktop");
+        settings.OverlayBackgroundOpacity = 0.4;
+
+        await store.SaveAsync(settingsPath, settings);
+        var reloaded = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop");
+
+        Assert.Equal(0.4, reloaded.OverlayBackgroundOpacity);
     }
 
     [Fact]

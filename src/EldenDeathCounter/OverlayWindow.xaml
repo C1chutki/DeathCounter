@@ -18,6 +18,9 @@
             BorderThickness="1"
             CornerRadius="7"
             Padding="22,20,22,18">
+        <Border.LayoutTransform>
+            <ScaleTransform x:Name="OverlayScaleTransform" ScaleX="1" ScaleY="1" />
+        </Border.LayoutTransform>
         <Border.Effect>
             <DropShadowEffect BlurRadius="16"
                               ShadowDepth="0"
