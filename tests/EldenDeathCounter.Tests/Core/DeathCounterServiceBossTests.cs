@@ -62,6 +62,28 @@ public sealed class DeathCounterServiceBossTests
     }
 
     [Fact]
+    public async Task SkipActiveBossCancelsEncounterAndRemovesItsDeathsFromGlobalCount()
+    {
+        var (service, dataFile) = CreateService();
+        var startedAt = new DateTimeOffset(2026, 5, 31, 20, 0, 0, TimeSpan.FromHours(2));
+
+        await service.AddDeathAsync("manual-button", "Death before boss.");
+        await service.SetActiveBossAsync("Tree Sentinel", now: startedAt);
+        await service.AddDeathAsync("manual-button", "Boss death 1.");
+        await service.AddDeathAsync("manual-button", "Boss death 2.");
+        await service.SkipActiveBossAsync("manual-button");
+
+        Assert.Equal(1, service.State.CurrentDeathCount);
+        Assert.Null(service.State.ActiveBoss);
+        Assert.Empty(service.State.BossHistory);
+
+        var loaded = await new DeathCounterStore(new InMemoryLogService()).LoadAsync(dataFile);
+        Assert.Equal(1, loaded.CurrentDeathCount);
+        Assert.Null(loaded.ActiveBoss);
+        Assert.Empty(loaded.BossHistory);
+    }
+
+    [Fact]
     public async Task PauseActiveBossTimerPersistsElapsedDurationAndStopsGrowth()
     {
         var (service, dataFile) = CreateService();
@@ -158,6 +180,54 @@ public sealed class DeathCounterServiceBossTests
         Assert.Equal(3, loadedEntry.DeathCount);
         Assert.Equal(editedDefeatedAt - editedStartedAt, loadedEntry.KillDuration);
         Assert.Equal("manual-edit", loadedEntry.CompletedBy);
+    }
+
+    [Fact]
+    public async Task AddBossHistoryEntryPersistsManualRecord()
+    {
+        var (service, dataFile) = CreateService();
+        var defeatedAt = new DateTimeOffset(2026, 5, 31, 20, 45, 0, TimeSpan.FromHours(2));
+        var startedAt = defeatedAt.AddMinutes(-9).AddSeconds(-12);
+
+        await service.AddBossHistoryEntryAsync(
+            "  Starscourge Radahn  ",
+            7,
+            startedAt,
+            defeatedAt,
+            "  manual-entry  ");
+
+        var entry = Assert.Single(service.State.BossHistory);
+        Assert.Equal("Starscourge Radahn", entry.Name);
+        Assert.Equal(7, entry.DeathCount);
+        Assert.Equal(startedAt, entry.StartedAt);
+        Assert.Equal(defeatedAt, entry.DefeatedAt);
+        Assert.Equal(defeatedAt - startedAt, entry.KillDuration);
+        Assert.Equal("manual-entry", entry.CompletedBy);
+
+        var loaded = await new DeathCounterStore(new InMemoryLogService()).LoadAsync(dataFile);
+        var loadedEntry = Assert.Single(loaded.BossHistory);
+        Assert.Equal("Starscourge Radahn", loadedEntry.Name);
+        Assert.Equal(7, loadedEntry.DeathCount);
+        Assert.Equal(defeatedAt - startedAt, loadedEntry.KillDuration);
+        Assert.Equal("manual-entry", loadedEntry.CompletedBy);
+    }
+
+    [Fact]
+    public async Task AddBossHistoryEntryIgnoresEmptyName()
+    {
+        var (service, dataFile) = CreateService();
+        var defeatedAt = new DateTimeOffset(2026, 5, 31, 20, 45, 0, TimeSpan.FromHours(2));
+
+        await service.AddBossHistoryEntryAsync(
+            " ",
+            4,
+            defeatedAt.AddMinutes(-2),
+            defeatedAt,
+            "manual-entry");
+
+        Assert.Empty(service.State.BossHistory);
+        var loaded = await new DeathCounterStore(new InMemoryLogService()).LoadAsync(dataFile);
+        Assert.Empty(loaded.BossHistory);
     }
 
     [Fact]

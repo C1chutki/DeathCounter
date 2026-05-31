@@ -530,7 +530,7 @@
                                FontFamily="{DynamicResource HeaderFontFamily}"
                                FontSize="16"
                                FontWeight="Bold" />
-                    <TextBlock Text="v1.7.1"
+                    <TextBlock Text="v1.8.1"
                                FontFamily="{DynamicResource AppFontFamily}"
                                FontSize="14"
                                Foreground="{DynamicResource Ink}" />
@@ -732,6 +732,7 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="74" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel VerticalAlignment="Center">
@@ -771,9 +772,15 @@
                                         Content="✦  BOSS DEFEATED"
                                         Command="{Binding BossDefeatedCommand}"
                                         Style="{StaticResource GoldButton}"
-                                        MinWidth="230"
-                                        Margin="0,0,16,0" />
+                                        MinWidth="210"
+                                        Margin="0,0,8,0" />
                                 <Button Grid.Column="4"
+                                        Content="SKIP"
+                                        Command="{Binding SkipBossCommand}"
+                                        Style="{StaticResource DangerButton}"
+                                        MinWidth="94"
+                                        Margin="0,0,16,0" />
+                                <Button Grid.Column="5"
                                         Content="✎"
                                         Command="{Binding SetActiveBossCommand}"
                                         FontSize="22" />
@@ -814,10 +821,22 @@
                                             <TextBlock Text="Decrement Counter" Style="{StaticResource MutedText}" />
                                         </DockPanel>
                                     </Border>
-                                    <Border Background="{DynamicResource HistoryCard}" BorderBrush="{DynamicResource DimBorder}" BorderThickness="1" CornerRadius="9" Padding="14">
+                                    <Border Background="{DynamicResource HistoryCard}" BorderBrush="{DynamicResource DimBorder}" BorderThickness="1" CornerRadius="9" Padding="14" Margin="0,0,0,12">
                                         <DockPanel>
                                             <TextBlock DockPanel.Dock="Right" Text="{Binding ManualBossDefeatedHotkeyText}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource AppFontFamily}" />
                                             <TextBlock Text="Boss Defeated" Style="{StaticResource MutedText}" />
+                                        </DockPanel>
+                                    </Border>
+                                    <Border Background="{DynamicResource HistoryCard}" BorderBrush="{DynamicResource DimBorder}" BorderThickness="1" CornerRadius="9" Padding="14" Margin="0,0,0,12">
+                                        <DockPanel>
+                                            <TextBlock DockPanel.Dock="Right" Text="{Binding DetectionToggleHotkeyText}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource AppFontFamily}" />
+                                            <TextBlock Text="Toggle Detection" Style="{StaticResource MutedText}" />
+                                        </DockPanel>
+                                    </Border>
+                                    <Border Background="{DynamicResource HistoryCard}" BorderBrush="{DynamicResource DimBorder}" BorderThickness="1" CornerRadius="9" Padding="14">
+                                        <DockPanel>
+                                            <TextBlock DockPanel.Dock="Right" Text="{Binding BossSkipHotkeyText}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource AppFontFamily}" />
+                                            <TextBlock Text="Skip Boss" Style="{StaticResource MutedText}" />
                                         </DockPanel>
                                     </Border>
                                 </StackPanel>
@@ -1032,9 +1051,21 @@
                         </StackPanel>
 
                         <StackPanel Grid.Row="2">
-                            <TextBlock Text="CONQUERED FOES"
-                                       Style="{StaticResource LabelText}"
-                                       Margin="0,0,0,20" />
+                            <Grid Margin="0,0,0,20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="CONQUERED FOES"
+                                           Style="{StaticResource LabelText}"
+                                           VerticalAlignment="Center" />
+                                <Button Grid.Column="1"
+                                        Content="ADD RECORD"
+                                        Command="{Binding OpenAddBossHistoryEditorCommand}"
+                                        Style="{StaticResource GoldButton}"
+                                        MinWidth="140"
+                                        VerticalAlignment="Center" />
+                            </Grid>
                             <StackPanel Orientation="Horizontal"
                                         HorizontalAlignment="Center"
                                         Margin="0,0,0,24">
@@ -1352,6 +1383,8 @@
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
                                         <TextBlock Text="Add Death" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
                                         <TextBox Grid.Column="1" Text="{Binding ManualAddHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
@@ -1360,7 +1393,11 @@
                                         <TextBlock Grid.Row="2" Text="Boss Kill" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
                                         <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding ManualBossDefeatedHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
                                         <TextBlock Grid.Row="3" Text="Toggle Overlay" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
-                                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding OverlayToggleHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" />
+                                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding OverlayToggleHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
+                                        <TextBlock Grid.Row="4" Text="Toggle Detection" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
+                                        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding DetectionToggleHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
+                                        <TextBlock Grid.Row="5" Text="Skip Boss" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
+                                        <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding BossSkipHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" />
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -1411,7 +1448,7 @@
                                       Color="#000000" />
                 </Border.Effect>
                 <StackPanel>
-                    <TextBlock Text="EDIT FELLED RECORD"
+                    <TextBlock Text="{Binding BossHistoryEditorTitle}"
                                Style="{StaticResource LabelText}"
                                Margin="0,0,0,18" />
                     <TextBlock Text="Name"
@@ -1460,7 +1497,8 @@
                                 Command="{Binding DeleteBossHistoryEditorCommand}"
                                 Style="{StaticResource DangerButton}"
                                 MinWidth="100"
-                                Margin="0,0,12,0" />
+                                Margin="0,0,12,0"
+                                Visibility="{Binding CanDeleteBossHistoryEntry, Converter={StaticResource BooleanToVisibilityConverter}}" />
                         <Button Content="CANCEL"
                                 Command="{Binding CancelBossHistoryEditorCommand}"
                                 MinWidth="100"
@@ -1495,7 +1533,7 @@
             <DockPanel LastChildFill="False"
                        VerticalAlignment="Center">
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="HOTKEYS: F7/F8/F9"
+                    <TextBlock Text="HOTKEYS: F6/F7/F8/F9/Ctrl+Shift+P"
                                Foreground="{DynamicResource Ink}"
                                Margin="0,0,28,0" />
                     <TextBlock Text="DOCUMENTATION"

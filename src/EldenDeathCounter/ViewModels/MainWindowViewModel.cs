@@ -102,6 +102,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ManualSubtractHotkeyText = string.Empty;
         ManualBossDefeatedHotkeyText = string.Empty;
         OverlayToggleHotkeyText = string.Empty;
+        DetectionToggleHotkeyText = string.Empty;
+        BossSkipHotkeyText = string.Empty;
         DataFolderPathText = string.Empty;
         ManualCounterText = string.Empty;
         BossNameText = string.Empty;
@@ -123,8 +125,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         SetActiveBossCommand = new RelayCommand(_ => _ = SetActiveBossAsync());
         ClearActiveBossCommand = new RelayCommand(_ => _ = ClearActiveBossAsync("manual-button"));
         BossDefeatedCommand = new RelayCommand(_ => _ = MarkBossDefeatedAsync("manual-button"));
+        SkipBossCommand = new RelayCommand(_ => _ = SkipBossAsync("manual-button"));
         ClearDetectionLogCommand = new RelayCommand(_ => DetectionLogEntries.Clear());
         StartDiagnosticsCommand = new RelayCommand(_ => StartDiagnosticsSession());
+        OpenAddBossHistoryEditorCommand = new RelayCommand(_ => OpenAddBossHistoryEditor());
         OpenBossHistoryEditorCommand = new RelayCommand(OpenBossHistoryEditor);
         SaveBossHistoryEditorCommand = new RelayCommand(_ => _ = SaveBossHistoryEditorAsync());
         DeleteBossHistoryEditorCommand = new RelayCommand(_ => _ = DeleteBossHistoryEditorAsync());
@@ -333,6 +337,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public string OverlayToggleHotkeyText { get; set; }
 
+    public string DetectionToggleHotkeyText { get; set; }
+
+    public string BossSkipHotkeyText { get; set; }
+
     public string DataFolderPathText { get; set; }
 
     public string ManualCounterText { get; set; }
@@ -344,6 +352,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         get => _isBossHistoryEditorOpen;
         private set => SetField(ref _isBossHistoryEditorOpen, value);
     }
+
+    public string BossHistoryEditorTitle => _editingBossHistoryEntry is null
+        ? "ADD FELLED RECORD"
+        : "EDIT FELLED RECORD";
+
+    public bool CanDeleteBossHistoryEntry => _editingBossHistoryEntry is not null;
 
     public string BossEditNameText
     {
@@ -411,7 +425,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    public string FooterText => "Use borderless fullscreen or windowed mode for Elden Ring. Exclusive fullscreen may hide the overlay. F8 adds a death, F9 subtracts one, and F7 marks the active boss defeated by default.";
+    public string FooterText => "Use borderless fullscreen or windowed mode for Elden Ring. Exclusive fullscreen may hide the overlay. F6 toggles detection, F8 adds a death, F9 subtracts one, F7 marks the active boss defeated, and Ctrl+Shift+P skips the active boss by default.";
 
     public ICommand StartDetectionCommand { get; }
 
@@ -441,9 +455,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public ICommand BossDefeatedCommand { get; }
 
+    public ICommand SkipBossCommand { get; }
+
     public ICommand ClearDetectionLogCommand { get; }
 
     public ICommand StartDiagnosticsCommand { get; }
+
+    public ICommand OpenAddBossHistoryEditorCommand { get; }
 
     public ICommand OpenBossHistoryEditorCommand { get; }
 
@@ -646,9 +664,27 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         await _counterService.ClearActiveBossAsync(detectionMethod);
     }
 
+    private async Task SkipBossAsync(string detectionMethod)
+    {
+        await _counterService.SkipActiveBossAsync(detectionMethod);
+    }
+
     private async Task MarkBossDefeatedAsync(string detectionMethod)
     {
         await _counterService.MarkActiveBossDefeatedAsync(detectionMethod);
+    }
+
+    private void OpenAddBossHistoryEditor()
+    {
+        _editingBossHistoryEntry = null;
+        BossEditNameText = string.Empty;
+        BossEditAttemptsText = "0";
+        BossEditDurationText = "00:00:00";
+        BossEditRecordedAtText = DateTimeOffset.Now.LocalDateTime.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+        BossEditCompletedByText = "manual-entry";
+        OnPropertyChanged(nameof(BossHistoryEditorTitle));
+        OnPropertyChanged(nameof(CanDeleteBossHistoryEntry));
+        IsBossHistoryEditorOpen = true;
     }
 
     private void OpenBossHistoryEditor(object? parameter)
@@ -664,16 +700,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         BossEditDurationText = FormatDuration(GetBossKillDuration(item.Entry));
         BossEditRecordedAtText = item.Entry.DefeatedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
         BossEditCompletedByText = item.Entry.CompletedBy;
+        OnPropertyChanged(nameof(BossHistoryEditorTitle));
+        OnPropertyChanged(nameof(CanDeleteBossHistoryEntry));
         IsBossHistoryEditorOpen = true;
     }
 
     private async Task SaveBossHistoryEditorAsync()
     {
-        if (_editingBossHistoryEntry is null)
-        {
-            return;
-        }
-
         if (string.IsNullOrWhiteSpace(BossEditNameText))
         {
             DetectionStatus = "Boss name cannot be empty.";
@@ -712,13 +745,26 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         var defeatedAt = new DateTimeOffset(defeatedLocalTime, TimeZoneInfo.Local.GetUtcOffset(defeatedLocalTime));
         var startedAt = defeatedAt - duration;
-        await _counterService.UpdateBossHistoryEntryAsync(
-            _editingBossHistoryEntry,
-            BossEditNameText,
-            deathCount,
-            startedAt,
-            defeatedAt,
-            BossEditCompletedByText);
+        if (_editingBossHistoryEntry is null)
+        {
+            await _counterService.AddBossHistoryEntryAsync(
+                BossEditNameText,
+                deathCount,
+                startedAt,
+                defeatedAt,
+                BossEditCompletedByText);
+        }
+        else
+        {
+            await _counterService.UpdateBossHistoryEntryAsync(
+                _editingBossHistoryEntry,
+                BossEditNameText,
+                deathCount,
+                startedAt,
+                defeatedAt,
+                BossEditCompletedByText);
+        }
+
         CloseBossHistoryEditor();
     }
 
@@ -736,6 +782,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private void CloseBossHistoryEditor()
     {
         _editingBossHistoryEntry = null;
+        OnPropertyChanged(nameof(BossHistoryEditorTitle));
+        OnPropertyChanged(nameof(CanDeleteBossHistoryEntry));
         IsBossHistoryEditorOpen = false;
     }
 
@@ -878,6 +926,20 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return false;
         }
 
+        var detectionToggleHotkey = HotkeyDefinition.Parse(DetectionToggleHotkeyText);
+        if (!detectionToggleHotkey.IsValid)
+        {
+            error = $"Detection toggle hotkey is invalid: {detectionToggleHotkey.Error}";
+            return false;
+        }
+
+        var bossSkipHotkey = HotkeyDefinition.Parse(BossSkipHotkeyText);
+        if (!bossSkipHotkey.IsValid)
+        {
+            error = $"Boss skip hotkey is invalid: {bossSkipHotkey.Error}";
+            return false;
+        }
+
         var dataFolderPath = Environment.ExpandEnvironmentVariables(DataFolderPathText.Trim());
         if (string.IsNullOrWhiteSpace(dataFolderPath))
         {
@@ -900,6 +962,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         Settings.ManualSubtractHotkey = ManualSubtractHotkeyText.Trim();
         Settings.BossDefeatedHotkey = ManualBossDefeatedHotkeyText.Trim();
         Settings.OverlayToggleHotkey = OverlayToggleHotkeyText.Trim();
+        Settings.DetectionToggleHotkey = DetectionToggleHotkeyText.Trim();
+        Settings.BossSkipHotkey = BossSkipHotkeyText.Trim();
         Settings.DataFolderPath = dataFolderPath;
         return true;
     }
@@ -928,7 +992,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         var subtract = _hotkeyService.Register(_window, Settings.ManualSubtractHotkey, "manual-subtract");
         var bossDefeated = _hotkeyService.Register(_window, Settings.BossDefeatedHotkey, "boss-defeated");
         var overlayToggle = _hotkeyService.Register(_window, Settings.OverlayToggleHotkey, "overlay-toggle");
-        HotkeyStatus = $"Hotkeys: {add}; {subtract}; {bossDefeated}; {overlayToggle}";
+        var detectionToggle = _hotkeyService.Register(_window, Settings.DetectionToggleHotkey, "detection-toggle");
+        var bossSkip = _hotkeyService.Register(_window, Settings.BossSkipHotkey, "boss-skip");
+        HotkeyStatus = $"Hotkeys: {add}; {subtract}; {bossDefeated}; {overlayToggle}; {detectionToggle}; {bossSkip}";
     }
 
     private void HandleHotkey(string name)
@@ -950,6 +1016,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             else if (name == "overlay-toggle")
             {
                 await ToggleOverlayAsync();
+            }
+            else if (name == "detection-toggle")
+            {
+                await ToggleDetectionAsync();
+            }
+            else if (name == "boss-skip")
+            {
+                await SkipBossAsync("manual-hotkey");
             }
         });
     }
@@ -986,6 +1060,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ManualSubtractHotkeyText = Settings.ManualSubtractHotkey;
         ManualBossDefeatedHotkeyText = Settings.BossDefeatedHotkey;
         OverlayToggleHotkeyText = Settings.OverlayToggleHotkey;
+        DetectionToggleHotkeyText = Settings.DetectionToggleHotkey;
+        BossSkipHotkeyText = Settings.BossSkipHotkey;
         DataFolderPathText = Settings.DataFolderPath;
 
         OnPropertyChanged(nameof(DetectionIntervalMsText));
@@ -999,6 +1075,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(ManualSubtractHotkeyText));
         OnPropertyChanged(nameof(ManualBossDefeatedHotkeyText));
         OnPropertyChanged(nameof(OverlayToggleHotkeyText));
+        OnPropertyChanged(nameof(DetectionToggleHotkeyText));
+        OnPropertyChanged(nameof(BossSkipHotkeyText));
         OnPropertyChanged(nameof(DataFolderPathText));
         OnPropertyChanged(nameof(OverlayEnabled));
         OnPropertyChanged(nameof(DetectionEnabledOnStartup));

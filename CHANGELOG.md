@@ -2,6 +2,10 @@
 
 ## 2026-05-31
 
+- Dodano globalny skrot `F6` do wlaczania/wylaczania detekcji oraz `Ctrl+Shift+P` do pomijania aktywnego bossa. Pomijanie anuluje aktualne podejscie: odejmuje smierci aktywnego bossa od globalnego licznika, usuwa aktywna nazwe/czas i nie tworzy wpisu historii; obok `BOSS DEFEATED` dodano przycisk `SKIP`. Wersje podniesiono do 1.8.1.
+
+- Dodano reczne dodawanie pokonanych bossow w zakladce Bosses przez ten sam modal co edycja historii: `ADD RECORD` otwiera formularz z polami Name, Attempts, Duration, Recorded at i Completed by, a `DELETE` jest widoczny tylko przy edycji istniejacego wpisu. Nowe rekordy zapisuja `manual-entry`, trimuja dane i przeliczaja czas walki tak jak edycja; wersje podniesiono do 1.8.0.
+
 - Przebudowano zakladke Settings do ukladu 2:3:1: Overlay + Detection, Character + Language + Hotkeys oraz Profile / Save game. Usunieto edycje Detection Phrases z Settings; frazy detekcji i zwyciestwa bossa sa teraz hardcoded w kodzie i nie zapisuja sie do appsettings JSON. Wersje podniesiono do 1.7.1.
 
 - Overlay skaluje sie teraz jako cala calosc przez `ScaleTransform` (`LayoutTransform` na `OverlayChrome`) zamiast recznego skalowania per-element, wiec tekst, odstepy, ramki, divider, sekcja bossa i timer skaluja sie proporcjonalnie; `OverlayFontScale` zachowuje nazwe pola (kompatybilnosc JSON), a `ApplyFontScale` zmieniono na `ApplyScale`. Dodano `AppSettings.OverlayBackgroundOpacity` (domyslnie 0.9, zakres 0.0–1.0) sterujace alfa tla overlaya bez wyblakniecia tekstu, z kontrolka „Przezroczystosc tla" w Quick Settings i zywa aktualizacja niezalezna od zmiany motywu. Dodano testy domyslnych/persistencji i podniesiono wersje do 1.7.0.

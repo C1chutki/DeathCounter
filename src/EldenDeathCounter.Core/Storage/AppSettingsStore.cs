@@ -130,6 +130,12 @@ public sealed class AppSettingsStore
         settings.OverlayToggleHotkey = string.IsNullOrWhiteSpace(settings.OverlayToggleHotkey)
             ? defaults.OverlayToggleHotkey
             : settings.OverlayToggleHotkey;
+        settings.DetectionToggleHotkey = string.IsNullOrWhiteSpace(settings.DetectionToggleHotkey)
+            ? defaults.DetectionToggleHotkey
+            : settings.DetectionToggleHotkey;
+        settings.BossSkipHotkey = string.IsNullOrWhiteSpace(settings.BossSkipHotkey)
+            ? defaults.BossSkipHotkey
+            : settings.BossSkipHotkey;
         settings.OverlayFontScale = settings.OverlayFontScale <= 0
             ? defaults.OverlayFontScale
             : Math.Clamp(settings.OverlayFontScale, 0.6, 1.6);

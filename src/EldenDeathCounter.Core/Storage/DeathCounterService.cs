@@ -153,6 +153,22 @@ public sealed class DeathCounterService
             () => $"Active boss cleared by {detectionMethod}.");
     }
 
+    public async Task SkipActiveBossAsync(string detectionMethod)
+    {
+        await MutateAndPersistAsync(
+            () =>
+            {
+                if (State.ActiveBoss is null)
+                {
+                    return;
+                }
+
+                State.CurrentDeathCount = Math.Max(0, State.CurrentDeathCount - State.ActiveBoss.DeathCount);
+                State.ActiveBoss = null;
+            },
+            () => $"Active boss skipped by {detectionMethod}.");
+    }
+
     public async Task MarkActiveBossDefeatedAsync(string detectionMethod)
     {
         await MarkActiveBossDefeatedAsync(detectionMethod, DateTimeOffset.Now);
@@ -250,6 +266,37 @@ public sealed class DeathCounterService
                 entry.CompletedBy = completedBy.Trim();
             },
             () => $"Boss history entry '{entry.Name}' updated.");
+    }
+
+    public async Task AddBossHistoryEntryAsync(
+        string name,
+        int deathCount,
+        DateTimeOffset startedAt,
+        DateTimeOffset defeatedAt,
+        string completedBy)
+    {
+        var normalizedName = name.Trim();
+        if (string.IsNullOrWhiteSpace(normalizedName))
+        {
+            return;
+        }
+
+        await MutateAndPersistAsync(
+            () =>
+            {
+                State.BossHistory.Add(new BossHistoryEntry
+                {
+                    Name = normalizedName,
+                    DeathCount = Math.Max(0, deathCount),
+                    StartedAt = startedAt,
+                    DefeatedAt = defeatedAt,
+                    KillDuration = defeatedAt >= startedAt
+                        ? defeatedAt - startedAt
+                        : TimeSpan.Zero,
+                    CompletedBy = completedBy.Trim()
+                });
+            },
+            () => $"Boss history entry '{normalizedName}' added.");
     }
 
     public async Task DeleteBossHistoryEntryAsync(BossHistoryEntry entry)

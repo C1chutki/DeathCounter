@@ -50,6 +50,10 @@ public sealed class AppSettings
 
     public string OverlayToggleHotkey { get; set; } = "Ctrl+Shift+O";
 
+    public string DetectionToggleHotkey { get; set; } = "F6";
+
+    public string BossSkipHotkey { get; set; } = "Ctrl+Shift+P";
+
     // Scale of the whole overlay window (text, spacing, borders, divider, timer).
     // Kept under the original "OverlayFontScale" name so existing settings JSON keeps loading.
     public double OverlayFontScale { get; set; } = 1.0;
@@ -89,6 +93,8 @@ public sealed class AppSettings
             ManualSubtractHotkey = "F9",
             BossDefeatedHotkey = "F7",
             OverlayToggleHotkey = "Ctrl+Shift+O",
+            DetectionToggleHotkey = "F6",
+            BossSkipHotkey = "Ctrl+Shift+P",
             OverlayFontScale = 1.0,
             OverlayBackgroundOpacity = 0.9
         };

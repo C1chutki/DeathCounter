@@ -117,6 +117,34 @@ public sealed class SettingsMenuCoverageTests
         Assert.Contains("NumberText", defeatedBossesTemplate);
     }
 
+    [Fact]
+    public void BossesTabExposesManualHistoryAddCommand()
+    {
+        var xaml = File.ReadAllText(GetMainWindowXamlPath());
+        var bossesTab = Regex.Match(
+            xaml,
+            """<TabItem Header="Bosses">(?<content>[\s\S]*?)</TabItem>""",
+            RegexOptions.CultureInvariant).Groups["content"].Value;
+
+        Assert.NotEmpty(bossesTab);
+        Assert.Contains("ADD RECORD", bossesTab);
+        Assert.Contains("OpenAddBossHistoryEditorCommand", bossesTab);
+    }
+
+    [Fact]
+    public void BossHistoryEditorSupportsAddAndEditModes()
+    {
+        var xaml = File.ReadAllText(GetMainWindowXamlPath());
+        var editor = Regex.Match(
+            xaml,
+            "Visibility=\"\\{Binding IsBossHistoryEditorOpen, Converter=\\{StaticResource BooleanToVisibilityConverter\\}\\}\">(?<content>[\\s\\S]*?)</Border>\\s*<Border x:Name=\"BottomStatusBar\"",
+            RegexOptions.CultureInvariant).Groups["content"].Value;
+
+        Assert.NotEmpty(editor);
+        Assert.Contains("BossHistoryEditorTitle", editor);
+        Assert.Contains("CanDeleteBossHistoryEntry", editor);
+    }
+
     private static string GetMainWindowXamlPath()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);

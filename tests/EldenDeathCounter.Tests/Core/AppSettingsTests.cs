@@ -35,6 +35,8 @@ public sealed class AppSettingsTests
         Assert.Equal("F9", settings.ManualSubtractHotkey);
         Assert.Equal("F7", settings.BossDefeatedHotkey);
         Assert.Equal("Ctrl+Shift+O", settings.OverlayToggleHotkey);
+        Assert.Equal("F6", settings.DetectionToggleHotkey);
+        Assert.Equal("Ctrl+Shift+P", settings.BossSkipHotkey);
         Assert.Equal(1.0, settings.OverlayFontScale);
         Assert.Equal(0.9, settings.OverlayBackgroundOpacity);
         Assert.Equal("Strażnik Drzewa", settings.BossNameCorrections["STRAINIK DRZEWA"]);
@@ -115,6 +117,21 @@ public sealed class AppSettingsTests
         var settings = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop");
 
         Assert.Equal("Ctrl+Shift+O", settings.OverlayToggleHotkey);
+    }
+
+    [Fact]
+    public async Task LoadingOldSettingsAddsDetectionAndBossSkipHotkeyDefaults()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var settingsPath = Path.Combine(folder, "appsettings.json");
+        await File.WriteAllTextAsync(settingsPath, """{"dataFolderPath":"C:\\Temp\\Counter"}""");
+        var store = new AppSettingsStore(new FileLogService(Path.Combine(folder, "log.txt")));
+
+        var settings = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop");
+
+        Assert.Equal("F6", settings.DetectionToggleHotkey);
+        Assert.Equal("Ctrl+Shift+P", settings.BossSkipHotkey);
     }
 
     [Fact]
