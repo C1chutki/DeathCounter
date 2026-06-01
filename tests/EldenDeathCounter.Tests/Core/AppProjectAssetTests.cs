@@ -128,7 +128,7 @@ public sealed class AppProjectAssetTests
         var formatterCode = File.ReadAllText(Path.Combine(appProjectPath, "..", "EldenDeathCounter.Core", "Configuration", "DeathCounterText.cs"));
 
         Assert.Contains("Śmierci: 0", overlayXaml, StringComparison.Ordinal);
-        Assert.Contains("DeathCounterText.FormatGlobalCount(count, _gameLanguage)", overlayCode, StringComparison.Ordinal);
+        Assert.Contains("DeathCounterText.FormatGlobalCount(count, _appLanguage)", overlayCode, StringComparison.Ordinal);
         Assert.Contains("\"Deaths\"", formatterCode, StringComparison.Ordinal);
         Assert.Contains("\\u015Amierci", formatterCode, StringComparison.Ordinal);
         Assert.DoesNotContain("Ĺ", overlayXaml, StringComparison.Ordinal);
@@ -154,8 +154,8 @@ public sealed class AppProjectAssetTests
         Assert.Contains("MonitorToggleButton", xaml, StringComparison.Ordinal);
         Assert.Contains("ToggleDetectionCommand", xaml, StringComparison.Ordinal);
         Assert.Contains("IsDetectionRunning", xaml, StringComparison.Ordinal);
-        Assert.Contains("Value=\"START\"", xaml, StringComparison.Ordinal);
-        Assert.Contains("Value=\"STOP\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("Value=\"{DynamicResource Monitor_Start}\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("Value=\"{DynamicResource Monitor_Stop}\"", xaml, StringComparison.Ordinal);
         Assert.Contains("#17301F", xaml, StringComparison.Ordinal);
         Assert.Contains("#3A1010", xaml, StringComparison.Ordinal);
     }
@@ -182,8 +182,8 @@ public sealed class AppProjectAssetTests
         var dashboardTab = xaml[dashboardStart..dashboardEnd];
 
         Assert.Contains("<ScrollViewer VerticalScrollBarVisibility=\"Auto\">", dashboardTab, StringComparison.Ordinal);
-        Assert.Contains("Binding Reminders", dashboardTab, StringComparison.Ordinal);
-        Assert.Contains("Boss Defeated", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Dash_BindingReminders", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Dash_BossDefeatedReminder", dashboardTab, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -208,7 +208,7 @@ public sealed class AppProjectAssetTests
         var bossesTab = xaml[bossesStart..bossesEnd];
 
         Assert.Contains("<TextBox Text=\"{Binding BossSearchText, UpdateSourceTrigger=PropertyChanged}\"", bossesTab, StringComparison.Ordinal);
-        Assert.Contains("Search Boss Name...", bossesTab, StringComparison.Ordinal);
+        Assert.Contains("Bosses_SearchPlaceholder", bossesTab, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -252,7 +252,7 @@ public sealed class AppProjectAssetTests
             "EldenDeathCounter",
             "MainWindow.xaml"));
         var xaml = File.ReadAllText(xamlPath);
-        var detectionHeaderStart = xaml.IndexOf("SYSTEM ENGINE", StringComparison.Ordinal);
+        var detectionHeaderStart = xaml.IndexOf("Detect_SystemEngine", StringComparison.Ordinal);
         Assert.True(detectionHeaderStart >= 0);
 
         var detectionHeaderEnd = xaml.IndexOf("<Border Grid.Row=\"1\"", detectionHeaderStart, StringComparison.Ordinal);

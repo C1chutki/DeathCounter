@@ -123,7 +123,7 @@
         </Style>
 
         <Style x:Key="MonitorToggleButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-            <Setter Property="Content" Value="START" />
+            <Setter Property="Content" Value="{DynamicResource Monitor_Start}" />
             <Setter Property="Background" Value="#17301F" />
             <Setter Property="BorderBrush" Value="{StaticResource MonitorGreen}" />
             <Setter Property="Foreground" Value="#D8FFE0" />
@@ -134,7 +134,7 @@
                     <Setter Property="Background" Value="#21462C" />
                 </Trigger>
                 <DataTrigger Binding="{Binding IsDetectionRunning}" Value="True">
-                    <Setter Property="Content" Value="STOP" />
+                    <Setter Property="Content" Value="{DynamicResource Monitor_Stop}" />
                     <Setter Property="Background" Value="#3A1010" />
                     <Setter Property="BorderBrush" Value="#D9574F" />
                     <Setter Property="Foreground" Value="#FFD6D1" />
@@ -530,38 +530,38 @@
                                FontFamily="{DynamicResource HeaderFontFamily}"
                                FontSize="16"
                                FontWeight="Bold" />
-                    <TextBlock Text="v1.8.3"
+                    <TextBlock Text="v1.9.0"
                                FontFamily="{DynamicResource AppFontFamily}"
                                FontSize="14"
                                Foreground="{DynamicResource Ink}" />
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Margin="0,12,0,0">
-                    <RadioButton Content="▦  Dashboard"
+                    <RadioButton Content="{DynamicResource Nav_Dashboard}"
                                  GroupName="Navigation"
                                  IsChecked="True"
                                  Tag="0"
                                  Checked="NavigationRadio_Checked" />
-                    <RadioButton Content="◎  Detection"
+                    <RadioButton Content="{DynamicResource Nav_Detection}"
                                  GroupName="Navigation"
                                  Tag="1"
                                  Checked="NavigationRadio_Checked" />
-                    <RadioButton Content="⚔  Bosses"
+                    <RadioButton Content="{DynamicResource Nav_Bosses}"
                                  GroupName="Navigation"
                                  Tag="2"
                                  Checked="NavigationRadio_Checked" />
-                    <RadioButton Content="⚙  Settings"
+                    <RadioButton Content="{DynamicResource Nav_Settings}"
                                  GroupName="Navigation"
                                  Tag="3"
                                  Checked="NavigationRadio_Checked" />
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" Margin="20,28,20,0">
-                    <Button Content="TOGGLE OVERLAY"
+                    <Button Content="{DynamicResource Nav_ToggleOverlay}"
                             Command="{Binding ToggleOverlayCommand}"
                             Margin="0,0,0,28" />
                     <Separator Background="{DynamicResource Separator}" Margin="0,0,0,24" />
-                    <Button Content="▰  OPEN DATA FOLDER"
+                    <Button Content="{DynamicResource Nav_OpenDataFolder}"
                             Command="{Binding OpenDataFolderCommand}"
                             BorderThickness="0"
                             HorizontalContentAlignment="Left"
@@ -637,7 +637,7 @@
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <TextBlock Text="CURRENT TALLY"
+                                <TextBlock Text="{DynamicResource Dash_CurrentTally}"
                                            Style="{StaticResource LabelText}"
                                            HorizontalAlignment="Center" />
                                 <StackPanel Grid.Row="1" VerticalAlignment="Center">
@@ -662,12 +662,12 @@
                                             FontSize="28"
                                             BorderBrush="{DynamicResource AccentBorder}" />
                                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <Button Content="RESET COUNTER"
+                                        <Button Content="{DynamicResource Dash_ResetCounter}"
                                                 Command="{Binding ResetCounterCommand}"
                                                 MinWidth="150"
                                                 Margin="0,0,16,0"
                                                 BorderBrush="#B2594E" />
-                                        <Button Content="SET COUNTER"
+                                        <Button Content="{DynamicResource Dash_SetCounter}"
                                                 Command="{Binding SetCounterCommand}"
                                                 MinWidth="150" />
                                     </StackPanel>
@@ -684,7 +684,7 @@
 
                         <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource PanelBorder}" Margin="0,0,0,12" MinHeight="395">
                             <StackPanel>
-                                <TextBlock Text="◎ Monitor Status"
+                                <TextBlock Text="{DynamicResource Dash_MonitorStatus}"
                                            FontFamily="{DynamicResource HeaderFontFamily}"
                                            FontSize="24"
                                            FontWeight="Bold"
@@ -698,7 +698,7 @@
                                             </Grid.ColumnDefinitions>
                                             <Ellipse Style="{StaticResource MonitorStatusDot}" VerticalAlignment="Center" Margin="0,0,12,0" />
                                             <StackPanel Grid.Column="1">
-                                                <TextBlock Text="DETECTION" Style="{StaticResource LabelText}" />
+                                                <TextBlock Text="{DynamicResource Dash_DetectionLabel}" Style="{StaticResource LabelText}" />
                                                 <TextBlock Text="{Binding DetectionStatus}"
                                                            Foreground="{DynamicResource Ink}"
                                                            FontFamily="{DynamicResource HeaderFontFamily}"
@@ -710,7 +710,7 @@
                                         </Grid>
                                         <Border BorderBrush="#342F27" BorderThickness="0,1,0,0" Padding="0,14,0,0">
                                             <StackPanel>
-                                                <TextBlock Text="LAST DEATH" Style="{StaticResource LabelText}" />
+                                                <TextBlock Text="{DynamicResource Dash_LastDeath}" Style="{StaticResource LabelText}" />
                                                 <TextBlock Text="{Binding LastDetectedDeathText}"
                                                            FontFamily="{DynamicResource AppFontFamily}"
                                                            Foreground="{DynamicResource MutedInk}"
@@ -736,7 +736,7 @@
                                     <ColumnDefinition Width="74" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="ACTIVE ENCOUNTER" Style="{StaticResource LabelText}" />
+                                    <TextBlock Text="{DynamicResource Common_ActiveEncounter}" Style="{StaticResource LabelText}" />
                                     <DockPanel Margin="0,10,0,0">
                                         <TextBlock DockPanel.Dock="Right"
                                                    Text="{Binding ActiveBossDeathCountText}"
@@ -769,13 +769,13 @@
                                         FontSize="28"
                                         Margin="0,0,16,0" />
                                 <Button Grid.Column="3"
-                                        Content="✦  BOSS DEFEATED"
+                                        Content="{DynamicResource Dash_BossDefeated}"
                                         Command="{Binding BossDefeatedCommand}"
                                         Style="{StaticResource GoldButton}"
                                         MinWidth="210"
                                         Margin="0,0,8,0" />
                                 <Button Grid.Column="4"
-                                        Content="SKIP"
+                                        Content="{DynamicResource Dash_Skip}"
                                         Command="{Binding SkipBossCommand}"
                                         Style="{StaticResource DangerButton}"
                                         MinWidth="94"
@@ -795,48 +795,48 @@
                             </Grid.ColumnDefinitions>
                             <Border Style="{StaticResource PanelBorder}">
                                 <StackPanel>
-                                    <TextBlock Text="⚙ Quick Settings" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="23" FontWeight="Bold" Margin="0,0,0,22" />
-                                    <CheckBox Content="Start detection on app launch" IsChecked="{Binding DetectionEnabledOnStartup}" />
-                                    <CheckBox Content="Auto-read boss name" IsChecked="{Binding AutoDetectBossNames}" />
-                                    <TextBlock Text="Manual counter" Style="{StaticResource LabelText}" Margin="0,24,0,8" />
+                                    <TextBlock Text="{DynamicResource Dash_QuickSettings}" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="23" FontWeight="Bold" Margin="0,0,0,22" />
+                                    <CheckBox Content="{DynamicResource Settings_StartDetectionOnLaunch}" IsChecked="{Binding DetectionEnabledOnStartup}" />
+                                    <CheckBox Content="{DynamicResource Settings_AutoReadBossName}" IsChecked="{Binding AutoDetectBossNames}" />
+                                    <TextBlock Text="{DynamicResource Dash_ManualCounter}" Style="{StaticResource LabelText}" Margin="0,24,0,8" />
                                     <TextBox Text="{Binding ManualCounterText, UpdateSourceTrigger=PropertyChanged}" />
-                                    <TextBlock Text="Skala overlay (0.6–1.6)" Style="{StaticResource LabelText}" Margin="0,24,0,8" />
+                                    <TextBlock Text="{DynamicResource Dash_OverlayScale}" Style="{StaticResource LabelText}" Margin="0,24,0,8" />
                                     <TextBox Text="{Binding OverlayFontScaleInput}" />
-                                    <TextBlock Text="Przezroczystość tła (0.0–1.0)" Style="{StaticResource LabelText}" Margin="0,24,0,8" />
+                                    <TextBlock Text="{DynamicResource Dash_OverlayOpacity}" Style="{StaticResource LabelText}" Margin="0,24,0,8" />
                                     <TextBox Text="{Binding OverlayBackgroundOpacityInput}" />
                                 </StackPanel>
                             </Border>
                             <Border Grid.Column="2" Style="{StaticResource PanelBorder}">
                                 <StackPanel>
-                                    <TextBlock Text="▤ Binding Reminders" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="23" FontWeight="Bold" Margin="0,0,0,18" />
+                                    <TextBlock Text="{DynamicResource Dash_BindingReminders}" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="23" FontWeight="Bold" Margin="0,0,0,18" />
                                     <Border Background="{DynamicResource HistoryCard}" BorderBrush="{DynamicResource DimBorder}" BorderThickness="1" CornerRadius="9" Padding="14" Margin="0,0,0,12">
                                         <DockPanel>
                                             <TextBlock DockPanel.Dock="Right" Text="{Binding ManualAddHotkeyText}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource AppFontFamily}" />
-                                            <TextBlock Text="Increment Counter" Style="{StaticResource MutedText}" />
+                                            <TextBlock Text="{DynamicResource Dash_IncrementCounter}" Style="{StaticResource MutedText}" />
                                         </DockPanel>
                                     </Border>
                                     <Border Background="{DynamicResource HistoryCard}" BorderBrush="{DynamicResource DimBorder}" BorderThickness="1" CornerRadius="9" Padding="14" Margin="0,0,0,12">
                                         <DockPanel>
                                             <TextBlock DockPanel.Dock="Right" Text="{Binding ManualSubtractHotkeyText}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource AppFontFamily}" />
-                                            <TextBlock Text="Decrement Counter" Style="{StaticResource MutedText}" />
+                                            <TextBlock Text="{DynamicResource Dash_DecrementCounter}" Style="{StaticResource MutedText}" />
                                         </DockPanel>
                                     </Border>
                                     <Border Background="{DynamicResource HistoryCard}" BorderBrush="{DynamicResource DimBorder}" BorderThickness="1" CornerRadius="9" Padding="14" Margin="0,0,0,12">
                                         <DockPanel>
                                             <TextBlock DockPanel.Dock="Right" Text="{Binding ManualBossDefeatedHotkeyText}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource AppFontFamily}" />
-                                            <TextBlock Text="Boss Defeated" Style="{StaticResource MutedText}" />
+                                            <TextBlock Text="{DynamicResource Dash_BossDefeatedReminder}" Style="{StaticResource MutedText}" />
                                         </DockPanel>
                                     </Border>
                                     <Border Background="{DynamicResource HistoryCard}" BorderBrush="{DynamicResource DimBorder}" BorderThickness="1" CornerRadius="9" Padding="14" Margin="0,0,0,12">
                                         <DockPanel>
                                             <TextBlock DockPanel.Dock="Right" Text="{Binding DetectionToggleHotkeyText}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource AppFontFamily}" />
-                                            <TextBlock Text="Toggle Detection" Style="{StaticResource MutedText}" />
+                                            <TextBlock Text="{DynamicResource Common_ToggleDetection}" Style="{StaticResource MutedText}" />
                                         </DockPanel>
                                     </Border>
                                     <Border Background="{DynamicResource HistoryCard}" BorderBrush="{DynamicResource DimBorder}" BorderThickness="1" CornerRadius="9" Padding="14">
                                         <DockPanel>
                                             <TextBlock DockPanel.Dock="Right" Text="{Binding BossSkipHotkeyText}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource AppFontFamily}" />
-                                            <TextBlock Text="Skip Boss" Style="{StaticResource MutedText}" />
+                                            <TextBlock Text="{DynamicResource Common_SkipBoss}" Style="{StaticResource MutedText}" />
                                         </DockPanel>
                                     </Border>
                                 </StackPanel>
@@ -863,9 +863,9 @@
                                     <TextBlock Text="◎" FontSize="44" Foreground="{DynamicResource Gold}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="SYSTEM ENGINE" Style="{StaticResource LabelText}" />
+                                    <TextBlock Text="{DynamicResource Detect_SystemEngine}" Style="{StaticResource LabelText}" />
                                     <TextBlock Text="{Binding DetectionStatus}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="38" FontWeight="Bold" Margin="0,4,0,4" />
-                                    <TextBlock Text="Monitoring video stream for configured death patterns..." Style="{StaticResource MutedText}" FontSize="18" />
+                                    <TextBlock Text="{DynamicResource Detect_Monitoring}" Style="{StaticResource MutedText}" FontSize="18" />
                                 </StackPanel>
                                 <Button Grid.Column="2"
                                         Command="{Binding ToggleDetectionCommand}"
@@ -884,19 +884,19 @@
                                     </Grid.RowDefinitions>
                                     <DockPanel Margin="0,0,0,26">
                                         <Button DockPanel.Dock="Right"
-                                                Content="CLEAR"
+                                                Content="{DynamicResource Detect_Clear}"
                                                 Command="{Binding ClearDetectionLogCommand}"
                                                 Padding="10,4"
                                                 MinHeight="28"
                                                 BorderThickness="0" />
                                         <Button DockPanel.Dock="Right"
-                                                Content="DIAG 10M"
+                                                Content="{DynamicResource Detect_Diag10m}"
                                                 Command="{Binding StartDiagnosticsCommand}"
                                                 Padding="10,4"
                                                 MinHeight="28"
                                                 Margin="0,0,8,0"
                                                 BorderThickness="0" />
-                                        <TextBlock Text="▰ Detection Log" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="30" FontWeight="Bold" />
+                                        <TextBlock Text="{DynamicResource Detect_Log}" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="30" FontWeight="Bold" />
                                     </DockPanel>
                                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                                         <ItemsControl ItemsSource="{Binding DetectionLogEntries}">
@@ -948,17 +948,17 @@
                                 <ColumnDefinition Width="360" />
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="Great Enemy Felled"
+                                <TextBlock Text="{DynamicResource Bosses_Title}"
                                            FontFamily="{DynamicResource HeaderFontFamily}"
                                            FontSize="48"
                                            FontWeight="Bold"
                                            Foreground="{DynamicResource Gold}" />
-                                <TextBlock Text="Every major encounter across the Lands Between."
+                                <TextBlock Text="{DynamicResource Bosses_Subtitle1}"
                                            Style="{StaticResource MutedText}"
                                            FontSize="20"
                                            TextWrapping="Wrap"
                                            Margin="0,12,0,0" />
-                                <TextBlock Text="Every attempt and victory, written in blood."
+                                <TextBlock Text="{DynamicResource Bosses_Subtitle2}"
                                            Style="{StaticResource MutedText}"
                                            FontSize="20"
                                            TextWrapping="Wrap"
@@ -975,7 +975,7 @@
                                              BorderThickness="0"
                                              Padding="0"
                                              FontSize="18" />
-                                    <TextBlock Text="Search Boss Name..."
+                                    <TextBlock Text="{DynamicResource Bosses_SearchPlaceholder}"
                                                FontFamily="{DynamicResource AppFontFamily}"
                                                FontSize="18"
                                                Foreground="#6F675D"
@@ -996,7 +996,7 @@
                         </Grid>
 
                         <StackPanel Grid.Row="1" Margin="0,0,0,46">
-                            <TextBlock Text="CURRENT ENCOUNTER"
+                            <TextBlock Text="{DynamicResource Bosses_CurrentEncounter}"
                                        Style="{StaticResource LabelText}"
                                        Margin="0,0,0,20" />
                             <Border Background="{DynamicResource PanelAlt}"
@@ -1010,7 +1010,7 @@
                                         <ColumnDefinition Width="250" />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel VerticalAlignment="Center">
-                                        <TextBlock Text="ACTIVE ENCOUNTER"
+                                        <TextBlock Text="{DynamicResource Common_ActiveEncounter}"
                                                    Style="{StaticResource LabelText}"
                                                    Margin="0,0,0,22" />
                                         <TextBlock Text="{Binding BossesActiveName}"
@@ -1032,7 +1032,7 @@
                                             Padding="26"
                                             HorizontalAlignment="Stretch">
                                         <StackPanel HorizontalAlignment="Center">
-                                            <TextBlock Text="DEATHS RECORDED"
+                                            <TextBlock Text="{DynamicResource Bosses_DeathsRecorded}"
                                                        FontFamily="{DynamicResource AppFontFamily}"
                                                        FontSize="15"
                                                        FontWeight="Bold"
@@ -1056,11 +1056,11 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="CONQUERED FOES"
+                                <TextBlock Text="{DynamicResource Bosses_ConqueredFoes}"
                                            Style="{StaticResource LabelText}"
                                            VerticalAlignment="Center" />
                                 <Button Grid.Column="1"
-                                        Content="ADD RECORD"
+                                        Content="{DynamicResource Bosses_AddRecord}"
                                         Command="{Binding OpenAddBossHistoryEditorCommand}"
                                         Style="{StaticResource GoldButton}"
                                         MinWidth="140"
@@ -1069,7 +1069,7 @@
                             <StackPanel Orientation="Horizontal"
                                         HorizontalAlignment="Center"
                                         Margin="0,0,0,24">
-                                <TextBlock Text="Sort by"
+                                <TextBlock Text="{DynamicResource Bosses_SortBy}"
                                            Style="{StaticResource MutedText}"
                                            FontFamily="{DynamicResource AppFontFamily}"
                                            FontWeight="Bold"
@@ -1082,7 +1082,7 @@
                                           Style="{StaticResource DarkComboBox}"
                                           FontSize="16"
                                           Width="170" />
-                                <TextBlock Text="Direction"
+                                <TextBlock Text="{DynamicResource Bosses_Direction}"
                                            Style="{StaticResource MutedText}"
                                            FontFamily="{DynamicResource AppFontFamily}"
                                            FontWeight="Bold"
@@ -1163,7 +1163,7 @@
                                                                            Foreground="{DynamicResource Gold}"
                                                                            VerticalAlignment="Center"
                                                                            Margin="0,0,6,0" />
-                                                                <TextBlock Text="FELLED"
+                                                                <TextBlock Text="{DynamicResource Bosses_Felled}"
                                                                            FontFamily="{DynamicResource HeaderFontFamily}"
                                                                            FontSize="12"
                                                                            FontWeight="Bold"
@@ -1205,7 +1205,7 @@
                                                     </StackPanel>
                                                     <DockPanel Margin="0,16,0,0" LastChildFill="False">
                                                         <Button DockPanel.Dock="Right"
-                                                                Content="EDIT"
+                                                                Content="{DynamicResource Common_Edit}"
                                                                 Command="{Binding DataContext.OpenBossHistoryEditorCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                                 CommandParameter="{Binding}"
                                                                 Style="{StaticResource MiniEditButton}"
@@ -1243,13 +1243,13 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,34">
-                            <TextBlock Text="System Configurations"
+                            <TextBlock Text="{DynamicResource Settings_Title}"
                                        FontFamily="{DynamicResource HeaderFontFamily}"
                                        FontSize="30"
                                        FontWeight="Bold"
                                        Foreground="{DynamicResource Gold}"
                                        Margin="0,0,22,0" />
-                            <TextBlock Text="Configure core behaviors and detection parameters"
+                            <TextBlock Text="{DynamicResource Settings_Subtitle}"
                                        Style="{StaticResource MutedText}"
                                        FontFamily="{DynamicResource AppFontFamily}"
                                        VerticalAlignment="Center" />
@@ -1265,9 +1265,9 @@
                             <!-- OVERLAY -->
                             <Border Style="{StaticResource PanelBorder}">
                                 <StackPanel>
-                                    <TextBlock Text="| OVERLAY" Style="{StaticResource LabelText}" Margin="0,0,0,24" />
-                                    <CheckBox Content="Show overlay" IsChecked="{Binding OverlayEnabled}" Margin="0,0,0,4" />
-                                    <TextBlock Text="Toggle the always-on-top death counter overlay." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontStyle="Italic" Margin="0,0,0,22" />
+                                    <TextBlock Text="{DynamicResource Settings_OverlaySection}" Style="{StaticResource LabelText}" Margin="0,0,0,24" />
+                                    <CheckBox Content="{DynamicResource Settings_ShowOverlay}" IsChecked="{Binding OverlayEnabled}" Margin="0,0,0,4" />
+                                    <TextBlock Text="{DynamicResource Settings_ShowOverlayDesc}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontStyle="Italic" Margin="0,0,0,22" />
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
@@ -1275,11 +1275,11 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
                                         <StackPanel>
-                                            <TextBlock Text="Overlay X Position" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
+                                            <TextBlock Text="{DynamicResource Settings_OverlayX}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
                                             <TextBox Text="{Binding OverlayXText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,0" />
                                         </StackPanel>
                                         <StackPanel Grid.Column="2">
-                                            <TextBlock Text="Overlay Y Position" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
+                                            <TextBlock Text="{DynamicResource Settings_OverlayY}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
                                             <TextBox Text="{Binding OverlayYText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,0" />
                                         </StackPanel>
                                     </Grid>
@@ -1289,7 +1289,7 @@
                             <!-- DETECTION -->
                             <Border Grid.Column="2" Style="{StaticResource PanelBorder}">
                                 <StackPanel>
-                                    <TextBlock Text="| DETECTION" Style="{StaticResource LabelText}" Margin="0,0,0,24" />
+                                    <TextBlock Text="{DynamicResource Settings_DetectionSection}" Style="{StaticResource LabelText}" Margin="0,0,0,24" />
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
@@ -1297,25 +1297,25 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
                                         <StackPanel>
-                                            <TextBlock Text="Detection Interval (ms)" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
+                                            <TextBlock Text="{DynamicResource Settings_DetectionInterval}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
                                             <TextBox Text="{Binding DetectionIntervalMsText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,18" />
                                         </StackPanel>
                                         <StackPanel Grid.Column="2">
-                                            <TextBlock Text="Cooldown (seconds)" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
+                                            <TextBlock Text="{DynamicResource Settings_Cooldown}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
                                             <TextBox Text="{Binding DetectionCooldownSecondsText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,18" />
                                         </StackPanel>
                                     </Grid>
-                                    <TextBlock Text="Detection Sensitivity" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
+                                    <TextBlock Text="{DynamicResource Settings_Sensitivity}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
                                     <TextBox Text="{Binding DetectionSensitivityText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,18" />
-                                    <TextBlock Text="Capture Region" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
+                                    <TextBlock Text="{DynamicResource Settings_CaptureRegion}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
                                     <ComboBox ItemsSource="{Binding CaptureTargetOptions}"
                                               SelectedValue="{Binding SelectedCaptureTargetValue, UpdateSourceTrigger=PropertyChanged}"
                                               SelectedValuePath="Value"
                                               DisplayMemberPath="DisplayName"
                                               Style="{StaticResource DarkComboBox}"
                                               Margin="0,6,0,14" />
-                                    <CheckBox Content="Start detection on app launch" IsChecked="{Binding DetectionEnabledOnStartup}" />
-                                    <CheckBox Content="Auto-read boss name" IsChecked="{Binding AutoDetectBossNames}" />
+                                    <CheckBox Content="{DynamicResource Settings_StartDetectionOnLaunch}" IsChecked="{Binding DetectionEnabledOnStartup}" />
+                                    <CheckBox Content="{DynamicResource Settings_AutoReadBossName}" IsChecked="{Binding AutoDetectBossNames}" />
                                 </StackPanel>
                             </Border>
                         </Grid>
@@ -1332,11 +1332,11 @@
                             <!-- CHARACTER & SAVE GAME -->
                             <Border Style="{StaticResource PanelBorder}">
                                 <StackPanel>
-                                    <TextBlock Text="| CHARACTER &amp; SAVE GAME" Style="{StaticResource LabelText}" Margin="0,0,0,16" />
-                                    <TextBlock Text="Deaths and boss history are tracked separately per character profile." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
-                                    <TextBlock Text="Character name" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" Margin="0,0,0,6" />
+                                    <TextBlock Text="{DynamicResource Settings_CharacterSection}" Style="{StaticResource LabelText}" Margin="0,0,0,16" />
+                                    <TextBlock Text="{DynamicResource Settings_CharacterDesc}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
+                                    <TextBlock Text="{DynamicResource Settings_CharacterName}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" Margin="0,0,0,6" />
                                     <TextBox Text="{Binding CharacterProfileNameText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,16" />
-                                    <Button Content="USE PROFILE"
+                                    <Button Content="{DynamicResource Settings_UseProfile}"
                                             Command="{Binding ApplyCharacterProfileCommand}"
                                             Style="{StaticResource GoldButton}" />
                                 </StackPanel>
@@ -1345,27 +1345,27 @@
                             <!-- LANGUAGE -->
                             <Border Grid.Column="2" Style="{StaticResource PanelBorder}">
                                 <StackPanel>
-                                    <TextBlock Text="| LANGUAGE" Style="{StaticResource LabelText}" Margin="0,0,0,16" />
-                                    <TextBlock Text="Language used to recognise on-screen death and boss text." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
+                                    <TextBlock Text="{DynamicResource Settings_LanguageSection}" Style="{StaticResource LabelText}" Margin="0,0,0,16" />
+                                    <TextBlock Text="{DynamicResource Settings_LanguageDesc}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
                                     <ComboBox ItemsSource="{Binding GameLanguageOptions}"
                                               SelectedValue="{Binding SelectedGameLanguageValue, UpdateSourceTrigger=PropertyChanged}"
                                               SelectedValuePath="Value"
                                               DisplayMemberPath="DisplayName"
                                               Style="{StaticResource DarkComboBox}" />
-                                    <TextBlock Text="| APP LANGUAGE" Style="{StaticResource LabelText}" Margin="0,24,0,16" />
-                                    <TextBlock Text="Language of the application interface." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
-                                    <!-- Placeholder selector: graphical only, not yet wired to logic. -->
-                                    <ComboBox Style="{StaticResource DarkComboBox}" SelectedIndex="0">
-                                        <ComboBoxItem Content="English" />
-                                        <ComboBoxItem Content="Polski" />
-                                    </ComboBox>
+                                    <TextBlock Text="{DynamicResource Settings_AppLanguageSection}" Style="{StaticResource LabelText}" Margin="0,24,0,16" />
+                                    <TextBlock Text="{DynamicResource Settings_AppLanguageDesc}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
+                                    <ComboBox ItemsSource="{Binding AppLanguageOptions}"
+                                              SelectedValue="{Binding SelectedAppLanguageValue, UpdateSourceTrigger=PropertyChanged}"
+                                              SelectedValuePath="Value"
+                                              DisplayMemberPath="DisplayName"
+                                              Style="{StaticResource DarkComboBox}" />
                                 </StackPanel>
                             </Border>
 
                             <!-- HOTKEYS -->
                             <Border Grid.Column="4" Style="{StaticResource PanelBorder}">
                                 <StackPanel>
-                                    <TextBlock Text="| HOTKEYS" Style="{StaticResource LabelText}" Margin="0,0,0,20" />
+                                    <TextBlock Text="{DynamicResource Settings_HotkeysSection}" Style="{StaticResource LabelText}" Margin="0,0,0,20" />
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
@@ -1379,17 +1379,17 @@
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
-                                        <TextBlock Text="Add Death" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
+                                        <TextBlock Text="{DynamicResource Settings_HotkeyAddDeath}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
                                         <TextBox Grid.Column="1" Text="{Binding ManualAddHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
-                                        <TextBlock Grid.Row="1" Text="Subtract Death" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Row="1" Text="{DynamicResource Settings_HotkeySubtractDeath}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
                                         <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ManualSubtractHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
-                                        <TextBlock Grid.Row="2" Text="Boss Kill" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Row="2" Text="{DynamicResource Settings_HotkeyBossKill}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
                                         <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding ManualBossDefeatedHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
-                                        <TextBlock Grid.Row="3" Text="Toggle Overlay" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Row="3" Text="{DynamicResource Settings_HotkeyToggleOverlay}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
                                         <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding OverlayToggleHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
-                                        <TextBlock Grid.Row="4" Text="Toggle Detection" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Row="4" Text="{DynamicResource Common_ToggleDetection}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
                                         <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding DetectionToggleHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
-                                        <TextBlock Grid.Row="5" Text="Skip Boss" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Row="5" Text="{DynamicResource Common_SkipBoss}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
                                         <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding BossSkipHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" />
                                     </Grid>
                                 </StackPanel>
@@ -1404,12 +1404,12 @@
                                     <ColumnDefinition Width="200" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel>
-                                    <TextBlock Text="| PROFILE / SAVE GAME" Style="{StaticResource LabelText}" Margin="0,0,0,16" />
-                                    <TextBlock Text="Folder where the active profile's death counter and boss history are stored." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
+                                    <TextBlock Text="{DynamicResource Settings_ProfileSection}" Style="{StaticResource LabelText}" Margin="0,0,0,16" />
+                                    <TextBlock Text="{DynamicResource Settings_ProfileDesc}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
                                     <TextBox Text="{Binding DataFolderPathText, UpdateSourceTrigger=PropertyChanged}" />
                                 </StackPanel>
                                 <Button Grid.Column="1"
-                                        Content="SAVE SETTINGS"
+                                        Content="{DynamicResource Settings_SaveSettings}"
                                         Command="{Binding SaveSettingsCommand}"
                                         Style="{StaticResource GoldButton}"
                                         Margin="24,28,0,0"
@@ -1444,7 +1444,7 @@
                     <TextBlock Text="{Binding BossHistoryEditorTitle}"
                                Style="{StaticResource LabelText}"
                                Margin="0,0,0,18" />
-                    <TextBlock Text="Name"
+                    <TextBlock Text="{DynamicResource Editor_Name}"
                                Style="{StaticResource MutedText}"
                                FontFamily="{DynamicResource AppFontFamily}"
                                FontWeight="Bold" />
@@ -1457,7 +1457,7 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="Attempts"
+                            <TextBlock Text="{DynamicResource Editor_Attempts}"
                                        Style="{StaticResource MutedText}"
                                        FontFamily="{DynamicResource AppFontFamily}"
                                        FontWeight="Bold" />
@@ -1465,7 +1465,7 @@
                                      Margin="0,6,0,14" />
                         </StackPanel>
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Duration"
+                            <TextBlock Text="{DynamicResource Editor_Duration}"
                                        Style="{StaticResource MutedText}"
                                        FontFamily="{DynamicResource AppFontFamily}"
                                        FontWeight="Bold" />
@@ -1473,31 +1473,31 @@
                                      Margin="0,6,0,14" />
                         </StackPanel>
                     </Grid>
-                    <TextBlock Text="Recorded at"
+                    <TextBlock Text="{DynamicResource Editor_RecordedAt}"
                                Style="{StaticResource MutedText}"
                                FontFamily="{DynamicResource AppFontFamily}"
                                FontWeight="Bold" />
                     <TextBox Text="{Binding BossEditRecordedAtText, UpdateSourceTrigger=PropertyChanged}"
                              Margin="0,6,0,14" />
-                    <TextBlock Text="Completed by"
+                    <TextBlock Text="{DynamicResource Editor_CompletedBy}"
                                Style="{StaticResource MutedText}"
                                FontFamily="{DynamicResource AppFontFamily}"
                                FontWeight="Bold" />
                     <TextBox Text="{Binding BossEditCompletedByText, UpdateSourceTrigger=PropertyChanged}"
                              Margin="0,6,0,22" />
                     <DockPanel LastChildFill="False">
-                        <Button Content="DELETE"
+                        <Button Content="{DynamicResource Common_Delete}"
                                 Command="{Binding DeleteBossHistoryEditorCommand}"
                                 Style="{StaticResource DangerButton}"
                                 MinWidth="100"
                                 Margin="0,0,12,0"
                                 Visibility="{Binding CanDeleteBossHistoryEntry, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                        <Button Content="CANCEL"
+                        <Button Content="{DynamicResource Common_Cancel}"
                                 Command="{Binding CancelBossHistoryEditorCommand}"
                                 MinWidth="100"
                                 Margin="0,0,12,0" />
                         <Button DockPanel.Dock="Right"
-                                Content="SAVE"
+                                Content="{DynamicResource Common_Save}"
                                 Command="{Binding SaveBossHistoryEditorCommand}"
                                 IsDefault="True"
                                 Style="{StaticResource GoldButton}"
@@ -1526,10 +1526,10 @@
             <DockPanel LastChildFill="False"
                        VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="STATUS:"
+                    <TextBlock Text="{DynamicResource Status_Status}"
                                Foreground="{DynamicResource Ink}"
                                Margin="0,0,10,0" />
-                    <TextBlock Text="ŚMIERCI:"
+                    <TextBlock Text="{DynamicResource Status_Deaths}"
                                Foreground="{DynamicResource Ink}"
                                Margin="0,0,8,0" />
                     <TextBlock Text="{Binding StatusDeathCountText}"
@@ -1538,7 +1538,7 @@
                     <TextBlock Text="|"
                                Foreground="{DynamicResource Gold}"
                                Margin="0,0,16,0" />
-                    <TextBlock Text="OVERLAY:"
+                    <TextBlock Text="{DynamicResource Status_Overlay}"
                                Foreground="{DynamicResource Ink}"
                                Margin="0,0,8,0" />
                     <TextBlock Text="{Binding StatusOverlayStateText}"
@@ -1547,7 +1547,7 @@
                     <TextBlock Text="|"
                                Foreground="{DynamicResource Gold}"
                                Margin="0,0,16,0" />
-                    <TextBlock Text="DETECTION:"
+                    <TextBlock Text="{DynamicResource Status_Detection}"
                                Foreground="{DynamicResource Ink}"
                                Margin="0,0,8,0" />
                     <TextBlock Text="{Binding StatusDetectionStateText}"

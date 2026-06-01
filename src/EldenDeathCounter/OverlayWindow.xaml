@@ -41,7 +41,7 @@
                              Fill="#8DA46D"
                              Margin="0,0,10,0" />
                     <TextBlock x:Name="DetectionStatusTextBlock"
-                               Text="DETECTION STOPPED"
+                               Text="{DynamicResource Overlay_DetectionStopped}"
                                Foreground="#A18C52"
                                FontFamily="{DynamicResource HeaderFontFamily}"
                                FontSize="12"
@@ -58,7 +58,7 @@
             </Grid>
 
             <TextBlock x:Name="TotalDeathsLabelTextBlock"
-                       Text="TOTAL DEATHS"
+                       Text="{DynamicResource Overlay_TotalDeaths}"
                        Foreground="#A18C52"
                        FontFamily="{DynamicResource HeaderFontFamily}"
                        FontSize="12"

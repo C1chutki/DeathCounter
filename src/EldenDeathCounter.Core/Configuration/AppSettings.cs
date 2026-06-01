@@ -16,6 +16,9 @@ public sealed class AppSettings
 
     public string GameLanguage { get; set; } = "PL";
 
+    // UI language for the app chrome (en/pl). Independent of GameLanguage (OCR/detection).
+    public string AppLanguage { get; set; } = "en";
+
     public Dictionary<string, string> BossNameCorrections { get; set; } = [];
 
     public int DetectionIntervalMs { get; set; } = 300;
@@ -79,6 +82,7 @@ public sealed class AppSettings
             DetectionEnabledOnStartup = false,
             AutoDetectBossNames = true,
             GameLanguage = "PL",
+            AppLanguage = "en",
             DetectionIntervalMs = 300,
             DetectionCooldownSeconds = 25,
             DetectionSensitivity = 0.8,

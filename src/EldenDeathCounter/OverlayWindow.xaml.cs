@@ -5,6 +5,7 @@ using System.Reflection;
 using EldenDeathCounter.Core.Configuration;
 using EldenDeathCounter.Core.Storage;
 using EldenDeathCounter.Interop;
+using EldenDeathCounter.Localization;
 
 namespace EldenDeathCounter;
 
@@ -15,7 +16,9 @@ public partial class OverlayWindow : Window
         (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#0A1014");
 
     private readonly DispatcherTimer _bossTimer;
-    private string _gameLanguage;
+    // Language used for the overlay's own labels (Deaths/Śmierci, First Try). This follows the UI
+    // language (AppLanguage), not the OCR GameLanguage.
+    private string _appLanguage;
     private ActiveBossState? _activeBoss;
     private bool _isDetectionRunning;
     private System.Windows.Media.Color _overlayBackgroundColor = DefaultOverlayBackgroundColor;
@@ -26,7 +29,7 @@ public partial class OverlayWindow : Window
         InitializeComponent();
         Left = settings.OverlayX;
         Top = settings.OverlayY;
-        _gameLanguage = settings.GameLanguage;
+        _appLanguage = settings.AppLanguage;
         _bossTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1)
@@ -36,6 +39,16 @@ public partial class OverlayWindow : Window
         UpdateDetectionState(false);
         ApplyScale(settings.OverlayFontScale);
         ApplyBackgroundOpacity(settings.OverlayBackgroundOpacity);
+
+        // The detection status label is set in code, so {DynamicResource} cannot refresh it on a
+        // live language swap. Re-apply it whenever the UI language changes.
+        LocalizationService.Instance.LanguageChanged += OnLanguageChanged;
+        Closed += (_, _) => LocalizationService.Instance.LanguageChanged -= OnLanguageChanged;
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        UpdateDetectionState(_isDetectionRunning);
     }
 
     public void ApplyScale(double scale)
@@ -57,16 +70,16 @@ public partial class OverlayWindow : Window
         });
     }
 
-    public void UpdateCount(int count, ActiveBossState? activeBoss = null, string? gameLanguage = null)
+    public void UpdateCount(int count, ActiveBossState? activeBoss = null, string? appLanguage = null)
     {
         Dispatcher.Invoke(() =>
         {
-            if (!string.IsNullOrWhiteSpace(gameLanguage))
+            if (!string.IsNullOrWhiteSpace(appLanguage))
             {
-                _gameLanguage = gameLanguage;
+                _appLanguage = appLanguage;
             }
 
-            CounterTextBlock.Text = DeathCounterText.FormatGlobalCount(count, _gameLanguage);
+            CounterTextBlock.Text = DeathCounterText.FormatGlobalCount(count, _appLanguage);
             _activeBoss = activeBoss;
             if (activeBoss is null)
             {
@@ -79,7 +92,7 @@ public partial class OverlayWindow : Window
             }
 
             BossTextBlock.Text = DeathCounterText.FormatBossOverlayName(activeBoss.Name);
-            BossDeathTextBlock.Text = $"{DeathCounterText.FormatDeathLabel(_gameLanguage)}: {activeBoss.DeathCount}";
+            BossDeathTextBlock.Text = DeathCounterText.FormatBossDeath(activeBoss.DeathCount, _appLanguage);
             BossPanel.Visibility = Visibility.Visible;
             UpdateBossTimerText();
             if (activeBoss.IsTimerRunning && !_bossTimer.IsEnabled)
@@ -98,7 +111,8 @@ public partial class OverlayWindow : Window
         Dispatcher.Invoke(() =>
         {
             _isDetectionRunning = isRunning;
-            DetectionStatusTextBlock.Text = isRunning ? "DETECTION RUNNING" : "DETECTION STOPPED";
+            DetectionStatusTextBlock.Text = LocalizationService.Instance.GetString(
+                isRunning ? "Overlay_DetectionRunning" : "Overlay_DetectionStopped");
             DetectionDot.Fill = BrushFromHex(isRunning ? "#8DA46D" : "#6E6253");
         });
     }

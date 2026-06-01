@@ -14,6 +14,7 @@ using EldenDeathCounter.Core.Logging;
 using EldenDeathCounter.Core.Storage;
 using EldenDeathCounter.Detection;
 using EldenDeathCounter.Hotkeys;
+using EldenDeathCounter.Localization;
 using EldenDeathCounter.UI;
 
 namespace EldenDeathCounter.ViewModels;
@@ -32,7 +33,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private readonly Dispatcher _dispatcher;
     private AppGameProfile _activeGameProfile = AppGameProfile.EldenRing;
     private Window? _window;
-    private string _detectionStatus = "Detection stopped";
+    private string _detectionStatus = LocalizationService.Instance.GetString("Vm_DetectionStopped");
     private string _hotkeyStatus = "Hotkeys not registered yet.";
     private string _bossSearchText = string.Empty;
     private BossHistorySortMode _selectedBossSortMode = BossHistorySortMode.Default;
@@ -47,6 +48,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private bool _isDetectionRunning;
     private bool _isShuttingDown;
     private DateTimeOffset? _lastDetectedDeath;
+    private string _selectedAppLanguageValue = "en";
 
     public MainWindowViewModel(
         AppSettings settings,
@@ -83,6 +85,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         foreach (var option in CreateGameLanguageOptions())
         {
             GameLanguageOptions.Add(option);
+        }
+
+        foreach (var option in CreateAppLanguageOptions())
+        {
+            AppLanguageOptions.Add(option);
         }
 
         foreach (var option in CreateBossSortModeOptions())
@@ -161,13 +168,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             });
         };
         _hotkeyService.HotkeyPressed += (_, args) => HandleHotkey(args.Name);
+        LocalizationService.Instance.LanguageChanged += OnLanguageChanged;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public AppSettings Settings { get; private set; }
 
-    public string CounterText => DeathCounterText.FormatGlobalCount(_counterService.State.CurrentDeathCount, Settings.GameLanguage);
+    public string CounterText => DeathCounterText.FormatGlobalCount(_counterService.State.CurrentDeathCount, Settings.AppLanguage);
 
     public string ActiveBossText => _counterService.State.ActiveBoss is null
         ? "Active boss: none"
@@ -177,29 +185,27 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ? "(0)"
         : $"({_counterService.State.ActiveBoss.DeathCount})";
 
-    public string BossesActiveName => _counterService.State.ActiveBoss?.Name ?? "No active encounter";
+    public string BossesActiveName => _counterService.State.ActiveBoss?.Name ?? L("Bosses_NoActiveEncounter");
 
-    public string BossesActiveAttemptsText => _counterService.State.ActiveBoss is null
-        ? "0 attempts"
-        : FormatAttempts(_counterService.State.ActiveBoss.DeathCount);
+    public string BossesActiveAttemptsText => FormatAttempts(_counterService.State.ActiveBoss?.DeathCount ?? 0);
 
     public string BossesActiveStartedText => _counterService.State.ActiveBoss is null
-        ? "Start a boss encounter from the dashboard."
-        : $"Started {_counterService.State.ActiveBoss.StartedAt.LocalDateTime:yyyy-MM-dd HH:mm}";
+        ? L("Bosses_StartPrompt")
+        : string.Format(L("Bosses_StartedFormat"), _counterService.State.ActiveBoss.StartedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture));
 
     public string DefeatedBossesEmptyText => DefeatedBosses.Count == 0
         ? string.IsNullOrWhiteSpace(BossSearchText) || _counterService.State.BossHistory.Count == 0
-            ? "No conquered foes recorded yet."
-            : "No conquered foes match search."
+            ? L("Bosses_EmptyNone")
+            : L("Bosses_EmptyNoMatch")
         : string.Empty;
 
     public string StatusSummary => $"{CounterText} | Overlay: {(Settings.OverlayEnabled ? "on" : "off")} | Detection: {DetectionStatus}";
 
     public string StatusDeathCountText => _counterService.State.CurrentDeathCount.ToString(CultureInfo.InvariantCulture);
 
-    public string StatusOverlayStateText => Settings.OverlayEnabled ? "ACTIVE" : "OFF";
+    public string StatusOverlayStateText => Settings.OverlayEnabled ? L("Status_OverlayActive") : L("Status_OverlayOff");
 
-    public string StatusDetectionStateText => IsDetectionRunning ? "RUNNING" : "STOPPED";
+    public string StatusDetectionStateText => IsDetectionRunning ? L("Status_DetectionRunning") : L("Status_DetectionStopped");
 
     public string DetectionStatus
     {
@@ -221,7 +227,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    public string LastDetectedDeathText => _lastDetectedDeath?.ToString("yyyy-MM-dd HH:mm:ss zzz", CultureInfo.CurrentCulture) ?? "None";
+    public string LastDetectedDeathText => _lastDetectedDeath?.ToString("yyyy-MM-dd HH:mm:ss zzz", CultureInfo.CurrentCulture) ?? L("Common_None");
 
     public string HotkeyStatus
     {
@@ -328,6 +334,19 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public string SelectedGameLanguageValue { get; set; }
 
+    public string SelectedAppLanguageValue
+    {
+        get => _selectedAppLanguageValue;
+        set
+        {
+            var normalized = LocalizationService.NormalizeLanguage(value);
+            if (SetField(ref _selectedAppLanguageValue, normalized))
+            {
+                _ = ApplyAppLanguageAsync(normalized);
+            }
+        }
+    }
+
     public string OverlayXText { get; set; }
 
     public string OverlayYText { get; set; }
@@ -359,8 +378,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     public string BossHistoryEditorTitle => _editingBossHistoryEntry is null
-        ? "ADD FELLED RECORD"
-        : "EDIT FELLED RECORD";
+        ? L("Editor_AddTitle")
+        : L("Editor_EditTitle");
 
     public bool CanDeleteBossHistoryEntry => _editingBossHistoryEntry is not null;
 
@@ -486,6 +505,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public ObservableCollection<GameLanguageOption> GameLanguageOptions { get; } = [];
 
+    public ObservableCollection<AppLanguageOption> AppLanguageOptions { get; } = [];
+
     public ObservableCollection<BossSortModeOption> BossSortModeOptions { get; } = [];
 
     public ObservableCollection<BossSortDirectionOption> BossSortDirectionOptions { get; } = [];
@@ -538,7 +559,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             ConfigureDetectionDiagnostics();
         }
 
-        DetectionStatus = $"Switched to {profile.Theme.Title}";
+        DetectionStatus = string.Format(L("Vm_SwitchedToFormat"), profile.Theme.Title);
         _log.Info($"Game profile switched to {profile.Id}.");
         OnPropertyChanged(nameof(StatusSummary));
         return true;
@@ -600,7 +621,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private void StartDiagnosticsSession()
     {
         var until = _detectionService.StartDiagnosticsSession(Settings, TimeSpan.FromMinutes(Settings.DiagnosticsSessionMinutes));
-        DetectionStatus = $"Full diagnostics active until {until.LocalDateTime:HH:mm:ss}";
+        DetectionStatus = string.Format(L("Vm_DiagnosticsActiveFormat"), until.LocalDateTime.ToString("HH:mm:ss", CultureInfo.InvariantCulture));
     }
 
     private void ConfigureDetectionDiagnostics()
@@ -643,7 +664,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         if (!int.TryParse(ManualCounterText, NumberStyles.Integer, CultureInfo.InvariantCulture, out var count))
         {
-            DetectionStatus = "Manual counter value must be a whole number.";
+            DetectionStatus = L("Vm_ManualCounterInvalid");
             return;
         }
 
@@ -654,7 +675,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         if (string.IsNullOrWhiteSpace(BossNameText))
         {
-            DetectionStatus = "Boss name cannot be empty.";
+            DetectionStatus = L("Vm_BossNameEmpty");
             return;
         }
 
@@ -717,26 +738,26 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         if (string.IsNullOrWhiteSpace(BossEditNameText))
         {
-            DetectionStatus = "Boss name cannot be empty.";
+            DetectionStatus = L("Vm_BossNameEmpty");
             return;
         }
 
         if (!int.TryParse(BossEditAttemptsText, NumberStyles.Integer, CultureInfo.InvariantCulture, out var deathCount) || deathCount < 0)
         {
-            DetectionStatus = "Boss attempts must be a whole number of 0 or higher.";
+            DetectionStatus = L("Vm_BossAttemptsInvalid");
             return;
         }
 
         if (!TimeSpan.TryParseExact(BossEditDurationText, "c", CultureInfo.InvariantCulture, out var duration) &&
             !TimeSpan.TryParse(BossEditDurationText, CultureInfo.InvariantCulture, out duration))
         {
-            DetectionStatus = "Fight duration must use hh:mm:ss format.";
+            DetectionStatus = L("Vm_FightDurationFormat");
             return;
         }
 
         if (duration < TimeSpan.Zero)
         {
-            DetectionStatus = "Fight duration cannot be negative.";
+            DetectionStatus = L("Vm_FightDurationNegative");
             return;
         }
 
@@ -747,7 +768,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 DateTimeStyles.AssumeLocal,
                 out var defeatedLocalTime))
         {
-            DetectionStatus = "Recorded at must use yyyy-MM-dd HH:mm format.";
+            DetectionStatus = L("Vm_RecordedAtFormat");
             return;
         }
 
@@ -822,8 +843,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
 
         DetectionStatus = string.IsNullOrWhiteSpace(characterName)
-            ? "Using default save folder"
-            : $"Using character profile '{characterName}'";
+            ? L("Vm_UsingDefaultFolder")
+            : string.Format(L("Vm_UsingCharacterProfileFormat"), characterName);
         _log.Info($"Character profile switched to '{(string.IsNullOrWhiteSpace(characterName) ? "default" : characterName)}'.");
         OnPropertyChanged(nameof(StatusSummary));
     }
@@ -853,7 +874,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         await _settingsStore.SaveAsync(_settingsPath, Settings);
         ConfigureDetectionDiagnostics();
         _overlayWindow.ApplyPosition(Settings.OverlayX, Settings.OverlayY);
-        _overlayWindow.UpdateCount(_counterService.State.CurrentDeathCount, _counterService.State.ActiveBoss, Settings.GameLanguage);
+        _overlayWindow.UpdateCount(_counterService.State.CurrentDeathCount, _counterService.State.ActiveBoss, Settings.AppLanguage);
         ApplyOverlayState();
         RegisterHotkeys();
         if (restartDetection && IsDetectionRunning)
@@ -864,7 +885,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         if (updateStatus)
         {
-            DetectionStatus = "Settings saved";
+            DetectionStatus = L("Vm_SettingsSaved");
         }
 
         _log.Info("Settings saved.");
@@ -916,75 +937,75 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         if (!int.TryParse(DetectionIntervalMsText, NumberStyles.Integer, CultureInfo.InvariantCulture, out var interval) || interval < 300)
         {
-            error = "Detection interval must be at least 300 ms.";
+            error = L("Vm_DetectionIntervalInvalid");
             return false;
         }
 
         if (!int.TryParse(DetectionCooldownSecondsText, NumberStyles.Integer, CultureInfo.InvariantCulture, out var cooldown) || cooldown < 1)
         {
-            error = "Cooldown must be at least 1 second.";
+            error = L("Vm_CooldownInvalid");
             return false;
         }
 
         if (!double.TryParse(DetectionSensitivityText, NumberStyles.Float, CultureInfo.InvariantCulture, out var sensitivity))
         {
-            error = "Detection sensitivity must be a number from 0.1 to 1.0.";
+            error = L("Vm_SensitivityInvalid");
             return false;
         }
 
         if (!double.TryParse(OverlayXText, NumberStyles.Float, CultureInfo.InvariantCulture, out var overlayX) ||
             !double.TryParse(OverlayYText, NumberStyles.Float, CultureInfo.InvariantCulture, out var overlayY))
         {
-            error = "Overlay X and Y must be numbers.";
+            error = L("Vm_OverlayXYInvalid");
             return false;
         }
 
         var addHotkey = HotkeyDefinition.Parse(ManualAddHotkeyText);
         if (!addHotkey.IsValid)
         {
-            error = $"Add hotkey is invalid: {addHotkey.Error}";
+            error = string.Format(L("Vm_AddHotkeyInvalidFormat"), addHotkey.Error);
             return false;
         }
 
         var subtractHotkey = HotkeyDefinition.Parse(ManualSubtractHotkeyText);
         if (!subtractHotkey.IsValid)
         {
-            error = $"Subtract hotkey is invalid: {subtractHotkey.Error}";
+            error = string.Format(L("Vm_SubtractHotkeyInvalidFormat"), subtractHotkey.Error);
             return false;
         }
 
         var bossDefeatedHotkey = HotkeyDefinition.Parse(ManualBossDefeatedHotkeyText);
         if (!bossDefeatedHotkey.IsValid)
         {
-            error = $"Boss defeated hotkey is invalid: {bossDefeatedHotkey.Error}";
+            error = string.Format(L("Vm_BossDefeatedHotkeyInvalidFormat"), bossDefeatedHotkey.Error);
             return false;
         }
 
         var overlayToggleHotkey = HotkeyDefinition.Parse(OverlayToggleHotkeyText);
         if (!overlayToggleHotkey.IsValid)
         {
-            error = $"Overlay toggle hotkey is invalid: {overlayToggleHotkey.Error}";
+            error = string.Format(L("Vm_OverlayToggleHotkeyInvalidFormat"), overlayToggleHotkey.Error);
             return false;
         }
 
         var detectionToggleHotkey = HotkeyDefinition.Parse(DetectionToggleHotkeyText);
         if (!detectionToggleHotkey.IsValid)
         {
-            error = $"Detection toggle hotkey is invalid: {detectionToggleHotkey.Error}";
+            error = string.Format(L("Vm_DetectionToggleHotkeyInvalidFormat"), detectionToggleHotkey.Error);
             return false;
         }
 
         var bossSkipHotkey = HotkeyDefinition.Parse(BossSkipHotkeyText);
         if (!bossSkipHotkey.IsValid)
         {
-            error = $"Boss skip hotkey is invalid: {bossSkipHotkey.Error}";
+            error = string.Format(L("Vm_BossSkipHotkeyInvalidFormat"), bossSkipHotkey.Error);
             return false;
         }
 
         var dataFolderPath = Environment.ExpandEnvironmentVariables(DataFolderPathText.Trim());
         if (string.IsNullOrWhiteSpace(dataFolderPath))
         {
-            error = "Data folder path cannot be empty.";
+            error = L("Vm_DataFolderEmpty");
             return false;
         }
 
@@ -1074,7 +1095,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         _dispatcher.Invoke(() =>
         {
-            _overlayWindow.UpdateCount(_counterService.State.CurrentDeathCount, _counterService.State.ActiveBoss, Settings.GameLanguage);
+            _overlayWindow.UpdateCount(_counterService.State.CurrentDeathCount, _counterService.State.ActiveBoss, Settings.AppLanguage);
             RefreshCounterTextFields();
             OnPropertyChanged(nameof(CounterText));
             OnPropertyChanged(nameof(StatusDeathCountText));
@@ -1096,6 +1117,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             ? Settings.CaptureTarget
             : "PrimaryScreen";
         SelectedGameLanguageValue = NormalizeGameLanguage(Settings.GameLanguage, "PL");
+        // Set the backing field directly so re-reading settings (e.g. profile switch) does not
+        // re-trigger a language swap and settings save through the property setter.
+        _selectedAppLanguageValue = LocalizationService.NormalizeLanguage(Settings.AppLanguage);
         OverlayXText = Settings.OverlayX.ToString(CultureInfo.InvariantCulture);
         OverlayYText = Settings.OverlayY.ToString(CultureInfo.InvariantCulture);
         ManualAddHotkeyText = Settings.ManualAddHotkey;
@@ -1112,6 +1136,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(DetectionSensitivityText));
         OnPropertyChanged(nameof(SelectedCaptureTargetValue));
         OnPropertyChanged(nameof(SelectedGameLanguageValue));
+        OnPropertyChanged(nameof(SelectedAppLanguageValue));
         OnPropertyChanged(nameof(OverlayXText));
         OnPropertyChanged(nameof(OverlayYText));
         OnPropertyChanged(nameof(ManualAddHotkeyText));
@@ -1153,7 +1178,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 boss.Name,
                 FormatDefeatedAttempts(boss.DeathCount),
                 FormatDuration(GetBossKillDuration(boss)),
-                $"Recorded {boss.DefeatedAt.LocalDateTime:yyyy-MM-dd HH:mm}",
+                string.Format(L("Bosses_RecordedFormat"), boss.DefeatedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)),
                 boss.CompletedBy,
                 boss));
         }
@@ -1166,12 +1191,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private static string FormatAttempts(int deathCount)
     {
-        return deathCount == 1 ? "1 attempt" : $"{deathCount} attempts";
+        return string.Format(L(deathCount == 1 ? "Attempts_Singular" : "Attempts_Plural"), deathCount);
     }
 
     private static string FormatDefeatedAttempts(int deathCount)
     {
-        return deathCount == 0 ? "First Try" : $"{deathCount} Deaths";
+        return deathCount == 0 ? L("Bosses_FirstTry") : string.Format(L("Bosses_DeathsFormat"), deathCount);
     }
 
     private static TimeSpan GetBossKillDuration(BossHistoryEntry boss)
@@ -1191,8 +1216,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         var options = new List<CaptureTargetOption>
         {
-            new("EldenRingWindow", "Elden Ring window"),
-            new("PrimaryScreen", "Primary screen")
+            new("EldenRingWindow", L("Capture_EldenRingWindow")),
+            new("PrimaryScreen", L("Capture_PrimaryScreen"))
         };
 
         var screens = System.Windows.Forms.Screen.AllScreens;
@@ -1200,10 +1225,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             var screen = screens[index];
             var bounds = screen.Bounds;
-            var primary = screen.Primary ? ", primary" : string.Empty;
+            var primary = screen.Primary ? L("Capture_PrimarySuffix") : string.Empty;
             options.Add(new CaptureTargetOption(
                 $"Screen:{index}",
-                $"Screen {index + 1} ({bounds.Width}x{bounds.Height} at {bounds.Left},{bounds.Top}{primary})"));
+                string.Format(L("Capture_ScreenFormat"), index + 1, bounds.Width, bounds.Height, bounds.Left, bounds.Top, primary)));
         }
 
         return options;
@@ -1218,13 +1243,28 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ];
     }
 
+    private static IReadOnlyList<AppLanguageOption> CreateAppLanguageOptions()
+    {
+        return LocalizationService.Instance.AvailableLanguages
+            .Select(language => new AppLanguageOption(language.Code, language.DisplayName))
+            .ToList();
+    }
+
+    private async Task ApplyAppLanguageAsync(string language)
+    {
+        Settings.AppLanguage = language;
+        LocalizationService.Instance.SetLanguage(language);
+        await _settingsStore.SaveAsync(_settingsPath, Settings);
+        _log.Info($"App language switched to '{language}'.");
+    }
+
     private static IReadOnlyList<BossSortModeOption> CreateBossSortModeOptions()
     {
         return
         [
-            new(BossHistorySortMode.Default, "Default"),
-            new(BossHistorySortMode.Time, "Time"),
-            new(BossHistorySortMode.Deaths, "Deaths")
+            new(BossHistorySortMode.Default, L("Sort_Default")),
+            new(BossHistorySortMode.Time, L("Sort_Time")),
+            new(BossHistorySortMode.Deaths, L("Sort_Deaths"))
         ];
     }
 
@@ -1232,8 +1272,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         return
         [
-            new(BossHistorySortDirection.Descending, "Descending"),
-            new(BossHistorySortDirection.Ascending, "Ascending")
+            new(BossHistorySortDirection.Descending, L("Sort_Descending")),
+            new(BossHistorySortDirection.Ascending, L("Sort_Ascending"))
         ];
     }
 
@@ -1271,8 +1311,63 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         catch (Exception exception)
         {
             _log.Error($"Failed to open path {path}.", exception);
-            DetectionStatus = $"Failed to open {path}";
+            DetectionStatus = string.Format(L("Vm_FailedToOpenFormat"), path);
         }
+    }
+
+    private static string L(string key) => LocalizationService.Instance.GetString(key);
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        _dispatcher.Invoke(() =>
+        {
+            RebuildLocalizedOptions();
+            // Re-pushes the overlay counter and raises CounterText so the Deaths/Śmierci label
+            // follows the new UI language; also refreshes the boss cards.
+            RefreshCounter();
+            OnPropertyChanged(nameof(BossesActiveName));
+            OnPropertyChanged(nameof(BossesActiveAttemptsText));
+            OnPropertyChanged(nameof(BossesActiveStartedText));
+            OnPropertyChanged(nameof(DefeatedBossesEmptyText));
+            OnPropertyChanged(nameof(StatusOverlayStateText));
+            OnPropertyChanged(nameof(StatusDetectionStateText));
+            OnPropertyChanged(nameof(LastDetectedDeathText));
+            OnPropertyChanged(nameof(BossHistoryEditorTitle));
+            OnPropertyChanged(nameof(StatusSummary));
+        });
+    }
+
+    private void RebuildLocalizedOptions()
+    {
+        var captureTarget = SelectedCaptureTargetValue;
+        CaptureTargetOptions.Clear();
+        foreach (var option in CreateCaptureTargetOptions())
+        {
+            CaptureTargetOptions.Add(option);
+        }
+
+        SelectedCaptureTargetValue = captureTarget;
+        OnPropertyChanged(nameof(SelectedCaptureTargetValue));
+
+        var sortMode = SelectedBossSortMode;
+        BossSortModeOptions.Clear();
+        foreach (var option in CreateBossSortModeOptions())
+        {
+            BossSortModeOptions.Add(option);
+        }
+
+        var sortDirection = SelectedBossSortDirection;
+        BossSortDirectionOptions.Clear();
+        foreach (var option in CreateBossSortDirectionOptions())
+        {
+            BossSortDirectionOptions.Add(option);
+        }
+
+        // Re-assert selections so the combo boxes rebind to the freshly localized display names.
+        _selectedBossSortMode = sortMode;
+        _selectedBossSortDirection = sortDirection;
+        OnPropertyChanged(nameof(SelectedBossSortMode));
+        OnPropertyChanged(nameof(SelectedBossSortDirection));
     }
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -1305,6 +1400,8 @@ public sealed record BossDisplayItem(
 public sealed record CaptureTargetOption(string Value, string DisplayName);
 
 public sealed record GameLanguageOption(string Value, string DisplayName);
+
+public sealed record AppLanguageOption(string Value, string DisplayName);
 
 public sealed record BossSortModeOption(BossHistorySortMode Value, string DisplayName);
 

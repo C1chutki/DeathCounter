@@ -2,6 +2,8 @@
 
 ## 2026-06-01
 
+- Dodano pelne tlumaczenie interfejsu (angielski/polski) przelaczane na zywo z selektora APP LANGUAGE w Settings, bez restartu. Statyczne teksty XAML korzystaja z `{DynamicResource}`, a slowniki `Localization/Strings.en.xaml` i `Strings.pl.xaml` sa wymieniane w zasobach aplikacji przez `LocalizationService` (z `GetString` dla tekstow budowanych w kodzie). Teksty statusu/walidacji w `MainWindowViewModel` oraz etykiety overlaya (`TOTAL DEATHS`, `DETECTION RUNNING/STOPPED`) tlumaczone sa przez `GetString`, a zdarzenie `LanguageChanged` odswieza juz wyswietlone teksty i listy. Etykieta licznika smierci (`Deaths:` / `Śmierci:`, takze `First Try` / `Pierwsze podejscie`) na overlayu i glownym ekranie idzie teraz za `AppLanguage`, a nie za `GameLanguage` OCR, i zmienia sie na zywo wraz z jezykiem interfejsu. Wybor jezyka UI zapisywany jest w `AppSettings.AppLanguage` (domyslnie `en`, niezalezny od `GameLanguage` OCR) i przezywa restart. Dodano testy `AppLanguage` (domyslny `en`, round-trip JSON, niezaleznosc od `GameLanguage`) oraz test parzystosci kluczy obu slownikow; testy pokrycia Settings przepiete na klucze zasobow. Wersje podniesiono do 1.9.0.
+
 - Dodano reczne profile postaci dla Elden Ring: wpisanie nazwy postaci ustawia osobny folder `DeathCounter\<Gra>\Characters\<Nazwa>`, przelacza aktywny `deaths.json` i zapisuje nazwe profilu w ustawieniach. Puste pole wraca do domyslnego folderu gry; nazwy folderow sa sanityzowane. Wersje podniesiono do 1.8.3.
 
 ## 2026-05-31

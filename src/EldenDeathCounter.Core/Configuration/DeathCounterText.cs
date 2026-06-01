@@ -15,6 +15,19 @@ public static class DeathCounterText
             : "\u015Amierci";
     }
 
+    public static string FormatBossDeath(int deathCount, string? gameLanguage)
+    {
+        if (deathCount <= 0)
+        {
+            var normalizedLanguage = gameLanguage?.Trim().ToUpperInvariant();
+            return normalizedLanguage is "ENG" or "EN"
+                ? "First Try"
+                : "Pierwsze podejście";
+        }
+
+        return $"{FormatDeathLabel(gameLanguage)}: {deathCount}";
+    }
+
     public static string FormatBossOverlayName(string bossName)
     {
         var names = bossName

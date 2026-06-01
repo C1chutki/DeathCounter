@@ -42,15 +42,16 @@ public sealed class SettingsMenuCoverageTests
             """<TabItem Header="Settings">(?<content>[\s\S]*?)</TabItem>""",
             RegexOptions.CultureInvariant).Groups["content"].Value;
 
+        // Section headers are localized via {DynamicResource}; assert on the resource keys.
         Assert.Contains("Grid.Row=\"1\"", settingsTab);
-        Assert.Contains("| OVERLAY", settingsTab);
-        Assert.Contains("| DETECTION", settingsTab);
+        Assert.Contains("Settings_OverlaySection", settingsTab);
+        Assert.Contains("Settings_DetectionSection", settingsTab);
         Assert.Contains("Grid.Row=\"2\"", settingsTab);
-        Assert.Contains("| CHARACTER &amp; SAVE GAME", settingsTab);
-        Assert.Contains("| LANGUAGE", settingsTab);
-        Assert.Contains("| HOTKEYS", settingsTab);
+        Assert.Contains("Settings_CharacterSection", settingsTab);
+        Assert.Contains("Settings_LanguageSection", settingsTab);
+        Assert.Contains("Settings_HotkeysSection", settingsTab);
         Assert.Contains("Grid.Row=\"3\"", settingsTab);
-        Assert.Contains("| PROFILE / SAVE GAME", settingsTab);
+        Assert.Contains("Settings_ProfileSection", settingsTab);
     }
 
     [Fact]
@@ -67,8 +68,8 @@ public sealed class SettingsMenuCoverageTests
             RegexOptions.CultureInvariant).Groups["content"].Value;
 
         Assert.NotEmpty(firstSettingsRow);
-        Assert.Contains("| OVERLAY", firstSettingsRow);
-        Assert.Contains("| DETECTION", firstSettingsRow);
+        Assert.Contains("Settings_OverlaySection", firstSettingsRow);
+        Assert.Contains("Settings_DetectionSection", firstSettingsRow);
         Assert.Contains("CaptureTargetOptions", firstSettingsRow);
     }
 
@@ -129,7 +130,7 @@ public sealed class SettingsMenuCoverageTests
             RegexOptions.CultureInvariant).Groups["content"].Value;
 
         Assert.NotEmpty(bossesTab);
-        Assert.Contains("ADD RECORD", bossesTab);
+        Assert.Contains("Bosses_AddRecord", bossesTab);
         Assert.Contains("OpenAddBossHistoryEditorCommand", bossesTab);
     }
 
