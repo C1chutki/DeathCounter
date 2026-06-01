@@ -5,7 +5,7 @@ using EldenDeathCounter.Core.Logging;
 using EldenDeathCounter.Core.Storage;
 using EldenDeathCounter.Detection;
 
-namespace EldenDeathCounter.Tests.Core;
+namespace EldenDeathCounter.App.Tests.Core;
 
 public sealed class DeathDetectionServiceShutdownTests
 {

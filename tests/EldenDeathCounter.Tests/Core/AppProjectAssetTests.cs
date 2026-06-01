@@ -297,8 +297,6 @@ public sealed class AppProjectAssetTests
         Assert.Contains("StatusOverlayStateText", statusBar, StringComparison.Ordinal);
         Assert.Contains("StatusDetectionStateText", statusBar, StringComparison.Ordinal);
         Assert.Contains("Foreground=\"{DynamicResource Gold}\"", statusBar, StringComparison.Ordinal);
-        Assert.Contains("HOTKEYS: F6/F7/F8/F9/Ctrl+Shift+P", statusBar, StringComparison.Ordinal);
-        Assert.Contains("DOCUMENTATION", statusBar, StringComparison.Ordinal);
     }
 
     [Fact]

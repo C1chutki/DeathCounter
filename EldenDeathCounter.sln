@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EldenDeathCounter", "src\El
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EldenDeathCounter.Core", "src\EldenDeathCounter.Core\EldenDeathCounter.Core.csproj", "{D08D8AC8-2130-4D33-B0A5-C3B2A422E50B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EldenDeathCounter.App.Tests", "tests\EldenDeathCounter.App.Tests\EldenDeathCounter.App.Tests.csproj", "{83B3A8DC-0B1E-4AF7-9E2C-A778E28F4E21}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,18 @@ Global
 		{D08D8AC8-2130-4D33-B0A5-C3B2A422E50B}.Release|x64.Build.0 = Release|Any CPU
 		{D08D8AC8-2130-4D33-B0A5-C3B2A422E50B}.Release|x86.ActiveCfg = Release|Any CPU
 		{D08D8AC8-2130-4D33-B0A5-C3B2A422E50B}.Release|x86.Build.0 = Release|Any CPU
+		{83B3A8DC-0B1E-4AF7-9E2C-A778E28F4E21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83B3A8DC-0B1E-4AF7-9E2C-A778E28F4E21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83B3A8DC-0B1E-4AF7-9E2C-A778E28F4E21}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{83B3A8DC-0B1E-4AF7-9E2C-A778E28F4E21}.Debug|x64.Build.0 = Debug|Any CPU
+		{83B3A8DC-0B1E-4AF7-9E2C-A778E28F4E21}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{83B3A8DC-0B1E-4AF7-9E2C-A778E28F4E21}.Debug|x86.Build.0 = Debug|Any CPU
+		{83B3A8DC-0B1E-4AF7-9E2C-A778E28F4E21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83B3A8DC-0B1E-4AF7-9E2C-A778E28F4E21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83B3A8DC-0B1E-4AF7-9E2C-A778E28F4E21}.Release|x64.ActiveCfg = Release|Any CPU
+		{83B3A8DC-0B1E-4AF7-9E2C-A778E28F4E21}.Release|x64.Build.0 = Release|Any CPU
+		{83B3A8DC-0B1E-4AF7-9E2C-A778E28F4E21}.Release|x86.ActiveCfg = Release|Any CPU
+		{83B3A8DC-0B1E-4AF7-9E2C-A778E28F4E21}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,5 +81,6 @@ Global
 		{1E23D621-21DC-4819-88E5-1D556CBC90CA} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{B8A58F06-C62D-4271-AD38-CCD2298545CD} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{D08D8AC8-2130-4D33-B0A5-C3B2A422E50B} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{83B3A8DC-0B1E-4AF7-9E2C-A778E28F4E21} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal
