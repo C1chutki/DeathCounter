@@ -57,6 +57,16 @@ public partial class MainWindow : Window
         }
     }
 
+    private async void DarkSouls1Button_Click(object sender, RoutedEventArgs e)
+    {
+        await ApplyGameProfileAsync(AppGameProfile.DarkSouls1);
+    }
+
+    private async void DarkSouls2Button_Click(object sender, RoutedEventArgs e)
+    {
+        await ApplyGameProfileAsync(AppGameProfile.DarkSouls2);
+    }
+
     private async void DarkSouls3Button_Click(object sender, RoutedEventArgs e)
     {
         await ApplyGameProfileAsync(AppGameProfile.DarkSouls3);
@@ -104,6 +114,14 @@ public partial class MainWindow : Window
         SetResourceBrush("DimBorder", theme.Border);
         SetResourceBrush("StatusBarSurface", theme.Panel);
         SetResourceBrush("BorderGold", theme.Border);
+
+        DarkSouls1Button.Background = BrushFromHex(AppGameTheme.DarkSouls1.Primary);
+        DarkSouls1Button.BorderBrush = BrushFromHex(AppGameTheme.DarkSouls1.Primary);
+        DarkSouls1Button.Foreground = BrushFromHex(AppGameTheme.DarkSouls1.Neutral);
+
+        DarkSouls2Button.Background = BrushFromHex(AppGameTheme.DarkSouls2.Primary);
+        DarkSouls2Button.BorderBrush = BrushFromHex(AppGameTheme.DarkSouls2.Primary);
+        DarkSouls2Button.Foreground = BrushFromHex(AppGameTheme.DarkSouls2.Neutral);
 
         DarkSouls3Button.Background = BrushFromHex(AppGameTheme.DarkSouls3.Primary);
         DarkSouls3Button.BorderBrush = BrushFromHex(AppGameTheme.DarkSouls3.Primary);

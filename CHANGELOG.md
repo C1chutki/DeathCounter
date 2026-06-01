@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-06-02
+
+- Dodano w pelni funkcjonalne przelaczenie aplikacji na gre Dark Souls 1 przyciskiem `DS` w naglowku. Nowy profil `AppGameProfile.DarkSouls1` (folder `DeathCounter\DarkSouls1` z osobnymi `appsettings.json`/`deaths.json`/`log.txt`) i motyw `AppGameTheme.DarkSouls1` w niebiesko-grafitowej palecie ze screena (Primary `#4A90E2`, tlo `#0A0A0A`/`#1A1A1A`, szary tekst `#C2C2C2`) sa przelaczane na zywo wraz z overlayem. Dodano testy profilu i motywu Dark Souls 1; wersje podniesiono do 1.10.0.
+
 ## 2026-06-01
 
 - Rozdzielono testy core od testow wymagajacych pelnej aplikacji WPF: `EldenDeathCounter.Tests` referencjonuje teraz tylko `EldenDeathCounter.Core`, a test zatrzymywania `DeathDetectionService` przeniesiono do `EldenDeathCounter.App.Tests`. Zmniejsza to zwykly output testow i ogranicza kopiowanie ciezkich zaleznosci WPF/aplikacji; wersje podniesiono do 1.9.1.

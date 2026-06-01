@@ -30,6 +30,36 @@ public sealed record AppGameTheme(
         "#EAC36D",
         "#FFFFFF");
 
+    public static AppGameTheme DarkSouls1 { get; } = new(
+        "Dark Souls Death Counter",
+        "#4A90E2",
+        "#161616",
+        "#1A1A1A",
+        "#0A0A0A",
+        "#F1F4F8",
+        "#C2C2C2",
+        "#1A1A1A",
+        "#232323",
+        "#2E4A66",
+        "#CC101010",
+        "#4A90E2",
+        "#BBD4F2");
+
+    public static AppGameTheme DarkSouls2 { get; } = new(
+        "Dark Souls 2 Death Counter",
+        "#9FA8DA",
+        "#1A237E",
+        "#B2DFDB",
+        "#121212",
+        "#ECEFF1",
+        "#8C93B0",
+        "#17182B",
+        "#21243D",
+        "#5C4F1E",
+        "#CC12152E",
+        "#9FA8DA",
+        "#E8EAF6");
+
     public static AppGameTheme DarkSouls3 { get; } = new(
         "Dark Souls 3 Death Counter",
         "#E65100",
