@@ -1151,7 +1151,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             DefeatedBosses.Add(new BossDisplayItem(
                 $"#{numberedBoss.KillNumber}",
                 boss.Name,
-                FormatAttempts(boss.DeathCount),
+                FormatDefeatedAttempts(boss.DeathCount),
                 FormatDuration(GetBossKillDuration(boss)),
                 $"Recorded {boss.DefeatedAt.LocalDateTime:yyyy-MM-dd HH:mm}",
                 boss.CompletedBy,
@@ -1167,6 +1167,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private static string FormatAttempts(int deathCount)
     {
         return deathCount == 1 ? "1 attempt" : $"{deathCount} attempts";
+    }
+
+    private static string FormatDefeatedAttempts(int deathCount)
+    {
+        return deathCount == 0 ? "First Try" : $"{deathCount} Deaths";
     }
 
     private static TimeSpan GetBossKillDuration(BossHistoryEntry boss)

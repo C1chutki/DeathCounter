@@ -1525,13 +1525,6 @@
             </Border.Resources>
             <DockPanel LastChildFill="False"
                        VerticalAlignment="Center">
-                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="HOTKEYS: F6/F7/F8/F9/Ctrl+Shift+P"
-                               Foreground="{DynamicResource Ink}"
-                               Margin="0,0,28,0" />
-                    <TextBlock Text="DOCUMENTATION"
-                               Foreground="{DynamicResource Ink}" />
-                </StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="STATUS:"
                                Foreground="{DynamicResource Ink}"
