@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-06-01
+
+- Dodano reczne profile postaci dla Elden Ring: wpisanie nazwy postaci ustawia osobny folder `DeathCounter\<Gra>\Characters\<Nazwa>`, przelacza aktywny `deaths.json` i zapisuje nazwe profilu w ustawieniach. Puste pole wraca do domyslnego folderu gry; nazwy folderow sa sanityzowane. Wersje podniesiono do 1.8.3.
+
 ## 2026-05-31
 
 - Zawezono pionowy pas przechwytywania death/boss-victory na podstawie pomiaru realnych zrzutow gry (a nie recznych szacunkow), co zmniejsza powierzchnie OCR i ogranicza falszywe trafienia z innych okien (np. notatnika). Frakcja `captureHeight` spadla `0.26 -> 0.15` (na 2560x1440 wysokosc pasa 374 -> 216 px, pas ~636..852 zamiast 547..921, ~89/69 px mniej u gory/dolu), `centerY` doprecyzowano `0.51 -> 0.517`, a floor wysokosci obnizono `260 -> 160` px. Zmierzone pasmo tekstu (`YOU DIED` / `NIE ZYJESZ` / `ENEMY FELLED` / `POKONANO WROGA`) to ~693..797 px (frac ~0.481..0.553). Crop referencyjny templatu (wczesniej `0.43..0.58` death i `0.43..0.62` victory) zawezono i scentralizowano w nowym `DeathTextTemplateReferenceRegion` (y `0.476..0.558`), tak by template pozostal mniejszy niz ROI analizatora i zachowal zapas na jitter pozycji tekstu. Oba detektory (`TemplateDeathTextImageSignalDetector`, `TemplateBossVictoryTextImageSignalDetector`) i testy korzystaja z tego samego cropu. Zaktualizowano stale/progi w testach regresyjnych; pelny zestaw 195/195. Wersje podniesiono do 1.8.2.

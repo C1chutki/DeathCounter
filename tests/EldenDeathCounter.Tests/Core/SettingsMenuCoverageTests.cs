@@ -22,6 +22,8 @@ public sealed class SettingsMenuCoverageTests
         Assert.Contains("DetectionSensitivityText", settingsTab);
         Assert.Contains("SelectedCaptureTargetValue", settingsTab);
         Assert.Contains("SelectedGameLanguageValue", settingsTab);
+        Assert.Contains("CharacterProfileNameText", settingsTab);
+        Assert.Contains("ApplyCharacterProfileCommand", settingsTab);
         Assert.Contains("DataFolderPathText", settingsTab);
         Assert.Contains("ManualAddHotkeyText", settingsTab);
         Assert.Contains("ManualSubtractHotkeyText", settingsTab);

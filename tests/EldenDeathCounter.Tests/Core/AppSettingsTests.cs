@@ -39,6 +39,7 @@ public sealed class AppSettingsTests
         Assert.Equal("Ctrl+Shift+P", settings.BossSkipHotkey);
         Assert.Equal(1.0, settings.OverlayFontScale);
         Assert.Equal(0.9, settings.OverlayBackgroundOpacity);
+        Assert.Equal(string.Empty, settings.CharacterProfileName);
         Assert.Equal("Strażnik Drzewa", settings.BossNameCorrections["STRAINIK DRZEWA"]);
     }
 
@@ -132,6 +133,36 @@ public sealed class AppSettingsTests
 
         Assert.Equal("F6", settings.DetectionToggleHotkey);
         Assert.Equal("Ctrl+Shift+P", settings.BossSkipHotkey);
+    }
+
+    [Fact]
+    public async Task LoadingSettingsWithoutCharacterProfileNameAppliesEmptyDefault()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var settingsPath = Path.Combine(folder, "appsettings.json");
+        await File.WriteAllTextAsync(settingsPath, """{"dataFolderPath":"C:\\Temp\\Counter"}""");
+        var store = new AppSettingsStore(new FileLogService(Path.Combine(folder, "log.txt")));
+
+        var settings = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop");
+
+        Assert.Equal(string.Empty, settings.CharacterProfileName);
+    }
+
+    [Fact]
+    public async Task SavedCharacterProfileNameSurvivesRoundTrip()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var settingsPath = Path.Combine(folder, "appsettings.json");
+        var store = new AppSettingsStore(new FileLogService(Path.Combine(folder, "log.txt")));
+        var settings = AppSettings.CreateDefault(@"C:\Users\TestUser\Desktop");
+        settings.CharacterProfileName = "Kamil";
+
+        await store.SaveAsync(settingsPath, settings);
+        var reloaded = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop");
+
+        Assert.Equal("Kamil", reloaded.CharacterProfileName);
     }
 
     [Fact]

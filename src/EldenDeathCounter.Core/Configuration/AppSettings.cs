@@ -28,6 +28,8 @@ public sealed class AppSettings
 
     public string DataFolderPath { get; set; } = string.Empty;
 
+    public string CharacterProfileName { get; set; } = string.Empty;
+
     public DiagnosticsMode DiagnosticsMode { get; set; } = DiagnosticsMode.Events;
 
     public int DiagnosticsSessionMinutes { get; set; } = 10;
@@ -82,6 +84,7 @@ public sealed class AppSettings
             DetectionSensitivity = 0.8,
             CaptureTarget = "EldenRingWindow",
             DataFolderPath = profile.GetDataFolderPath(desktopPath),
+            CharacterProfileName = string.Empty,
             DiagnosticsMode = DiagnosticsMode.Events,
             DiagnosticsSessionMinutes = 10,
             DiagnosticsMaxEventLogMb = 5,

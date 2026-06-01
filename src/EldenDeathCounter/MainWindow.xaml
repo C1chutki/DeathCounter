@@ -530,7 +530,7 @@
                                FontFamily="{DynamicResource HeaderFontFamily}"
                                FontSize="16"
                                FontWeight="Bold" />
-                    <TextBlock Text="v1.8.2"
+                    <TextBlock Text="v1.8.3"
                                FontFamily="{DynamicResource AppFontFamily}"
                                FontSize="14"
                                Foreground="{DynamicResource Ink}" />
@@ -1329,23 +1329,16 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- CHARACTER & SAVE GAME (placeholder selectors: graphical only, not yet wired to logic) -->
+                            <!-- CHARACTER & SAVE GAME -->
                             <Border Style="{StaticResource PanelBorder}">
                                 <StackPanel>
                                     <TextBlock Text="| CHARACTER &amp; SAVE GAME" Style="{StaticResource LabelText}" Margin="0,0,0,16" />
-                                    <TextBlock Text="Deaths and boss history will be tracked separately per character and save." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
+                                    <TextBlock Text="Deaths and boss history are tracked separately per character profile." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
                                     <TextBlock Text="Character name" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" Margin="0,0,0,6" />
-                                    <ComboBox Style="{StaticResource DarkComboBox}" SelectedIndex="0" Margin="0,0,0,16">
-                                        <ComboBoxItem Content="Tarnished" />
-                                        <ComboBoxItem Content="Sellsword" />
-                                        <ComboBoxItem Content="Add character..." />
-                                    </ComboBox>
-                                    <TextBlock Text="Save game / profile" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" Margin="0,0,0,6" />
-                                    <ComboBox Style="{StaticResource DarkComboBox}" SelectedIndex="0">
-                                        <ComboBoxItem Content="Slot 1" />
-                                        <ComboBoxItem Content="Slot 2" />
-                                        <ComboBoxItem Content="Slot 3" />
-                                    </ComboBox>
+                                    <TextBox Text="{Binding CharacterProfileNameText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,16" />
+                                    <Button Content="USE PROFILE"
+                                            Command="{Binding ApplyCharacterProfileCommand}"
+                                            Style="{StaticResource GoldButton}" />
                                 </StackPanel>
                             </Border>
 
@@ -1412,7 +1405,7 @@
                                 </Grid.ColumnDefinitions>
                                 <StackPanel>
                                     <TextBlock Text="| PROFILE / SAVE GAME" Style="{StaticResource LabelText}" Margin="0,0,0,16" />
-                                    <TextBlock Text="Folder where this profile's death counter and boss history are stored." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
+                                    <TextBlock Text="Folder where the active profile's death counter and boss history are stored." Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
                                     <TextBox Text="{Binding DataFolderPathText, UpdateSourceTrigger=PropertyChanged}" />
                                 </StackPanel>
                                 <Button Grid.Column="1"

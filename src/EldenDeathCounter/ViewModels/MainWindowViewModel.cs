@@ -30,6 +30,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private readonly IDetectionEventLogService _detectionEventLog;
     private readonly string _desktopPath;
     private readonly Dispatcher _dispatcher;
+    private AppGameProfile _activeGameProfile = AppGameProfile.EldenRing;
     private Window? _window;
     private string _detectionStatus = "Detection stopped";
     private string _hotkeyStatus = "Hotkeys not registered yet.";
@@ -104,6 +105,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OverlayToggleHotkeyText = string.Empty;
         DetectionToggleHotkeyText = string.Empty;
         BossSkipHotkeyText = string.Empty;
+        CharacterProfileNameText = string.Empty;
         DataFolderPathText = string.Empty;
         ManualCounterText = string.Empty;
         BossNameText = string.Empty;
@@ -122,6 +124,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OpenDataFileCommand = new RelayCommand(_ => OpenPath(Path.Combine(Settings.DataFolderPath, "deaths.json")));
         OpenDataFolderCommand = new RelayCommand(_ => OpenPath(Settings.DataFolderPath));
         SaveSettingsCommand = new RelayCommand(_ => _ = SaveSettingsAsync());
+        ApplyCharacterProfileCommand = new RelayCommand(_ => _ = ApplyCharacterProfileAsync());
         SetActiveBossCommand = new RelayCommand(_ => _ = SetActiveBossAsync());
         ClearActiveBossCommand = new RelayCommand(_ => _ = ClearActiveBossAsync("manual-button"));
         BossDefeatedCommand = new RelayCommand(_ => _ = MarkBossDefeatedAsync("manual-button"));
@@ -341,6 +344,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public string BossSkipHotkeyText { get; set; }
 
+    public string CharacterProfileNameText { get; set; }
+
     public string DataFolderPathText { get; set; }
 
     public string ManualCounterText { get; set; }
@@ -449,6 +454,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public ICommand SaveSettingsCommand { get; }
 
+    public ICommand ApplyCharacterProfileCommand { get; }
+
     public ICommand SetActiveBossCommand { get; }
 
     public ICommand ClearActiveBossCommand { get; }
@@ -507,6 +514,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             await StopDetectionAsync();
         }
 
+        _activeGameProfile = profile;
         _settingsPath = profile.GetSettingsFilePath(_desktopPath);
         _log.SwitchTo(profile.GetLogFilePath(_desktopPath));
         Settings = await _settingsStore.LoadAsync(_settingsPath, _desktopPath, profile);
@@ -800,8 +808,29 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         await ApplySettingsFromTextAsync();
     }
 
+    private async Task ApplyCharacterProfileAsync()
+    {
+        var characterName = AppCharacterProfile.NormalizeName(CharacterProfileNameText);
+        CharacterProfileNameText = characterName;
+        DataFolderPathText = AppCharacterProfile.GetDataFolderPath(_desktopPath, _activeGameProfile, characterName);
+        OnPropertyChanged(nameof(CharacterProfileNameText));
+        OnPropertyChanged(nameof(DataFolderPathText));
+
+        if (!await ApplySettingsFromTextAsync())
+        {
+            return;
+        }
+
+        DetectionStatus = string.IsNullOrWhiteSpace(characterName)
+            ? "Using default save folder"
+            : $"Using character profile '{characterName}'";
+        _log.Info($"Character profile switched to '{(string.IsNullOrWhiteSpace(characterName) ? "default" : characterName)}'.");
+        OnPropertyChanged(nameof(StatusSummary));
+    }
+
     private async Task<bool> ApplySettingsFromTextAsync(bool restartDetection = true, bool updateStatus = true)
     {
+        var previousDataFolderPath = Settings.DataFolderPath;
         if (!TryReadSettings(out var error))
         {
             DetectionStatus = error;
@@ -809,6 +838,18 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
 
         Directory.CreateDirectory(Settings.DataFolderPath);
+        if (!string.Equals(
+            Path.GetFullPath(previousDataFolderPath),
+            Path.GetFullPath(Settings.DataFolderPath),
+            StringComparison.OrdinalIgnoreCase))
+        {
+            _log.SwitchTo(Path.Combine(Settings.DataFolderPath, "log.txt"));
+            await _counterService.SwitchDataFileAsync(Path.Combine(Settings.DataFolderPath, "deaths.json"));
+            RefreshCounter();
+            RefreshCounterTextFields();
+            RefreshBosses();
+        }
+
         await _settingsStore.SaveAsync(_settingsPath, Settings);
         ConfigureDetectionDiagnostics();
         _overlayWindow.ApplyPosition(Settings.OverlayX, Settings.OverlayY);
@@ -964,6 +1005,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         Settings.OverlayToggleHotkey = OverlayToggleHotkeyText.Trim();
         Settings.DetectionToggleHotkey = DetectionToggleHotkeyText.Trim();
         Settings.BossSkipHotkey = BossSkipHotkeyText.Trim();
+        Settings.CharacterProfileName = AppCharacterProfile.NormalizeName(CharacterProfileNameText);
         Settings.DataFolderPath = dataFolderPath;
         return true;
     }
@@ -1062,6 +1104,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OverlayToggleHotkeyText = Settings.OverlayToggleHotkey;
         DetectionToggleHotkeyText = Settings.DetectionToggleHotkey;
         BossSkipHotkeyText = Settings.BossSkipHotkey;
+        CharacterProfileNameText = Settings.CharacterProfileName;
         DataFolderPathText = Settings.DataFolderPath;
 
         OnPropertyChanged(nameof(DetectionIntervalMsText));
@@ -1077,6 +1120,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(OverlayToggleHotkeyText));
         OnPropertyChanged(nameof(DetectionToggleHotkeyText));
         OnPropertyChanged(nameof(BossSkipHotkeyText));
+        OnPropertyChanged(nameof(CharacterProfileNameText));
         OnPropertyChanged(nameof(DataFolderPathText));
         OnPropertyChanged(nameof(OverlayEnabled));
         OnPropertyChanged(nameof(DetectionEnabledOnStartup));

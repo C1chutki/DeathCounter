@@ -33,4 +33,27 @@ public sealed class AppGameProfileTests
 
         Assert.Equal(@"C:\Users\TestUser\Desktop\DeathCounter\DarkSouls3", settings.DataFolderPath);
     }
+
+    [Fact]
+    public void CharacterProfileUsesSanitizedSubfolderInsideGameProfile()
+    {
+        var desktopPath = @"C:\Users\TestUser\Desktop";
+
+        Assert.Equal(
+            @"C:\Users\TestUser\Desktop\DeathCounter\EldenRing\Characters\Kamil",
+            AppCharacterProfile.GetDataFolderPath(desktopPath, AppGameProfile.EldenRing, " Kamil "));
+        Assert.Equal(
+            @"C:\Users\TestUser\Desktop\DeathCounter\EldenRing\Characters\Kamil_save_1",
+            AppCharacterProfile.GetDataFolderPath(desktopPath, AppGameProfile.EldenRing, "Kamil: save/1"));
+    }
+
+    [Fact]
+    public void EmptyCharacterProfileNameFallsBackToGameProfileFolder()
+    {
+        var desktopPath = @"C:\Users\TestUser\Desktop";
+
+        Assert.Equal(
+            AppGameProfile.EldenRing.GetDataFolderPath(desktopPath),
+            AppCharacterProfile.GetDataFolderPath(desktopPath, AppGameProfile.EldenRing, "   "));
+    }
 }
