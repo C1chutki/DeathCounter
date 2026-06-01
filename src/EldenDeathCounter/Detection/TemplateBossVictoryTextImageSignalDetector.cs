@@ -134,11 +134,7 @@ public sealed class TemplateBossVictoryTextImageSignalDetector : IImageBossVicto
 
     private static PixelRect GetReferenceTextSearchRegion(int width, int height)
     {
-        return new PixelRect(
-            (int)(width * 0.24),
-            (int)(height * 0.43),
-            (int)(width * 0.78),
-            (int)(height * 0.62));
+        return DeathTextTemplateReferenceRegion.BossVictory(width, height);
     }
 
     private static T WithLockedPixels<T>(Bitmap bitmap, Func<Func<int, int, RgbPixel>, T> read)

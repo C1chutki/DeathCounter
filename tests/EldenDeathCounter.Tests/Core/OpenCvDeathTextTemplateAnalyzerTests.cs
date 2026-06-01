@@ -77,11 +77,7 @@ public sealed class OpenCvDeathTextTemplateAnalyzerTests
 
     private static DeathTextTemplate CreateTemplate(Bitmap bitmap, string name)
     {
-        var crop = new PixelRect(
-            (int)(bitmap.Width * 0.33),
-            (int)(bitmap.Height * 0.43),
-            (int)(bitmap.Width * 0.67),
-            (int)(bitmap.Height * 0.58));
+        var crop = DeathTextTemplateReferenceRegion.DeathScreen(bitmap.Width, bitmap.Height);
 
         return WithLockedPixels(bitmap, getPixel => DeathTextTemplate.FromReference(
             name,

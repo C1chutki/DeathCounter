@@ -10,9 +10,9 @@ public static class DeathTextCaptureRegionCalculator
         }
 
         var captureWidth = Math.Min(screenWidth, Math.Max(640, (int)Math.Round(screenWidth * 0.66)));
-        var captureHeight = Math.Min(screenHeight, Math.Max(260, (int)Math.Round(screenHeight * 0.26)));
+        var captureHeight = Math.Min(screenHeight, Math.Max(160, (int)Math.Round(screenHeight * 0.15)));
         var left = (screenWidth - captureWidth) / 2;
-        var centerY = (int)Math.Round(screenHeight * 0.51);
+        var centerY = (int)Math.Round(screenHeight * 0.517);
         var top = Math.Clamp(centerY - captureHeight / 2, 0, screenHeight - captureHeight);
 
         return new PixelRect(left, top, left + captureWidth, top + captureHeight);

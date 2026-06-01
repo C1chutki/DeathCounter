@@ -14,11 +14,7 @@ public sealed class BossVictoryTextTemplateReferenceImageTests
         Assert.True(File.Exists(imagePath), imagePath);
 
         using var bitmap = new Bitmap(imagePath);
-        var crop = new PixelRect(
-            (int)(bitmap.Width * 0.24),
-            (int)(bitmap.Height * 0.43),
-            (int)(bitmap.Width * 0.78),
-            (int)(bitmap.Height * 0.62));
+        var crop = DeathTextTemplateReferenceRegion.BossVictory(bitmap.Width, bitmap.Height);
 
         var template = WithLockedPixels(bitmap, getPixel => DeathTextTemplate.FromReference(
             "POKONANO WROGA",

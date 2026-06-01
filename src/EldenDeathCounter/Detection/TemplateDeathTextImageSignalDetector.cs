@@ -129,11 +129,7 @@ public sealed class TemplateDeathTextImageSignalDetector : IImageDeathSignalDete
 
     private static PixelRect GetReferenceTextSearchRegion(int width, int height)
     {
-        return new PixelRect(
-            (int)(width * 0.33),
-            (int)(height * 0.43),
-            (int)(width * 0.67),
-            (int)(height * 0.58));
+        return DeathTextTemplateReferenceRegion.DeathScreen(width, height);
     }
 
     private static T WithLockedPixels<T>(Bitmap bitmap, Func<Func<int, int, RgbPixel>, T> read)

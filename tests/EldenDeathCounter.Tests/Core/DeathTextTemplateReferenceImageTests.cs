@@ -14,11 +14,7 @@ public sealed class DeathTextTemplateReferenceImageTests
         Assert.True(File.Exists(imagePath), imagePath);
 
         using var bitmap = new Bitmap(imagePath);
-        var crop = new PixelRect(
-            (int)(bitmap.Width * 0.33),
-            (int)(bitmap.Height * 0.43),
-            (int)(bitmap.Width * 0.67),
-            (int)(bitmap.Height * 0.58));
+        var crop = DeathTextTemplateReferenceRegion.DeathScreen(bitmap.Width, bitmap.Height);
 
         var template = WithLockedPixels(bitmap, getPixel => DeathTextTemplate.FromReference(
             "NIE ŻYJESZ",
@@ -49,11 +45,7 @@ public sealed class DeathTextTemplateReferenceImageTests
         Assert.True(File.Exists(screenshotPath), screenshotPath);
 
         using var templateBitmap = new Bitmap(templatePath);
-        var crop = new PixelRect(
-            (int)(templateBitmap.Width * 0.33),
-            (int)(templateBitmap.Height * 0.43),
-            (int)(templateBitmap.Width * 0.67),
-            (int)(templateBitmap.Height * 0.58));
+        var crop = DeathTextTemplateReferenceRegion.DeathScreen(templateBitmap.Width, templateBitmap.Height);
 
         var template = WithLockedPixels(templateBitmap, getPixel => DeathTextTemplate.FromReference(
             "NIE ZYJESZ",
@@ -83,11 +75,7 @@ public sealed class DeathTextTemplateReferenceImageTests
         Assert.True(File.Exists(templatePath), templatePath);
 
         using var bitmap = new Bitmap(templatePath);
-        var crop = new PixelRect(
-            (int)(bitmap.Width * 0.33),
-            (int)(bitmap.Height * 0.43),
-            (int)(bitmap.Width * 0.67),
-            (int)(bitmap.Height * 0.58));
+        var crop = DeathTextTemplateReferenceRegion.DeathScreen(bitmap.Width, bitmap.Height);
 
         var template = WithLockedPixels(bitmap, getPixel => DeathTextTemplate.FromReference(
             "YOU DIED",
