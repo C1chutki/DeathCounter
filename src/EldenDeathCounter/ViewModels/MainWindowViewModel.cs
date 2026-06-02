@@ -182,8 +182,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         : $"Active boss: {_counterService.State.ActiveBoss.Name} ({_counterService.State.ActiveBoss.DeathCount})";
 
     public string ActiveBossDeathCountText => _counterService.State.ActiveBoss is null
-        ? "(0)"
-        : $"({_counterService.State.ActiveBoss.DeathCount})";
+        ? "0"
+        : _counterService.State.ActiveBoss.DeathCount.ToString(CultureInfo.InvariantCulture);
 
     public string BossesActiveName => _counterService.State.ActiveBoss?.Name ?? L("Bosses_NoActiveEncounter");
 

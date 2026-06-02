@@ -1,6 +1,36 @@
 # Changelog
 
+## 2026-06-03
+
+- Powiekszono licznik smierci aktywnego encountera w dashboardzie, usunieto z niego nawiasy i dodano przyciski `-`/`+` przed `SET` w tym samym stylu. Wersje podniesiono do 1.12.8.
+
+- Powiekszono i wycentrowano naglowek aktywnej sekcji wzgledem calego okna oraz ujednolicono jego font z naglowkiem Settings. Wersje podniesiono do 1.12.7.
+
+- Poprawiono dashboardowe przyciski licznika: `F8` nie ma juz lokalnie mocniejszej ramki, a animacja hover skaluje przyciski subtelnie od srodka zamiast zmniejszac je od lewego gornego rogu. Dodano regresje XAML dla punktu skalowania i wersje podniesiono do 1.12.6.
+
 ## 2026-06-02
+
+- Ujednolicono cztery okragle przyciski dashboardu do zlotego stylu przycisku `F8`, zastapiono resetowa litere `R` ikona zapetlonej strzalki i dodano animacje scale-up przy najechaniu. Dodano test regresyjny XAML dla tych przyciskow; wersje podniesiono do 1.12.5.
+
+- Usunieto widoczny naglowek `Great Enemy Felled` z zakladki Bosses oraz odpowiadajacy mu nieuzywany klucz lokalizacji. Dodano test layoutu blokujacy powrot tego napisu; wersje podniesiono do 1.12.4.
+
+- Ujednolicono motywy DS1, DS2 i DS3 z paleta Elden Ring tak, ze roznia sie tylko kolorem primary-akcentu oraz tytulem gry. Dodano test regresyjny blokujacy ponowne rozjechanie palet; wersje podniesiono do 1.12.3.
+
+- Usunieto podtytuly z zakladki Bosses i przeniesiono wyszukiwarke oraz `ADD RECORD` do jednego paska z sortowaniem historii bossow. Wersje podniesiono do 1.12.2.
+
+- Zwiekszono liczbe kulek w animowanym tle dashboarda do 40, ujednolicono je do jednego zlotego koloru i dodano im wspolny blur. Wzmocniono glow oraz rozmycie duzej liczby smierci przez mocniejszy cien i dodatkowa warstwe `BlurEffect`; wersje podniesiono do 1.12.1.
+
+- Zrobiono dolny pasek aktywnego encountera przezroczystym, zwiekszono liczbe kulek w animowanym tle dashboarda z 12 do 20 i wzmocniono glow duzej liczby smierci. Wersje podniesiono do 1.12.0.
+
+- Podmieniono tlo dashboarda na czarne, CSS-like particle background inspirowane CodePenem TutsPlus; rozmyte smugi zastapiono animowanymi kulkami w zloto-rdzawych kolorach Elden Ring. Wersje podniesiono do 1.11.9.
+
+- Przesunieto glowna animowana smuge dashboarda na srodek za duza cyfra licznika i ograniczono jej poziomy dryf, zeby pozostawala za cyfra. Wersje podniesiono do 1.11.8.
+
+- Dopasowano kolorystyke animowanego tla dashboarda do palety aplikacji: zimne szarosci zastapiono ciemnym Elden Ring brazem, zlotym swiatlem i przygaszonym czerwonym akcentem. Wersje podniesiono do 1.11.7.
+
+- Ozywiono tlo dashboarda natywnym storyboardem WPF: rozmyte swiatla pulsuja i dryfuja, a drobne czastki zmieniaja pozycje oraz przezroczystosc podobnie do referencyjnego CodePena. Wersje podniesiono do 1.11.6.
+
+- Dodano do dashboarda tlo inspirowane dostarczonym gradientem i particle/light efektem oraz mocniejszy glow pod duza liczba smierci. Wersje podniesiono do 1.11.5.
 
 - Zmieniono emblemat w lewym railu z `M` na dark-fantasy `D` renderowane krojem `UnifrakturCook` z subtelnym ciemnoczerwonym cieniem. Wersje podniesiono do 1.11.4.
 

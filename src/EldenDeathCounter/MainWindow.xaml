@@ -39,6 +39,8 @@
             <GradientStop Color="#E8C66A" Offset="0" />
             <GradientStop Color="#B8902F" Offset="1" />
         </LinearGradientBrush>
+        <SolidColorBrush x:Key="DashboardBackdropBrush" Color="#000000" />
+        <SolidColorBrush x:Key="DashboardParticleGold" Color="#D9B45A" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
         <Style TargetType="TextBlock">
@@ -671,7 +673,11 @@
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="30">
+                                CornerRadius="30"
+                                RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform x:Name="ButtonScale" ScaleX="1" ScaleY="1" />
+                            </Border.RenderTransform>
                             <ContentPresenter HorizontalAlignment="Center"
                                               VerticalAlignment="Center" />
                         </Border>
@@ -680,15 +686,40 @@
                                 <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Gold}" />
                                 <Setter Property="Foreground" Value="{DynamicResource Gold2}" />
                             </Trigger>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         From="1"
+                                                         To="1.08"
+                                                         Duration="0:0:0.2" />
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         From="1"
+                                                         To="1.08"
+                                                         Duration="0:0:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         To="1"
+                                                         Duration="0:0:0.2" />
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         To="1"
+                                                         Duration="0:0:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-        </Style>
-
-        <Style x:Key="DashboardResetCircleButton" TargetType="Button" BasedOn="{StaticResource DashboardCircleButton}">
-            <Setter Property="BorderBrush" Value="#7A2E1D" />
-            <Setter Property="Foreground" Value="#E15A3D" />
         </Style>
 
         <Style x:Key="DashboardActionCaption" TargetType="TextBlock" BasedOn="{StaticResource LabelText}">
@@ -775,7 +806,7 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,8">
-                    <TextBlock Text="v1.11.4"
+                    <TextBlock Text="v1.12.8"
                                FontFamily="{DynamicResource MonoFontFamily}"
                                FontSize="8.5"
                                Foreground="{DynamicResource Faint}"
@@ -785,16 +816,12 @@
             </Grid>
         </Border>
 
-        <Border x:Name="HeaderBorder" Grid.Column="1" Grid.Row="0" Background="Transparent" BorderBrush="{DynamicResource Separator}" BorderThickness="0,0,0,1" Padding="32,0" Height="60">
+        <Border x:Name="HeaderBorder" Grid.ColumnSpan="2" Grid.Row="0" Background="Transparent" BorderBrush="{DynamicResource Separator}" BorderThickness="0,0,0,1" Padding="110,0,32,0" Height="60">
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
                 <!-- Game pills -->
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center">
                     <Button x:Name="DarkSouls1Button" Content="DS"
                             Style="{StaticResource GamePill}"
                             Click="DarkSouls1Button_Click" />
@@ -810,16 +837,19 @@
                 </StackPanel>
 
                 <!-- Section title -->
-                <TextBlock x:Name="SectionTitleText" Grid.Column="1"
-                           Text="DASHBOARD"
+                <TextBlock x:Name="SectionTitleText"
+                           Text="Dashboard"
                            FontFamily="{DynamicResource HeaderFontFamily}"
-                           FontSize="13"
-                           Foreground="{DynamicResource MutedInk}"
+                           FontSize="30"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource Gold}"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center" />
 
                 <!-- Live status -->
-                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
                     <Ellipse Style="{StaticResource TopStatusDot}" VerticalAlignment="Center" Margin="0,0,8,0" />
                     <TextBlock Text="{Binding DetectionStatus}"
                                FontFamily="{DynamicResource MonoFontFamily}"
@@ -862,15 +892,737 @@
             </TabControl.Resources>
 
             <TabItem Header="Dashboard">
-                <Grid x:Name="DashboardStage" Margin="38,0,34,16">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="96" />
-                    </Grid.RowDefinitions>
+                <Grid x:Name="DashboardStage"
+                      Background="{StaticResource DashboardBackdropBrush}"
+                      ClipToBounds="True">
+                    <Grid.Resources>
+                        <Storyboard x:Key="DashboardAmbientStoryboard" RepeatBehavior="Forever">
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall01Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="820"
+                                             Duration="0:1:00"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall01Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="420"
+                                             Duration="0:1:00"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall02Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-560"
+                                             Duration="0:0:58"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall02Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="330"
+                                             Duration="0:0:58"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall03Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="420"
+                                             Duration="0:1:04"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall03Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-260"
+                                             Duration="0:1:04"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall04Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-700"
+                                             Duration="0:1:07"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall04Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-210"
+                                             Duration="0:1:07"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall05Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="640"
+                                             Duration="0:0:55"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall05Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-310"
+                                             Duration="0:0:55"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall06Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-380"
+                                             Duration="0:1:02"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall06Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="280"
+                                             Duration="0:1:02"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall07Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="520"
+                                             Duration="0:1:09"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall07Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="190"
+                                             Duration="0:1:09"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall08Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-620"
+                                             Duration="0:0:53"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall08Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="390"
+                                             Duration="0:0:53"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall09Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="300"
+                                             Duration="0:1:05"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall09Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-360"
+                                             Duration="0:1:05"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall10Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-480"
+                                             Duration="0:0:57"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall10Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-250"
+                                             Duration="0:0:57"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall11Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="710"
+                                             Duration="0:1:11"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall11Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-120"
+                                             Duration="0:1:11"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall12Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-340"
+                                             Duration="0:1:03"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall12Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="240"
+                                             Duration="0:1:03"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall13Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="520"
+                                             Duration="0:0:52"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall13Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-180"
+                                             Duration="0:0:52"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall14Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-760"
+                                             Duration="0:1:12"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall14Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="160"
+                                             Duration="0:1:12"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall15Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="360"
+                                             Duration="0:0:49"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall15Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="330"
+                                             Duration="0:0:49"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall16Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-430"
+                                             Duration="0:1:08"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall16Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-330"
+                                             Duration="0:1:08"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall17Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="690"
+                                             Duration="0:0:56"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall17Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-90"
+                                             Duration="0:0:56"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall18Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-260"
+                                             Duration="0:1:14"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall18Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="410"
+                                             Duration="0:1:14"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall19Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="470"
+                                             Duration="0:1:01"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall19Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-420"
+                                             Duration="0:1:01"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall20Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-610"
+                                             Duration="0:0:51"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall20Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-160"
+                                             Duration="0:0:51"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall21Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="430"
+                                             Duration="0:0:54"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall21Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="210"
+                                             Duration="0:0:54"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall22Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-510"
+                                             Duration="0:1:06"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall22Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-280"
+                                             Duration="0:1:06"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall23Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="620"
+                                             Duration="0:0:59"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall23Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-140"
+                                             Duration="0:0:59"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall24Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-360"
+                                             Duration="0:1:10"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall24Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="340"
+                                             Duration="0:1:10"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall25Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="700"
+                                             Duration="0:1:13"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall25Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="110"
+                                             Duration="0:1:13"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall26Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-680"
+                                             Duration="0:0:50"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall26Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-190"
+                                             Duration="0:0:50"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall27Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="390"
+                                             Duration="0:1:16"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall27Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-360"
+                                             Duration="0:1:16"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall28Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-470"
+                                             Duration="0:0:56"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall28Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="230"
+                                             Duration="0:0:56"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall29Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="560"
+                                             Duration="0:1:02"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall29Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="300"
+                                             Duration="0:1:02"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall30Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-590"
+                                             Duration="0:1:15"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall30Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-100"
+                                             Duration="0:1:15"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall31Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="330"
+                                             Duration="0:0:48"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall31Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="390"
+                                             Duration="0:0:48"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall32Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-420"
+                                             Duration="0:1:18"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall32Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-310"
+                                             Duration="0:1:18"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall33Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="760"
+                                             Duration="0:1:07"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall33Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-240"
+                                             Duration="0:1:07"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall34Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-300"
+                                             Duration="0:0:52"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall34Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="180"
+                                             Duration="0:0:52"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall35Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="480"
+                                             Duration="0:1:21"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall35Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-380"
+                                             Duration="0:1:21"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall36Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-740"
+                                             Duration="0:1:04"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall36Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="260"
+                                             Duration="0:1:04"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall37Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="610"
+                                             Duration="0:1:01"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall37Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="170"
+                                             Duration="0:1:01"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall38Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-520"
+                                             Duration="0:1:23"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall38Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-350"
+                                             Duration="0:1:23"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall39Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="350"
+                                             Duration="0:0:47"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall39Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="-210"
+                                             Duration="0:0:47"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall40Offset"
+                                             Storyboard.TargetProperty="X"
+                                             From="0"
+                                             To="-640"
+                                             Duration="0:1:09"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall40Offset"
+                                             Storyboard.TargetProperty="Y"
+                                             From="0"
+                                             To="360"
+                                             Duration="0:1:09"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall01"
+                                             Storyboard.TargetProperty="Opacity"
+                                             From="0.25"
+                                             To="0.9"
+                                             Duration="0:0:6"
+                                             AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="DashboardParticleBall07"
+                                             Storyboard.TargetProperty="Opacity"
+                                             From="0.2"
+                                             To="0.72"
+                                             Duration="0:0:5"
+                                             AutoReverse="True" />
+                        </Storyboard>
+                    </Grid.Resources>
+                    <Grid.Triggers>
+                        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                            <BeginStoryboard Storyboard="{StaticResource DashboardAmbientStoryboard}" />
+                        </EventTrigger>
+                    </Grid.Triggers>
+                    <Canvas x:Name="DashboardParticleField"
+                            IsHitTestVisible="False"
+                            ClipToBounds="True"
+                            Opacity="0.86"
+                            Panel.ZIndex="0">
+                        <Canvas.Resources>
+                            <Style TargetType="{x:Type Ellipse}">
+                                <Setter Property="Fill" Value="{StaticResource DashboardParticleGold}" />
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <BlurEffect Radius="3.6" KernelType="Gaussian" />
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Canvas.Resources>
+                        <Ellipse x:Name="DashboardParticleBall01" Width="9" Height="9" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="110" Canvas.Top="82" Opacity="0.36">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall01Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall02" Width="7" Height="7" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1280" Canvas.Top="112" Opacity="0.44">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall02Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall03" Width="12" Height="12" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="250" Canvas.Top="552" Opacity="0.26">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall03Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall04" Width="8" Height="8" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1180" Canvas.Top="390" Opacity="0.42">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall04Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall05" Width="6" Height="6" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="520" Canvas.Top="128" Opacity="0.54">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall05Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall06" Width="10" Height="10" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="980" Canvas.Top="604" Opacity="0.3">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall06Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall07" Width="14" Height="14" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="398" Canvas.Top="302" Opacity="0.2">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall07Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall08" Width="5" Height="5" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1348" Canvas.Top="578" Opacity="0.5">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall08Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall09" Width="11" Height="11" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="720" Canvas.Top="638" Opacity="0.3">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall09Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall10" Width="8" Height="8" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1110" Canvas.Top="254" Opacity="0.38">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall10Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall11" Width="6" Height="6" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="156" Canvas.Top="512" Opacity="0.46">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall11Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall12" Width="13" Height="13" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="876" Canvas.Top="92" Opacity="0.24">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall12Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall13" Width="7" Height="7" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="72" Canvas.Top="326" Opacity="0.5">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall13Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall14" Width="10" Height="10" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1410" Canvas.Top="286" Opacity="0.28">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall14Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall15" Width="5" Height="5" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="442" Canvas.Top="54" Opacity="0.55">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall15Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall16" Width="12" Height="12" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1004" Canvas.Top="544" Opacity="0.24">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall16Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall17" Width="6" Height="6" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="178" Canvas.Top="214" Opacity="0.46">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall17Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall18" Width="9" Height="9" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="930" Canvas.Top="184" Opacity="0.34">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall18Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall19" Width="11" Height="11" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="560" Canvas.Top="590" Opacity="0.27">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall19Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall20" Width="8" Height="8" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1288" Canvas.Top="472" Opacity="0.36">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall20Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall21" Width="6" Height="6" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="322" Canvas.Top="118" Opacity="0.42">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall21Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall22" Width="10" Height="10" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1218" Canvas.Top="640" Opacity="0.24">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall22Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall23" Width="7" Height="7" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="42" Canvas.Top="602" Opacity="0.46">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall23Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall24" Width="12" Height="12" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1372" Canvas.Top="190" Opacity="0.28">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall24Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall25" Width="5" Height="5" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="646" Canvas.Top="42" Opacity="0.5">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall25Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall26" Width="9" Height="9" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1464" Canvas.Top="514" Opacity="0.32">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall26Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall27" Width="11" Height="11" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="82" Canvas.Top="452" Opacity="0.3">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall27Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall28" Width="6" Height="6" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1066" Canvas.Top="54" Opacity="0.48">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall28Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall29" Width="13" Height="13" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="298" Canvas.Top="682" Opacity="0.22">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall29Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall30" Width="8" Height="8" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1160" Canvas.Top="328" Opacity="0.4">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall30Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall31" Width="5" Height="5" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="770" Canvas.Top="708" Opacity="0.52">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall31Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall32" Width="10" Height="10" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="138" Canvas.Top="706" Opacity="0.26">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall32Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall33" Width="7" Height="7" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="514" Canvas.Top="414" Opacity="0.43">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall33Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall34" Width="12" Height="12" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1490" Canvas.Top="92" Opacity="0.24">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall34Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall35" Width="6" Height="6" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="908" Canvas.Top="696" Opacity="0.46">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall35Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall36" Width="9" Height="9" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1326" Canvas.Top="678" Opacity="0.34">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall36Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall37" Width="11" Height="11" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="186" Canvas.Top="34" Opacity="0.25">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall37Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall38" Width="5" Height="5" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1116" Canvas.Top="686" Opacity="0.54">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall38Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall39" Width="8" Height="8" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="662" Canvas.Top="286" Opacity="0.38">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall39Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse x:Name="DashboardParticleBall40" Width="14" Height="14" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1240" Canvas.Top="216" Opacity="0.2">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="DashboardParticleBall40Offset" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                    </Canvas>
 
-                    <Grid HorizontalAlignment="Center"
-                          VerticalAlignment="Center"
-                          Margin="0,0,0,12">
+                    <Grid Margin="38,0,34,16"
+                          Panel.ZIndex="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="96" />
+                        </Grid.RowDefinitions>
+
+                        <Grid HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Margin="0,0,0,12">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -886,23 +1638,57 @@
                                    Foreground="#A7512E"
                                    HorizontalAlignment="Center"
                                    Margin="0,0,0,12" />
-                        <TextBlock Grid.Row="1"
-                                   Text="{Binding StatusDeathCountText}"
-                                   FontFamily="{DynamicResource HeaderFontFamily}"
-                                   FontSize="172"
-                                   FontWeight="Bold"
-                                   LineHeight="172"
-                                   Foreground="#FFF0D2"
-                                   HorizontalAlignment="Center"
-                                   TextAlignment="Center"
-                                   Margin="0,-6,0,0">
-                            <TextBlock.Effect>
-                                <DropShadowEffect BlurRadius="22"
-                                                  ShadowDepth="0"
-                                                  Opacity="0.28"
-                                                  Color="#D9B45A" />
-                            </TextBlock.Effect>
-                        </TextBlock>
+                        <Grid Grid.Row="1"
+                              HorizontalAlignment="Center"
+                              Margin="0,-6,0,0"
+                              IsHitTestVisible="False">
+                            <TextBlock x:Name="DashboardCountGlow"
+                                       Text="{Binding StatusDeathCountText}"
+                                       FontFamily="{DynamicResource HeaderFontFamily}"
+                                       FontSize="172"
+                                       FontWeight="Bold"
+                                       LineHeight="172"
+                                       Foreground="#FFE8B8"
+                                       Opacity="0.82"
+                                       HorizontalAlignment="Center"
+                                       TextAlignment="Center">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect BlurRadius="156"
+                                                      ShadowDepth="0"
+                                                      Opacity="1"
+                                                      Color="#D9B45A" />
+                                </TextBlock.Effect>
+                            </TextBlock>
+                            <TextBlock x:Name="DashboardCountTextBlur"
+                                       Text="{Binding StatusDeathCountText}"
+                                       FontFamily="{DynamicResource HeaderFontFamily}"
+                                       FontSize="172"
+                                       FontWeight="Bold"
+                                       LineHeight="172"
+                                       Foreground="#FFE8B8"
+                                       Opacity="0.46"
+                                       HorizontalAlignment="Center"
+                                       TextAlignment="Center">
+                                <TextBlock.Effect>
+                                    <BlurEffect Radius="10" KernelType="Gaussian" />
+                                </TextBlock.Effect>
+                            </TextBlock>
+                            <TextBlock Text="{Binding StatusDeathCountText}"
+                                       FontFamily="{DynamicResource HeaderFontFamily}"
+                                       FontSize="172"
+                                       FontWeight="Bold"
+                                       LineHeight="172"
+                                       Foreground="#FFF0D2"
+                                       HorizontalAlignment="Center"
+                                       TextAlignment="Center">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect BlurRadius="44"
+                                                      ShadowDepth="0"
+                                                      Opacity="0.62"
+                                                      Color="#D9B45A" />
+                                </TextBlock.Effect>
+                            </TextBlock>
+                        </Grid>
                         <TextBlock Grid.Row="2"
                                    Text="TIMES"
                                    FontFamily="{DynamicResource MonoFontFamily}"
@@ -953,15 +1739,22 @@
                             <StackPanel Grid.Column="4">
                                 <Button Content="+"
                                         Command="{Binding AddDeathCommand}"
-                                        Style="{StaticResource DashboardCircleButton}"
-                                        BorderBrush="{DynamicResource Gold}" />
+                                        Style="{StaticResource DashboardCircleButton}" />
                                 <TextBlock Text="F8" Style="{StaticResource DashboardActionCaption}" />
                             </StackPanel>
                             <StackPanel Grid.Column="6">
-                                <Button Content="R"
-                                        Command="{Binding ResetCounterCommand}"
-                                        FontSize="24"
-                                        Style="{StaticResource DashboardResetCircleButton}" />
+                                <Button Command="{Binding ResetCounterCommand}"
+                                        Style="{StaticResource DashboardCircleButton}">
+                                    <Viewbox Width="26" Height="26">
+                                        <Path Data="M19,9 L19,4 L24,4 M19,4 C16.9,2.2 14.2,1.2 11.3,1.5 C5.5,2.1 1,7 1,12.8 C1,19 6,24 12.2,24 C17.4,24 21.8,20.4 23,15.5"
+                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                              StrokeThickness="2.4"
+                                              StrokeStartLineCap="Round"
+                                              StrokeEndLineCap="Round"
+                                              StrokeLineJoin="Round"
+                                              Fill="Transparent" />
+                                    </Viewbox>
+                                </Button>
                                 <TextBlock Text="RESET COUNTER" Style="{StaticResource DashboardActionCaption}" />
                             </StackPanel>
                         </Grid>
@@ -969,15 +1762,15 @@
 
                     <Border x:Name="ActiveEncounterBar"
                             Grid.Row="1"
-                            Background="{DynamicResource Panel}"
+                            Background="Transparent"
                             BorderBrush="{DynamicResource BorderGold}"
                             BorderThickness="1"
                             CornerRadius="4"
                             Padding="26,18,18,18">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="58" />
-                                <ColumnDefinition Width="28" />
+                                <ColumnDefinition Width="72" />
+                                <ColumnDefinition Width="24" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="24" />
                                 <ColumnDefinition Width="Auto" />
@@ -985,11 +1778,15 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="10" />
                                 <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="10" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="10" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Grid Width="58" Height="58">
-                                <Border Width="40"
-                                        Height="40"
+                            <Grid Width="72" Height="72">
+                                <Border Width="50"
+                                        Height="50"
                                         BorderBrush="{DynamicResource Gold}"
                                         BorderThickness="1"
                                         HorizontalAlignment="Center"
@@ -1001,7 +1798,7 @@
                                 </Border>
                                 <TextBlock Text="{Binding ActiveBossDeathCountText}"
                                            FontFamily="{DynamicResource MonoFontFamily}"
-                                           FontSize="12"
+                                           FontSize="28"
                                            FontWeight="Bold"
                                            Foreground="{DynamicResource Gold}"
                                            HorizontalAlignment="Center"
@@ -1032,14 +1829,22 @@
                             </Grid>
 
                             <Button Grid.Column="4"
+                                    Content="-"
+                                    Command="{Binding SubtractDeathCommand}"
+                                    Style="{StaticResource EncounterButton}" />
+                            <Button Grid.Column="6"
+                                    Content="+"
+                                    Command="{Binding AddDeathCommand}"
+                                    Style="{StaticResource EncounterButton}" />
+                            <Button Grid.Column="8"
                                     Content="SET"
                                     Command="{Binding SetActiveBossCommand}"
                                     Style="{StaticResource EncounterButton}" />
-                            <Button Grid.Column="6"
+                            <Button Grid.Column="10"
                                     Content="&#x2726; BOSS DEFEATED"
                                     Command="{Binding BossDefeatedCommand}"
                                     Style="{StaticResource EncounterGoldButton}" />
-                            <Button Grid.Column="8"
+                            <Button Grid.Column="12"
                                     Content="SKIP"
                                     Command="{Binding SkipBossCommand}"
                                     Style="{StaticResource EncounterButton}" />
@@ -1109,6 +1914,7 @@
                         </Border>
 
                     </Grid>
+                </Grid>
             </TabItem>
 
             <TabItem Header="Detection">
@@ -1203,64 +2009,10 @@
                     <Grid Margin="48,38">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <Grid Margin="0,0,0,42">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="360" />
-                            </Grid.ColumnDefinitions>
-                            <StackPanel>
-                                <TextBlock Text="{DynamicResource Bosses_Title}"
-                                           FontFamily="{DynamicResource HeaderFontFamily}"
-                                           FontSize="48"
-                                           FontWeight="Bold"
-                                           Foreground="{DynamicResource Gold}" />
-                                <TextBlock Text="{DynamicResource Bosses_Subtitle1}"
-                                           Style="{StaticResource MutedText}"
-                                           FontSize="20"
-                                           TextWrapping="Wrap"
-                                           Margin="0,12,0,0" />
-                                <TextBlock Text="{DynamicResource Bosses_Subtitle2}"
-                                           Style="{StaticResource MutedText}"
-                                           FontSize="20"
-                                           TextWrapping="Wrap"
-                                           Margin="0,8,0,0" />
-                            </StackPanel>
-                            <Border Grid.Column="1"
-                                    Background="{DynamicResource HeaderSurface}"
-                                    BorderBrush="{DynamicResource BorderGold}"
-                                    BorderThickness="0,0,0,1"
-                                    Padding="16,10"
-                                    VerticalAlignment="Top">
-                                <Grid>
-                                    <TextBox Text="{Binding BossSearchText, UpdateSourceTrigger=PropertyChanged}"
-                                             BorderThickness="0"
-                                             Padding="0"
-                                             FontSize="18" />
-                                    <TextBlock Text="{DynamicResource Bosses_SearchPlaceholder}"
-                                               FontFamily="{DynamicResource AppFontFamily}"
-                                               FontSize="18"
-                                               Foreground="#6F675D"
-                                               IsHitTestVisible="False">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                                                <Setter Property="Visibility" Value="Collapsed" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding BossSearchText}" Value="">
-                                                        <Setter Property="Visibility" Value="Visible" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                </Grid>
-                            </Border>
-                        </Grid>
-
-                        <StackPanel Grid.Row="1" Margin="0,0,0,46">
+                        <StackPanel Grid.Row="0" Margin="0,0,0,46">
                             <TextBlock Text="{DynamicResource Bosses_CurrentEncounter}"
                                        Style="{StaticResource LabelText}"
                                        Margin="0,0,0,20" />
@@ -1315,8 +2067,8 @@
                             </Border>
                         </StackPanel>
 
-                        <StackPanel Grid.Row="2">
-                            <Grid Margin="0,0,0,20">
+                        <StackPanel Grid.Row="1">
+                            <Grid Margin="0,0,0,24">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
@@ -1324,43 +2076,72 @@
                                 <TextBlock Text="{DynamicResource Bosses_ConqueredFoes}"
                                            Style="{StaticResource LabelText}"
                                            VerticalAlignment="Center" />
-                                <Button Grid.Column="1"
-                                        Content="{DynamicResource Bosses_AddRecord}"
-                                        Command="{Binding OpenAddBossHistoryEditorCommand}"
-                                        Style="{StaticResource GoldButton}"
-                                        MinWidth="140"
-                                        VerticalAlignment="Center" />
+                                <StackPanel Grid.Column="1"
+                                            Orientation="Horizontal"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center">
+                                    <TextBlock Text="{DynamicResource Bosses_SortBy}"
+                                               Style="{StaticResource MutedText}"
+                                               FontFamily="{DynamicResource AppFontFamily}"
+                                               FontWeight="Bold"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,10,0" />
+                                    <ComboBox ItemsSource="{Binding BossSortModeOptions}"
+                                              SelectedValue="{Binding SelectedBossSortMode, UpdateSourceTrigger=PropertyChanged}"
+                                              SelectedValuePath="Value"
+                                              DisplayMemberPath="DisplayName"
+                                              Style="{StaticResource DarkComboBox}"
+                                              FontSize="16"
+                                              Width="170" />
+                                    <TextBlock Text="{DynamicResource Bosses_Direction}"
+                                               Style="{StaticResource MutedText}"
+                                               FontFamily="{DynamicResource AppFontFamily}"
+                                               FontWeight="Bold"
+                                               VerticalAlignment="Center"
+                                               Margin="20,0,10,0" />
+                                    <ComboBox ItemsSource="{Binding BossSortDirectionOptions}"
+                                              SelectedValue="{Binding SelectedBossSortDirection, UpdateSourceTrigger=PropertyChanged}"
+                                              SelectedValuePath="Value"
+                                              DisplayMemberPath="DisplayName"
+                                              Style="{StaticResource DarkComboBox}"
+                                              FontSize="16"
+                                              Width="170" />
+                                    <Border Background="{DynamicResource HeaderSurface}"
+                                            BorderBrush="{DynamicResource BorderGold}"
+                                            BorderThickness="0,0,0,1"
+                                            Padding="14,8"
+                                            Width="260"
+                                            Margin="20,0,10,0">
+                                        <Grid>
+                                            <TextBox Text="{Binding BossSearchText, UpdateSourceTrigger=PropertyChanged}"
+                                                     BorderThickness="0"
+                                                     Padding="0"
+                                                     FontSize="16" />
+                                            <TextBlock Text="{DynamicResource Bosses_SearchPlaceholder}"
+                                                       FontFamily="{DynamicResource AppFontFamily}"
+                                                       FontSize="16"
+                                                       Foreground="#6F675D"
+                                                       IsHitTestVisible="False">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding BossSearchText}" Value="">
+                                                                <Setter Property="Visibility" Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Grid>
+                                    </Border>
+                                    <Button Content="{DynamicResource Bosses_AddRecord}"
+                                            Command="{Binding OpenAddBossHistoryEditorCommand}"
+                                            Style="{StaticResource GoldButton}"
+                                            MinWidth="140"
+                                            VerticalAlignment="Center" />
+                                </StackPanel>
                             </Grid>
-                            <StackPanel Orientation="Horizontal"
-                                        HorizontalAlignment="Center"
-                                        Margin="0,0,0,24">
-                                <TextBlock Text="{DynamicResource Bosses_SortBy}"
-                                           Style="{StaticResource MutedText}"
-                                           FontFamily="{DynamicResource AppFontFamily}"
-                                           FontWeight="Bold"
-                                           VerticalAlignment="Center"
-                                           Margin="0,0,10,0" />
-                                <ComboBox ItemsSource="{Binding BossSortModeOptions}"
-                                          SelectedValue="{Binding SelectedBossSortMode, UpdateSourceTrigger=PropertyChanged}"
-                                          SelectedValuePath="Value"
-                                          DisplayMemberPath="DisplayName"
-                                          Style="{StaticResource DarkComboBox}"
-                                          FontSize="16"
-                                          Width="170" />
-                                <TextBlock Text="{DynamicResource Bosses_Direction}"
-                                           Style="{StaticResource MutedText}"
-                                           FontFamily="{DynamicResource AppFontFamily}"
-                                           FontWeight="Bold"
-                                           VerticalAlignment="Center"
-                                           Margin="24,0,10,0" />
-                                <ComboBox ItemsSource="{Binding BossSortDirectionOptions}"
-                                          SelectedValue="{Binding SelectedBossSortDirection, UpdateSourceTrigger=PropertyChanged}"
-                                          SelectedValuePath="Value"
-                                          DisplayMemberPath="DisplayName"
-                                          Style="{StaticResource DarkComboBox}"
-                                          FontSize="16"
-                                          Width="170" />
-                            </StackPanel>
                             <TextBlock Text="{Binding DefeatedBossesEmptyText}"
                                        Style="{StaticResource MutedText}"
                                        FontStyle="Italic"

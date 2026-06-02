@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using EldenDeathCounter.Core.Detection;
 
@@ -159,13 +160,58 @@ public sealed class AppProjectAssetTests
         var dashboardTab = xaml[dashboardStart..dashboardEnd];
 
         Assert.DoesNotContain("<ScrollViewer", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("x:Key=\"DashboardBackdropBrush\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("Color=\"#000000\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("x:Key=\"DashboardParticleGold\"", xaml, StringComparison.Ordinal);
+        Assert.DoesNotContain("x:Key=\"DashboardParticleGoldSoft\"", xaml, StringComparison.Ordinal);
+        Assert.DoesNotContain("x:Key=\"DashboardParticleRuneRed\"", xaml, StringComparison.Ordinal);
+        Assert.DoesNotContain("Color=\"#191D1E\"", xaml, StringComparison.Ordinal);
+        Assert.DoesNotContain("Color=\"#283139\"", xaml, StringComparison.Ordinal);
         Assert.Contains("x:Name=\"DashboardStage\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("x:Name=\"DashboardParticleField\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("x:Name=\"DashboardParticleBall01\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("x:Name=\"DashboardParticleBall12\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("x:Name=\"DashboardParticleBall20\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("x:Name=\"DashboardParticleBall40\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Equal(40, Regex.Matches(dashboardTab, "x:Name=\"DashboardParticleBall\\d{2}\"").Count);
+        Assert.Contains("<Canvas.Resources>", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("TargetType=\"{x:Type Ellipse}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Fill\" Value=\"{StaticResource DashboardParticleGold}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("<BlurEffect Radius=\"3.6\"", dashboardTab, StringComparison.Ordinal);
+        Assert.DoesNotContain("Fill=\"{StaticResource DashboardParticleGoldSoft}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.DoesNotContain("Fill=\"{StaticResource DashboardParticleRuneRed}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.DoesNotContain("x:Name=\"DashboardLightPrimary\"", dashboardTab, StringComparison.Ordinal);
+        Assert.DoesNotContain("x:Name=\"DashboardLightSecondary\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("x:Key=\"DashboardAmbientStoryboard\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("RepeatBehavior=\"Forever\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("DoubleAnimation", dashboardTab, StringComparison.Ordinal);
         Assert.Contains("Text=\"YOU HAVE DIED\"", dashboardTab, StringComparison.Ordinal);
         Assert.Contains("Text=\"{Binding StatusDeathCountText}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("x:Name=\"DashboardCountGlow\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("x:Name=\"DashboardCountTextBlur\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("BlurRadius=\"156\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("<BlurEffect Radius=\"10\"", dashboardTab, StringComparison.Ordinal);
         Assert.Contains("Text=\"TIMES\"", dashboardTab, StringComparison.Ordinal);
         Assert.Contains("Style=\"{StaticResource DashboardCircleButton}\"", dashboardTab, StringComparison.Ordinal);
-        Assert.Contains("Style=\"{StaticResource DashboardResetCircleButton}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.DoesNotContain("DashboardResetCircleButton", xaml, StringComparison.Ordinal);
+        Assert.DoesNotContain("Content=\"R\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Storyboard.TargetName=\"ButtonScale\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("RenderTransformOrigin=\"0.5,0.5\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("To=\"1.08\"", xaml, StringComparison.Ordinal);
+        Assert.DoesNotContain("From=\"0.5\"", xaml, StringComparison.Ordinal);
+        Assert.DoesNotContain("Command=\"{Binding AddDeathCommand}\"\r\n                                        Style=\"{StaticResource DashboardCircleButton}\"\r\n                                        BorderBrush=", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Duration=\"0:0:0.2\"", xaml, StringComparison.Ordinal);
         Assert.Contains("x:Name=\"ActiveEncounterBar\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Background=\"Transparent\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("<Grid Width=\"72\" Height=\"72\">", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("<Border Width=\"50\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Text=\"{Binding ActiveBossDeathCountText}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("FontSize=\"28\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Content=\"-\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Command=\"{Binding SubtractDeathCommand}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Content=\"+\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Command=\"{Binding AddDeathCommand}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Style=\"{StaticResource EncounterButton}\"", dashboardTab, StringComparison.Ordinal);
         Assert.Contains("Command=\"{Binding SetActiveBossCommand}\"", dashboardTab, StringComparison.Ordinal);
         Assert.Contains("Command=\"{Binding BossDefeatedCommand}\"", dashboardTab, StringComparison.Ordinal);
         Assert.Contains("Command=\"{Binding SkipBossCommand}\"", dashboardTab, StringComparison.Ordinal);
@@ -301,7 +347,13 @@ public sealed class AppProjectAssetTests
         Assert.DoesNotContain("x:Name=\"BottomStatusBar\"", xaml, StringComparison.Ordinal);
 
         // The header carries the centered section title, game order from the reference, and live status.
+        Assert.Contains("x:Name=\"HeaderBorder\" Grid.ColumnSpan=\"2\"", xaml, StringComparison.Ordinal);
         Assert.Contains("x:Name=\"SectionTitleText\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("Text=\"Dashboard\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("FontSize=\"30\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("FontWeight=\"Bold\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("Foreground=\"{DynamicResource Gold}\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("HorizontalAlignment=\"Center\"", xaml, StringComparison.Ordinal);
         Assert.Contains("Style=\"{StaticResource TopStatusDot}\"", xaml, StringComparison.Ordinal);
         Assert.Contains("Text=\"{Binding DetectionStatus}\"", xaml, StringComparison.Ordinal);
         Assert.Contains("Text=\"LAST\"", xaml, StringComparison.Ordinal);
@@ -317,6 +369,7 @@ public sealed class AppProjectAssetTests
         // The narrow icon rail provides the emblem and glyph navigation.
         Assert.Contains("EmblemFontFamily", xaml, StringComparison.Ordinal);
         Assert.Contains("Style=\"{StaticResource RailNavButton}\"", xaml, StringComparison.Ordinal);
+        Assert.DoesNotContain("ToUpperInvariant", code, StringComparison.Ordinal);
         Assert.DoesNotContain("string.Join", code, StringComparison.Ordinal);
     }
 

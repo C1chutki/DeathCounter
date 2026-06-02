@@ -56,7 +56,6 @@
     <sys:String x:Key="Detect_Log">▰ Detection Log</sys:String>
 
     <!-- Bosses tab -->
-    <sys:String x:Key="Bosses_Title">Great Enemy Felled</sys:String>
     <sys:String x:Key="Bosses_Subtitle1">Every major encounter across the Lands Between.</sys:String>
     <sys:String x:Key="Bosses_Subtitle2">Every attempt and victory, written in blood.</sys:String>
     <sys:String x:Key="Bosses_SearchPlaceholder">Search Boss Name...</sys:String>

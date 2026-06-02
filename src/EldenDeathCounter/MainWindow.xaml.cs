@@ -79,8 +79,7 @@ public partial class MainWindow : Window
             _ => "Section_Dashboard",
         };
 
-        var text = TryFindResource(key) as string ?? string.Empty;
-        SectionTitleText.Text = text.ToUpperInvariant();
+        SectionTitleText.Text = TryFindResource(key) as string ?? string.Empty;
     }
 
     private async void DarkSouls1Button_Click(object sender, RoutedEventArgs e)

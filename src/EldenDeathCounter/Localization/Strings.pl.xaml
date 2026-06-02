@@ -56,7 +56,6 @@
     <sys:String x:Key="Detect_Log">▰ Dziennik wykrywania</sys:String>
 
     <!-- Bosses tab -->
-    <sys:String x:Key="Bosses_Title">Pokonano Wielkiego Wroga</sys:String>
     <sys:String x:Key="Bosses_Subtitle1">Każde wielkie starcie w Krainach Pomiędzy.</sys:String>
     <sys:String x:Key="Bosses_Subtitle2">Każda próba i zwycięstwo, zapisane krwią.</sys:String>
     <sys:String x:Key="Bosses_SearchPlaceholder">Szukaj nazwy bossa...</sys:String>
