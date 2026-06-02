@@ -2,6 +2,12 @@
 
 ## 2026-06-02
 
+- Zmieniono emblemat w lewym railu z `M` na dark-fantasy `D` renderowane krojem `UnifrakturCook` z subtelnym ciemnoczerwonym cieniem. Wersje podniesiono do 1.11.4.
+
+- Pogrubiono obramowania okraglych przyciskow dashboardu i powiekszono podpisy pod nimi. Wersje podniesiono do 1.11.3.
+
+- Przywrocono stara czcionke aplikacji `EB Garamond` dla wszystkich zasobow fontow UI, w tym nowych kluczy dodanych przez ostatni redesign. Wersje podniesiono do 1.11.2.
+
 - Przemodelowano Dashboard pod dostarczony screen: okno ma rozmiar referencyjny 1582x840, rail 78px z emblematem `M`, topbar `DS/DS2/DS3/ER`, centralny licznik `YOU HAVE DIED` oraz dolny pasek aktywnego encountera. Zaktualizowano testy XAML dla nowego ukladu; wersje podniesiono do 1.11.1.
 
 - Przebudowano wyglad glownego okna na styl projektu Claude Design "MEMENTO", zachowujac uklad i funkcje kazdej zakladki. Lewy panel zastapiono waskim paskiem ikon (72px) z okraglym emblematem (font UnifrakturCook) i nawigacja glifowa; naglowek przerobiono na pasek z pigulkami gier (aktywna na zlotym gradiencie), wysrodkowanym tytulem sekcji (Cinzel) oraz zywym statusem detekcji i nazwa postaci. Dolny pasek statusu usunieto. Dodano spakowane czcionki (Cinzel, Spectral, JetBrains Mono, UnifrakturCook) w `Assets/Fonts`, dostrojono palete motywu Elden Ring do tonacji CD (zloto `#D9B45A`, tlo `#0B0907`) i tlo z gradientem radialnym. Zaktualizowano testy chrome; wersje podniesiono do 1.11.0.

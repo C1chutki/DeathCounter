@@ -658,7 +658,7 @@
             <Setter Property="Padding" Value="0" />
             <Setter Property="Background" Value="#070503" />
             <Setter Property="BorderBrush" Value="#6A5425" />
-            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderThickness" Value="2" />
             <Setter Property="Foreground" Value="{DynamicResource Ink}" />
             <Setter Property="FontFamily" Value="{DynamicResource MonoFontFamily}" />
             <Setter Property="FontSize" Value="22" />
@@ -692,7 +692,7 @@
         </Style>
 
         <Style x:Key="DashboardActionCaption" TargetType="TextBlock" BasedOn="{StaticResource LabelText}">
-            <Setter Property="FontSize" Value="10" />
+            <Setter Property="FontSize" Value="11.5" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="Margin" Value="0,7,0,0" />
         </Style>
@@ -741,12 +741,17 @@
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="18" ShadowDepth="0" Opacity="0.5" Color="#D9B45A" />
                     </Border.Effect>
-                    <TextBlock Text="M"
+                    <TextBlock Text="D"
                                FontFamily="{DynamicResource EmblemFontFamily}"
-                               FontSize="24"
+                               FontSize="28"
+                               FontWeight="Bold"
                                Foreground="{DynamicResource Gold2}"
                                HorizontalAlignment="Center"
-                               VerticalAlignment="Center" />
+                               VerticalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect BlurRadius="10" ShadowDepth="0" Opacity="0.85" Color="#3B0000" />
+                        </TextBlock.Effect>
+                    </TextBlock>
                 </Border>
 
                 <!-- Navigation -->
@@ -770,7 +775,7 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,8">
-                    <TextBlock Text="v1.11.1"
+                    <TextBlock Text="v1.11.4"
                                FontFamily="{DynamicResource MonoFontFamily}"
                                FontSize="8.5"
                                Foreground="{DynamicResource Faint}"

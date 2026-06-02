@@ -321,6 +321,33 @@ public sealed class AppProjectAssetTests
     }
 
     [Fact]
+    public void SidebarEmblemUsesDarkFantasyDeathCounterInitial()
+    {
+        var projectRoot = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory,
+            "..",
+            "..",
+            "..",
+            "..",
+            ".."));
+        var xamlPath = Path.Combine(projectRoot, "src", "EldenDeathCounter", "MainWindow.xaml");
+        var appXamlPath = Path.Combine(projectRoot, "src", "EldenDeathCounter", "App.xaml");
+        var xaml = File.ReadAllText(xamlPath);
+        var appXaml = File.ReadAllText(appXamlPath);
+
+        var emblemStart = xaml.IndexOf("<!-- Emblem -->", StringComparison.Ordinal);
+        Assert.True(emblemStart >= 0);
+        var emblemEnd = xaml.IndexOf("<!-- Navigation -->", emblemStart, StringComparison.Ordinal);
+        Assert.True(emblemEnd > emblemStart);
+        var emblem = xaml[emblemStart..emblemEnd];
+
+        Assert.Contains("Text=\"D\"", emblem, StringComparison.Ordinal);
+        Assert.DoesNotContain("Text=\"M\"", emblem, StringComparison.Ordinal);
+        Assert.Contains("EmblemFontFamily", emblem, StringComparison.Ordinal);
+        Assert.Contains("#UnifrakturCook", appXaml, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void MainWindowThemeApplicationDoesNotMutateResourceBrushColors()
     {
         var codePath = Path.GetFullPath(Path.Combine(

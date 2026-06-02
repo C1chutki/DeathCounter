@@ -7,9 +7,9 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/EldenDeathCounter;component/Localization/Strings.en.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <FontFamily x:Key="AppFontFamily">pack://application:,,,/Assets/Fonts/#Spectral</FontFamily>
-            <FontFamily x:Key="HeaderFontFamily">pack://application:,,,/Assets/Fonts/#Cinzel</FontFamily>
-            <FontFamily x:Key="MonoFontFamily">pack://application:,,,/Assets/Fonts/#JetBrains Mono</FontFamily>
+            <FontFamily x:Key="AppFontFamily">EB Garamond</FontFamily>
+            <FontFamily x:Key="HeaderFontFamily">EB Garamond</FontFamily>
+            <FontFamily x:Key="MonoFontFamily">EB Garamond</FontFamily>
             <FontFamily x:Key="EmblemFontFamily">pack://application:,,,/Assets/Fonts/#UnifrakturCook</FontFamily>
         </ResourceDictionary>
     </Application.Resources>
