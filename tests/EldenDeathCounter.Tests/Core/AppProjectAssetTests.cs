@@ -137,7 +137,7 @@ public sealed class AppProjectAssetTests
     }
 
     [Fact]
-    public void DashboardMonitorStatusUsesSingleStatefulToggleButton()
+    public void DashboardUsesReferenceCounterStageLayout()
     {
         var xamlPath = Path.GetFullPath(Path.Combine(
             AppContext.BaseDirectory,
@@ -151,17 +151,28 @@ public sealed class AppProjectAssetTests
             "MainWindow.xaml"));
         var xaml = File.ReadAllText(xamlPath);
 
-        Assert.Contains("MonitorToggleButton", xaml, StringComparison.Ordinal);
-        Assert.Contains("ToggleDetectionCommand", xaml, StringComparison.Ordinal);
-        Assert.Contains("IsDetectionRunning", xaml, StringComparison.Ordinal);
-        Assert.Contains("Value=\"{DynamicResource Monitor_Start}\"", xaml, StringComparison.Ordinal);
-        Assert.Contains("Value=\"{DynamicResource Monitor_Stop}\"", xaml, StringComparison.Ordinal);
-        Assert.Contains("#17301F", xaml, StringComparison.Ordinal);
-        Assert.Contains("#3A1010", xaml, StringComparison.Ordinal);
+        var dashboardStart = xaml.IndexOf("<TabItem Header=\"Dashboard\">", StringComparison.Ordinal);
+        Assert.True(dashboardStart >= 0);
+
+        var dashboardEnd = xaml.IndexOf("<TabItem Header=\"Detection\">", dashboardStart, StringComparison.Ordinal);
+        Assert.True(dashboardEnd > dashboardStart);
+        var dashboardTab = xaml[dashboardStart..dashboardEnd];
+
+        Assert.DoesNotContain("<ScrollViewer", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("x:Name=\"DashboardStage\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Text=\"YOU HAVE DIED\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Text=\"{Binding StatusDeathCountText}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Text=\"TIMES\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Style=\"{StaticResource DashboardCircleButton}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Style=\"{StaticResource DashboardResetCircleButton}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("x:Name=\"ActiveEncounterBar\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Command=\"{Binding SetActiveBossCommand}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Command=\"{Binding BossDefeatedCommand}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Command=\"{Binding SkipBossCommand}\"", dashboardTab, StringComparison.Ordinal);
     }
 
     [Fact]
-    public void DashboardTabScrollsInsteadOfClippingBindingReminders()
+    public void DashboardKeepsManualCounterSetInputNearReferenceControls()
     {
         var xamlPath = Path.GetFullPath(Path.Combine(
             AppContext.BaseDirectory,
@@ -181,9 +192,13 @@ public sealed class AppProjectAssetTests
         Assert.True(dashboardEnd > dashboardStart);
         var dashboardTab = xaml[dashboardStart..dashboardEnd];
 
-        Assert.Contains("<ScrollViewer VerticalScrollBarVisibility=\"Auto\">", dashboardTab, StringComparison.Ordinal);
-        Assert.Contains("Dash_BindingReminders", dashboardTab, StringComparison.Ordinal);
-        Assert.Contains("Dash_BossDefeatedReminder", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Text=\"{Binding ManualCounterText, UpdateSourceTrigger=PropertyChanged}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Command=\"{Binding SubtractDeathCommand}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Command=\"{Binding SetCounterCommand}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Command=\"{Binding AddDeathCommand}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Command=\"{Binding ResetCounterCommand}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.DoesNotContain("Dash_QuickSettings", dashboardTab, StringComparison.Ordinal);
+        Assert.DoesNotContain("Dash_BindingReminders", dashboardTab, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -266,7 +281,7 @@ public sealed class AppProjectAssetTests
     }
 
     [Fact]
-    public void BottomStatusBarUsesCompactSegmentedGameHudStyling()
+    public void TopBarReplacesBottomStatusBarWithLiveStatusAndSectionTitle()
     {
         var xamlPath = Path.GetFullPath(Path.Combine(
             AppContext.BaseDirectory,
@@ -278,25 +293,31 @@ public sealed class AppProjectAssetTests
             "src",
             "EldenDeathCounter",
             "MainWindow.xaml"));
+        var codePath = Path.Combine(Path.GetDirectoryName(xamlPath)!, "MainWindow.xaml.cs");
         var xaml = File.ReadAllText(xamlPath);
-        var statusBarStart = xaml.IndexOf("x:Name=\"BottomStatusBar\"", StringComparison.Ordinal);
-        Assert.True(statusBarStart >= 0);
+        var code = File.ReadAllText(codePath);
 
-        var statusBarEnd = xaml.IndexOf("</Border>", statusBarStart, StringComparison.Ordinal);
-        Assert.True(statusBarEnd > statusBarStart);
-        var statusBar = xaml[statusBarStart..statusBarEnd];
+        // The Claude Design chrome drops the bottom status bar in favour of a top bar.
+        Assert.DoesNotContain("x:Name=\"BottomStatusBar\"", xaml, StringComparison.Ordinal);
 
-        Assert.DoesNotContain("Grid.Column=\"1\"", statusBar, StringComparison.Ordinal);
-        Assert.Contains("Grid.ColumnSpan=\"2\"", statusBar, StringComparison.Ordinal);
-        Assert.Contains("Background=\"{DynamicResource StatusBarSurface}\"", statusBar, StringComparison.Ordinal);
-        Assert.Contains("BorderBrush=\"{DynamicResource Separator}\"", statusBar, StringComparison.Ordinal);
-        Assert.Contains("Value=\"{DynamicResource AppFontFamily}\"", statusBar, StringComparison.Ordinal);
-        Assert.Contains("Value=\"12\"", statusBar, StringComparison.Ordinal);
-        Assert.Contains("Value=\"Bold\"", statusBar, StringComparison.Ordinal);
-        Assert.Contains("StatusDeathCountText", statusBar, StringComparison.Ordinal);
-        Assert.Contains("StatusOverlayStateText", statusBar, StringComparison.Ordinal);
-        Assert.Contains("StatusDetectionStateText", statusBar, StringComparison.Ordinal);
-        Assert.Contains("Foreground=\"{DynamicResource Gold}\"", statusBar, StringComparison.Ordinal);
+        // The header carries the centered section title, game order from the reference, and live status.
+        Assert.Contains("x:Name=\"SectionTitleText\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("Style=\"{StaticResource TopStatusDot}\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("Text=\"{Binding DetectionStatus}\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("Text=\"LAST\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("Text=\"{Binding LastDetectedDeathText}\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("Text=\"Elden Ring Death Counter\"", xaml, StringComparison.Ordinal);
+
+        var ds = xaml.IndexOf("x:Name=\"DarkSouls1Button\"", StringComparison.Ordinal);
+        var ds2 = xaml.IndexOf("x:Name=\"DarkSouls2Button\"", StringComparison.Ordinal);
+        var ds3 = xaml.IndexOf("x:Name=\"DarkSouls3Button\"", StringComparison.Ordinal);
+        var er = xaml.IndexOf("x:Name=\"EldenRingButton\"", StringComparison.Ordinal);
+        Assert.True(ds >= 0 && ds < ds2 && ds2 < ds3 && ds3 < er);
+
+        // The narrow icon rail provides the emblem and glyph navigation.
+        Assert.Contains("EmblemFontFamily", xaml, StringComparison.Ordinal);
+        Assert.Contains("Style=\"{StaticResource RailNavButton}\"", xaml, StringComparison.Ordinal);
+        Assert.DoesNotContain("string.Join", code, StringComparison.Ordinal);
     }
 
     [Fact]

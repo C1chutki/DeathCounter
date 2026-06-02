@@ -17,6 +17,8 @@ public partial class MainWindow : Window
         DataContext = _viewModel;
         InitializeComponent();
         ApplyGameTheme(AppGameProfile.EldenRing.Theme);
+        UpdateActiveGamePill(AppGameProfile.EldenRing);
+        SetSectionTitle(0);
     }
 
     protected override void OnSourceInitialized(EventArgs e)
@@ -53,8 +55,32 @@ public partial class MainWindow : Window
     {
         if (sender is System.Windows.Controls.RadioButton { Tag: string tag } && int.TryParse(tag, out var index))
         {
-            MainTabs.SelectedIndex = index;
+            if (MainTabs is not null)
+            {
+                MainTabs.SelectedIndex = index;
+            }
+
+            SetSectionTitle(index);
         }
+    }
+
+    private void SetSectionTitle(int index)
+    {
+        if (SectionTitleText is null)
+        {
+            return;
+        }
+
+        var key = index switch
+        {
+            1 => "Section_Detection",
+            2 => "Section_Bosses",
+            3 => "Section_Settings",
+            _ => "Section_Dashboard",
+        };
+
+        var text = TryFindResource(key) as string ?? string.Empty;
+        SectionTitleText.Text = text.ToUpperInvariant();
     }
 
     private async void DarkSouls1Button_Click(object sender, RoutedEventArgs e)
@@ -82,21 +108,34 @@ public partial class MainWindow : Window
         if (await _viewModel.SwitchGameProfileAsync(profile))
         {
             ApplyGameTheme(profile.Theme);
+            UpdateActiveGamePill(profile);
         }
+    }
+
+    private void UpdateActiveGamePill(AppGameProfile profile)
+    {
+        if (EldenRingButton is null)
+        {
+            return;
+        }
+
+        var active = (System.Windows.Style)FindResource("GamePillActive");
+        var inactive = (System.Windows.Style)FindResource("GamePill");
+
+        EldenRingButton.Style = profile.Id == AppGameProfile.EldenRing.Id ? active : inactive;
+        DarkSouls1Button.Style = profile.Id == AppGameProfile.DarkSouls1.Id ? active : inactive;
+        DarkSouls2Button.Style = profile.Id == AppGameProfile.DarkSouls2.Id ? active : inactive;
+        DarkSouls3Button.Style = profile.Id == AppGameProfile.DarkSouls3.Id ? active : inactive;
     }
 
     private void ApplyGameTheme(AppGameTheme theme)
     {
         Title = theme.Title;
-        AppTitleTextBlock.Text = theme.Title;
-        Background = BrushFromHex(theme.Neutral);
-        MainTabs.Background = BrushFromHex(theme.Neutral);
+        Background = BuildBackgroundBrush(theme);
+        MainTabs.Background = System.Windows.Media.Brushes.Transparent;
         SidebarBorder.Background = BrushFromHex(theme.Secondary);
         SidebarBorder.BorderBrush = BrushFromHex(theme.Border);
-        HeaderBorder.Background = BrushFromHex(theme.Panel);
         HeaderBorder.BorderBrush = BrushFromHex(theme.Border);
-        BottomStatusBar.Background = BrushFromHex(theme.Panel);
-        BottomStatusBar.BorderBrush = BrushFromHex(theme.Border);
 
         SetResourceBrush("Gold", theme.Primary);
         SetResourceBrush("Ink", theme.Ink);
@@ -115,19 +154,22 @@ public partial class MainWindow : Window
         SetResourceBrush("StatusBarSurface", theme.Panel);
         SetResourceBrush("BorderGold", theme.Border);
 
-        DarkSouls1Button.Background = BrushFromHex(AppGameTheme.DarkSouls1.Primary);
-        DarkSouls1Button.BorderBrush = BrushFromHex(AppGameTheme.DarkSouls1.Primary);
-        DarkSouls1Button.Foreground = BrushFromHex(AppGameTheme.DarkSouls1.Neutral);
-
-        DarkSouls2Button.Background = BrushFromHex(AppGameTheme.DarkSouls2.Primary);
-        DarkSouls2Button.BorderBrush = BrushFromHex(AppGameTheme.DarkSouls2.Primary);
-        DarkSouls2Button.Foreground = BrushFromHex(AppGameTheme.DarkSouls2.Neutral);
-
-        DarkSouls3Button.Background = BrushFromHex(AppGameTheme.DarkSouls3.Primary);
-        DarkSouls3Button.BorderBrush = BrushFromHex(AppGameTheme.DarkSouls3.Primary);
-        DarkSouls3Button.Foreground = BrushFromHex(AppGameTheme.DarkSouls3.Neutral);
-
         _viewModel.ApplyGameTheme(theme);
+    }
+
+    private static System.Windows.Media.RadialGradientBrush BuildBackgroundBrush(AppGameTheme theme)
+    {
+        var brush = new System.Windows.Media.RadialGradientBrush
+        {
+            GradientOrigin = new System.Windows.Point(0.5, -0.1),
+            Center = new System.Windows.Point(0.5, -0.1),
+            RadiusX = 1.5,
+            RadiusY = 1.2,
+        };
+        brush.GradientStops.Add(new System.Windows.Media.GradientStop(ColorFromHex(theme.PanelAlt), 0));
+        brush.GradientStops.Add(new System.Windows.Media.GradientStop(ColorFromHex(theme.Neutral), 0.65));
+        brush.Freeze();
+        return brush;
     }
 
     private void SetResourceBrush(string resourceKey, string color)

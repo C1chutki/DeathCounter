@@ -48,7 +48,7 @@ public sealed class AppGameThemeTests
     {
         var theme = AppGameTheme.EldenRing;
 
-        Assert.Equal("#EAC36D", theme.OverlayBorder);
+        Assert.Equal("#D9B45A", theme.OverlayBorder);
         Assert.Equal(theme.Primary, theme.OverlayBorder);
         Assert.Equal("#7F000000", theme.OverlayBackground);
     }

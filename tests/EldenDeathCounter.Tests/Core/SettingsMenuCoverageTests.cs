@@ -140,7 +140,7 @@ public sealed class SettingsMenuCoverageTests
         var xaml = File.ReadAllText(GetMainWindowXamlPath());
         var editor = Regex.Match(
             xaml,
-            "Visibility=\"\\{Binding IsBossHistoryEditorOpen, Converter=\\{StaticResource BooleanToVisibilityConverter\\}\\}\">(?<content>[\\s\\S]*?)</Border>\\s*<Border x:Name=\"BottomStatusBar\"",
+            "Visibility=\"\\{Binding IsBossHistoryEditorOpen, Converter=\\{StaticResource BooleanToVisibilityConverter\\}\\}\">(?<content>[\\s\\S]*?)</Grid>\\s*</Window>",
             RegexOptions.CultureInvariant).Groups["content"].Value;
 
         Assert.NotEmpty(editor);

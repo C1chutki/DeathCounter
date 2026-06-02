@@ -2,6 +2,10 @@
 
 ## 2026-06-02
 
+- Przemodelowano Dashboard pod dostarczony screen: okno ma rozmiar referencyjny 1582x840, rail 78px z emblematem `M`, topbar `DS/DS2/DS3/ER`, centralny licznik `YOU HAVE DIED` oraz dolny pasek aktywnego encountera. Zaktualizowano testy XAML dla nowego ukladu; wersje podniesiono do 1.11.1.
+
+- Przebudowano wyglad glownego okna na styl projektu Claude Design "MEMENTO", zachowujac uklad i funkcje kazdej zakladki. Lewy panel zastapiono waskim paskiem ikon (72px) z okraglym emblematem (font UnifrakturCook) i nawigacja glifowa; naglowek przerobiono na pasek z pigulkami gier (aktywna na zlotym gradiencie), wysrodkowanym tytulem sekcji (Cinzel) oraz zywym statusem detekcji i nazwa postaci. Dolny pasek statusu usunieto. Dodano spakowane czcionki (Cinzel, Spectral, JetBrains Mono, UnifrakturCook) w `Assets/Fonts`, dostrojono palete motywu Elden Ring do tonacji CD (zloto `#D9B45A`, tlo `#0B0907`) i tlo z gradientem radialnym. Zaktualizowano testy chrome; wersje podniesiono do 1.11.0.
+
 - Dodano w pelni funkcjonalne przelaczenie aplikacji na gre Dark Souls 1 przyciskiem `DS` w naglowku. Nowy profil `AppGameProfile.DarkSouls1` (folder `DeathCounter\DarkSouls1` z osobnymi `appsettings.json`/`deaths.json`/`log.txt`) i motyw `AppGameTheme.DarkSouls1` w niebiesko-grafitowej palecie ze screena (Primary `#4A90E2`, tlo `#0A0A0A`/`#1A1A1A`, szary tekst `#C2C2C2`) sa przelaczane na zywo wraz z overlayem. Dodano testy profilu i motywu Dark Souls 1; wersje podniesiono do 1.10.0.
 
 ## 2026-06-01

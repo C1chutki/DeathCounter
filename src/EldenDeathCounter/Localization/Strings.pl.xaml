@@ -10,6 +10,12 @@
     <sys:String x:Key="Nav_ToggleOverlay">PRZEŁĄCZ NAKŁADKĘ</sys:String>
     <sys:String x:Key="Nav_OpenDataFolder">▰  OTWÓRZ FOLDER DANYCH</sys:String>
 
+    <!-- Section titles (top bar / rail tooltips) -->
+    <sys:String x:Key="Section_Dashboard">Pulpit</sys:String>
+    <sys:String x:Key="Section_Detection">Wykrywanie</sys:String>
+    <sys:String x:Key="Section_Bosses">Bossowie</sys:String>
+    <sys:String x:Key="Section_Settings">Ustawienia</sys:String>
+
     <!-- Dashboard -->
     <sys:String x:Key="Dash_CurrentTally">AKTUALNY LICZNIK</sys:String>
     <sys:String x:Key="Dash_ResetCounter">ZRESETUJ LICZNIK</sys:String>

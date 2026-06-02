@@ -10,6 +10,12 @@
     <sys:String x:Key="Nav_ToggleOverlay">TOGGLE OVERLAY</sys:String>
     <sys:String x:Key="Nav_OpenDataFolder">▰  OPEN DATA FOLDER</sys:String>
 
+    <!-- Section titles (top bar / rail tooltips) -->
+    <sys:String x:Key="Section_Dashboard">Dashboard</sys:String>
+    <sys:String x:Key="Section_Detection">Detection</sys:String>
+    <sys:String x:Key="Section_Bosses">Bosses</sys:String>
+    <sys:String x:Key="Section_Settings">Settings</sys:String>
+
     <!-- Dashboard -->
     <sys:String x:Key="Dash_CurrentTally">CURRENT TALLY</sys:String>
     <sys:String x:Key="Dash_ResetCounter">RESET COUNTER</sys:String>

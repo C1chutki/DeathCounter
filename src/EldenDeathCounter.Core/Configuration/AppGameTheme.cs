@@ -17,17 +17,17 @@ public sealed record AppGameTheme(
 {
     public static AppGameTheme EldenRing { get; } = new(
         "Elden Ring Death Counter",
-        "#EAC36D",
-        "#191919",
-        "#F1EEE7",
-        "#0B0B0B",
-        "#F1EEE7",
-        "#B8B1A6",
-        "#141414",
-        "#191815",
-        "#4A3D27",
+        "#D9B45A",
+        "#0C0A06",
+        "#ECE3CF",
+        "#0B0907",
+        "#ECE3CF",
+        "#8A7C5E",
+        "#13100B",
+        "#1A150D",
+        "#2E2719",
         "#7F000000",
-        "#EAC36D",
+        "#D9B45A",
         "#FFFFFF");
 
     public static AppGameTheme DarkSouls1 { get; } = new(
