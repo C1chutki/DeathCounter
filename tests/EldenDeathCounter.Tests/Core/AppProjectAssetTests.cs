@@ -73,21 +73,35 @@ public sealed class AppProjectAssetTests
     [Fact]
     public void DeathTemplateLoaderIncludesAllEnglishDeathScreenTemplates()
     {
-        var detectorPath = Path.GetFullPath(Path.Combine(
-            AppContext.BaseDirectory,
-            "..",
-            "..",
-            "..",
-            "..",
-            "..",
-            "src",
-            "EldenDeathCounter",
-            "Detection",
-            "TemplateDeathTextImageSignalDetector.cs"));
-        var detectorCode = File.ReadAllText(detectorPath);
+        // English death-screen templates are resolved by the per-game template helper.
+        var english = GameDeathScreenTemplates.DeathTemplateFiles("EldenRing", "ENG");
 
-        Assert.Contains("\"ENG_Death_Screen.jpg\"", detectorCode, StringComparison.Ordinal);
-        Assert.Contains("\"ENG_Death_Screen_v2.jpg\"", detectorCode, StringComparison.Ordinal);
+        Assert.Contains("ENG_Death_Screen.jpg", english);
+        Assert.Contains("ENG_Death_Screen_v2.jpg", english);
+    }
+
+    [Fact]
+    public void AppProjectCopiesDarkSouls3DetectionAssets()
+    {
+        var projectPath = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory, "..", "..", "..", "..", "..",
+            "src", "EldenDeathCounter", "EldenDeathCounter.csproj"));
+        var project = XDocument.Load(projectPath);
+        var includes = project
+            .Descendants("Content")
+            .Select(element => element.Attribute("Include")?.Value)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        // The DS3 subfolder must be copied to output or the per-game templates can't be loaded at runtime.
+        Assert.Contains(@"..\..\Assets\Dark souls 3\*.*", includes);
+
+        var ds3Root = Path.GetFullPath(Path.Combine(
+            Path.GetDirectoryName(projectPath)!, "..", "..", "Assets", "Dark souls 3"));
+        foreach (var file in new[] { "ENG_YouDied.jpg", "PL_YouDied.jpg", "PL_Victory.jpg" })
+        {
+            Assert.True(File.Exists(Path.Combine(ds3Root, file)), $"Missing DS3 asset: {file}");
+        }
     }
 
     [Fact]

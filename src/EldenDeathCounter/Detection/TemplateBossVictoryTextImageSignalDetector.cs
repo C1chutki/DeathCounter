@@ -9,34 +9,23 @@ namespace EldenDeathCounter.Detection;
 
 public sealed class TemplateBossVictoryTextImageSignalDetector : IImageBossVictorySignalDetector
 {
-    private static readonly string[] DefaultTemplateFileNames =
-    [
-        "PL_Win_screen.jpg"
-    ];
-
-    private static readonly string[] EnglishTemplateFileNames =
-    [
-        "ENG_Win_Screen.jpg",
-        "ENG_Win_Screen_v2.jpg"
-    ];
-
     private readonly ILogService _log;
+    private readonly string? _templatePath;
     private readonly OpenCvDeathTextTemplateAnalyzer _analyzer = new();
-    private readonly IReadOnlyDictionary<string, IReadOnlyList<DeathTextTemplate>> _templatesByLanguage;
+    private readonly object _cacheLock = new();
+    private readonly Dictionary<string, IReadOnlyList<DeathTextTemplate>> _templatesByGameLanguage =
+        new(StringComparer.OrdinalIgnoreCase);
 
     public TemplateBossVictoryTextImageSignalDetector(ILogService log, string? templatePath = null)
     {
         _log = log;
-        _templatesByLanguage = LoadTemplatesByLanguage(templatePath, log);
+        _templatePath = templatePath;
     }
 
-    public ImageDeathSignalMatch Analyze(Bitmap bitmap, double sensitivity, string gameLanguage)
+    public ImageDeathSignalMatch Analyze(Bitmap bitmap, double sensitivity, string gameId, string gameLanguage)
     {
         var language = NormalizeLanguage(gameLanguage);
-        var templates = _templatesByLanguage.TryGetValue(language, out var languageTemplates)
-            ? languageTemplates
-            : [];
-
+        var templates = GetTemplates(gameId, language);
         if (templates.Count == 0)
         {
             return ImageDeathSignalMatch.NoMatch;
@@ -59,13 +48,21 @@ public sealed class TemplateBossVictoryTextImageSignalDetector : IImageBossVicto
         }
     }
 
-    private static IReadOnlyDictionary<string, IReadOnlyList<DeathTextTemplate>> LoadTemplatesByLanguage(string? templatePath, ILogService log)
+    private IReadOnlyList<DeathTextTemplate> GetTemplates(string gameId, string language)
     {
-        return new Dictionary<string, IReadOnlyList<DeathTextTemplate>>(StringComparer.OrdinalIgnoreCase)
+        var key = $"{gameId?.Trim() ?? string.Empty}|{language}";
+        lock (_cacheLock)
         {
-            ["PL"] = LoadTemplates(FindTemplatePaths(templatePath, DefaultTemplateFileNames), log),
-            ["ENG"] = LoadTemplates(FindTemplatePaths(templatePath, EnglishTemplateFileNames), log)
-        };
+            if (_templatesByGameLanguage.TryGetValue(key, out var cached))
+            {
+                return cached;
+            }
+
+            var fileNames = GameDeathScreenTemplates.VictoryTemplateFiles(gameId ?? string.Empty, language);
+            var templates = LoadTemplates(FindTemplatePaths(_templatePath, fileNames), _log);
+            _templatesByGameLanguage[key] = templates;
+            return templates;
+        }
     }
 
     private static IReadOnlyList<string> FindTemplatePaths(string? templatePath, IReadOnlyList<string> templateFileNames)

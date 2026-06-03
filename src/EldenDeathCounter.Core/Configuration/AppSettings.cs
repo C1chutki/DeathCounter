@@ -16,6 +16,12 @@ public sealed class AppSettings
 
     public string GameLanguage { get; set; } = "PL";
 
+    // Active game profile id (EldenRing/DarkSouls1/DarkSouls2/DarkSouls3). Derived from the loaded
+    // profile by AppSettingsStore, never read from disk, so a stale JSON value can't select the
+    // wrong game's detection assets (boss lists, death/victory templates).
+    [JsonIgnore]
+    public string GameId { get; set; } = AppGameProfile.EldenRing.Id;
+
     // UI language for the app chrome (en/pl). Independent of GameLanguage (OCR/detection).
     public string AppLanguage { get; set; } = "en";
 
@@ -81,6 +87,7 @@ public sealed class AppSettings
             OverlayY = 40,
             DetectionEnabledOnStartup = false,
             AutoDetectBossNames = true,
+            GameId = profile.Id,
             GameLanguage = "PL",
             AppLanguage = "en",
             DetectionIntervalMs = 300,

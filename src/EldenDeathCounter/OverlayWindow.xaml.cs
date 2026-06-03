@@ -16,6 +16,10 @@ public partial class OverlayWindow : Window
         (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#0A1014");
 
     private readonly DispatcherTimer _bossTimer;
+    // Re-asserts the overlay into the topmost z-order band on a steady cadence. A borderless
+    // fullscreen game grabbing the foreground demotes our one-shot Topmost, so without this the
+    // overlay disappears behind the game. (Exclusive fullscreen cannot be overlaid either way.)
+    private readonly DispatcherTimer _topMostTimer;
     // Language used for the overlay's own labels (Deaths/Śmierci, First Try). This follows the UI
     // language (AppLanguage), not the OCR GameLanguage.
     private string _appLanguage;
@@ -35,6 +39,11 @@ public partial class OverlayWindow : Window
             Interval = TimeSpan.FromSeconds(1)
         };
         _bossTimer.Tick += (_, _) => UpdateBossTimerText();
+        _topMostTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(1)
+        };
+        _topMostTimer.Tick += (_, _) => ReassertTopMost();
         VersionTextBlock.Text = GetApplicationVersionText();
         UpdateDetectionState(false);
         ApplyScale(settings.OverlayFontScale);
@@ -43,7 +52,12 @@ public partial class OverlayWindow : Window
         // The detection status label is set in code, so {DynamicResource} cannot refresh it on a
         // live language swap. Re-apply it whenever the UI language changes.
         LocalizationService.Instance.LanguageChanged += OnLanguageChanged;
-        Closed += (_, _) => LocalizationService.Instance.LanguageChanged -= OnLanguageChanged;
+        Closed += (_, _) =>
+        {
+            LocalizationService.Instance.LanguageChanged -= OnLanguageChanged;
+            _topMostTimer.Stop();
+            _bossTimer.Stop();
+        };
     }
 
     private void OnLanguageChanged(object? sender, EventArgs e)
@@ -147,6 +161,20 @@ public partial class OverlayWindow : Window
     {
         base.OnSourceInitialized(e);
         ClickThroughWindow.Enable(this);
+        ClickThroughWindow.ForceTopMost(this);
+        _topMostTimer.Start();
+    }
+
+    // Only poke the z-order while the overlay is actually shown. When it is hidden (overlay
+    // toggled off) we skip so we don't churn SetWindowPos on a hidden window.
+    private void ReassertTopMost()
+    {
+        if (!IsVisible)
+        {
+            return;
+        }
+
+        ClickThroughWindow.ForceTopMost(this);
     }
 
     private void UpdateBossTimerText()

@@ -223,7 +223,7 @@ public sealed class DeathDetectionService
                 var imageAnalysisStatus = "template-no-match";
 
                 var imageStartMs = frameStopwatch.ElapsedMilliseconds;
-                imageSignal = _imageDeathSignalDetector.Analyze(frame.Bitmap, settings.DetectionSensitivity, settings.GameLanguage);
+                imageSignal = _imageDeathSignalDetector.Analyze(frame.Bitmap, settings.DetectionSensitivity, settings.GameId, settings.GameLanguage);
                 imageAnalysisMs = frameStopwatch.ElapsedMilliseconds - imageStartMs;
                 if (imageSignal.IsMatch)
                 {
@@ -261,6 +261,15 @@ public sealed class DeathDetectionService
 
                 var stabilizerBefore = FormatStabilizerState();
                 var confirmedSignal = _deathSignalStabilizer.Observe(signal);
+                if (confirmedSignal is null && signal.IsStrongTemplateMatch)
+                {
+                    // A fully-gated template match (strong contrast/stroke/vertical coverage) is specific
+                    // enough to count on a single frame. Fast-fading death banners (DS3 at 500ms) often
+                    // appear above threshold on only one frame, so waiting for a second would drop the death.
+                    _deathSignalStabilizer.Reset();
+                    confirmedSignal = signal;
+                }
+
                 var stabilizerAfter = FormatStabilizerState();
                 var frameOutcome = confirmedSignal is not null
                     ? "confirmed"
@@ -453,7 +462,7 @@ public sealed class DeathDetectionService
         }
         else
         {
-                imageSignal = _bossVictorySignalDetector.Analyze(frame, settings.DetectionSensitivity, settings.GameLanguage);
+                imageSignal = _bossVictorySignalDetector.Analyze(frame, settings.DetectionSensitivity, settings.GameId, settings.GameLanguage);
             if (imageSignal.IsMatch)
             {
                 signal = imageSignal;
@@ -603,7 +612,7 @@ public sealed class DeathDetectionService
             using var screenshot = await _captureService.CaptureBossHealthBarAsync(settings.CaptureTarget, cancellationToken);
 
             // 1) Detect boss HP bars first (cheap). Boss-name OCR is gated entirely on this.
-            var bars = _bossNameDetector.AnalyzeBars(screenshot.Bitmap);
+            var bars = _bossNameDetector.AnalyzeBars(screenshot.Bitmap, settings.GameId);
             LogBossBarDiagnostics(screenshot.Bitmap, bars, now);
             var decision = _bossEncounterTracker.BeginFrame(bars.Count);
             if (decision.Rearmed)
@@ -658,13 +667,18 @@ public sealed class DeathDetectionService
     private BossNameMatcher GetBossNameMatcher(AppSettings settings)
     {
         var language = string.IsNullOrWhiteSpace(settings.GameLanguage) ? "ENG" : settings.GameLanguage.Trim();
+        var gameId = string.IsNullOrWhiteSpace(settings.GameId) ? "EldenRing" : settings.GameId.Trim();
+
+        // Cache key is game+language so switching games (e.g. Elden Ring -> Dark Souls III) reloads the
+        // matcher with that game's boss list instead of reusing the previous game's names.
+        var cacheKey = $"{gameId}|{language}";
         if (_bossNameMatcher is not null &&
-            string.Equals(_bossNameMatcherLanguage, language, StringComparison.OrdinalIgnoreCase))
+            string.Equals(_bossNameMatcherLanguage, cacheKey, StringComparison.OrdinalIgnoreCase))
         {
             return _bossNameMatcher;
         }
 
-        var fileName = ResolveBossListFileName(language);
+        var fileName = GameBossListFiles.Resolve(gameId, language);
         var path = Path.Combine(AppContext.BaseDirectory, "Assets", fileName);
         IReadOnlyList<string> names;
         try
@@ -684,16 +698,9 @@ public sealed class DeathDetectionService
         }
 
         _bossNameMatcher = new BossNameMatcher(names);
-        _bossNameMatcherLanguage = language;
-        _log.Info($"Boss-name matcher loaded {names.Count} boss names for language '{language}' from '{fileName}'.");
+        _bossNameMatcherLanguage = cacheKey;
+        _log.Info($"Boss-name matcher loaded {names.Count} boss names for game '{gameId}' language '{language}' from '{fileName}'.");
         return _bossNameMatcher;
-    }
-
-    private static string ResolveBossListFileName(string language)
-    {
-        return language.StartsWith("PL", StringComparison.OrdinalIgnoreCase)
-            ? "PL_BossList.txt"
-            : "ENG_BossList.txt";
     }
 
     private void LogBossBarDiagnostics(Bitmap capture, IReadOnlyList<BossHealthBarRegion> bars, DateTimeOffset now)

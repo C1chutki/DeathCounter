@@ -74,6 +74,7 @@ public sealed class AppSettingsStore
             settings.DataFolderPath = defaults.DataFolderPath;
         }
 
+        settings.GameId = profile.Id;
         settings.CharacterProfileName = AppCharacterProfile.NormalizeName(settings.CharacterProfileName ?? string.Empty);
         settings.DetectionPhrases = AppSettings.CreateDefaultDetectionPhrases();
         settings.BossVictoryPhrases = AppSettings.CreateDefaultBossVictoryPhrases();

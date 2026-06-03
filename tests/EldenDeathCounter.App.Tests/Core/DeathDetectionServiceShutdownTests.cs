@@ -101,17 +101,17 @@ public sealed class DeathDetectionServiceShutdownTests
 
     private sealed class NoMatchDeathSignalDetector : IImageDeathSignalDetector
     {
-        public ImageDeathSignalMatch Analyze(Bitmap bitmap, double sensitivity, string gameLanguage) => ImageDeathSignalMatch.NoMatch;
+        public ImageDeathSignalMatch Analyze(Bitmap bitmap, double sensitivity, string gameId, string gameLanguage) => ImageDeathSignalMatch.NoMatch;
     }
 
     private sealed class NoMatchBossVictorySignalDetector : IImageBossVictorySignalDetector
     {
-        public ImageDeathSignalMatch Analyze(Bitmap bitmap, double sensitivity, string gameLanguage) => ImageDeathSignalMatch.NoMatch;
+        public ImageDeathSignalMatch Analyze(Bitmap bitmap, double sensitivity, string gameId, string gameLanguage) => ImageDeathSignalMatch.NoMatch;
     }
 
     private sealed class EmptyBossNameDetector : IBossNameDetector
     {
-        public IReadOnlyList<BossHealthBarRegion> AnalyzeBars(Bitmap screenshot) => Array.Empty<BossHealthBarRegion>();
+        public IReadOnlyList<BossHealthBarRegion> AnalyzeBars(Bitmap screenshot, string gameId) => Array.Empty<BossHealthBarRegion>();
 
         public Task<BossNameDetectionResult> ReadBossNamesAsync(
             Bitmap screenshot,

@@ -44,6 +44,29 @@ public sealed class AppSettingsTests
     }
 
     [Fact]
+    public void DefaultGameIdMatchesTheRequestedProfile()
+    {
+        var settings = AppSettings.CreateDefault(@"C:\Users\TestUser\Desktop", AppGameProfile.DarkSouls3);
+
+        Assert.Equal("DarkSouls3", settings.GameId);
+    }
+
+    [Fact]
+    public async Task LoadingSettingsStampsGameIdFromProfileAndIgnoresDiskValue()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var settingsPath = Path.Combine(folder, "appsettings.json");
+        // A stale/hand-edited gameId on disk must never select the wrong game's detection assets.
+        await File.WriteAllTextAsync(settingsPath, """{"dataFolderPath":"C:\\Temp\\Counter","gameId":"EldenRing"}""");
+        var store = new AppSettingsStore(new FileLogService(Path.Combine(folder, "log.txt")));
+
+        var settings = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop", AppGameProfile.DarkSouls3);
+
+        Assert.Equal("DarkSouls3", settings.GameId);
+    }
+
+    [Fact]
     public async Task LoadingOldSettingsWithoutOverlayBackgroundOpacityAppliesDefault()
     {
         var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));

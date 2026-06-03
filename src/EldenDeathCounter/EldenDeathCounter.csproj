@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Content Include="..\..\Assets\*.*" Link="Assets\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\Assets\Dark souls 3\*.*" Link="Assets\Dark souls 3\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
