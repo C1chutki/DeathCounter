@@ -1617,7 +1617,7 @@
                           Panel.ZIndex="1">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />
-                            <RowDefinition Height="96" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
                         <Grid HorizontalAlignment="Center"
@@ -2426,17 +2426,23 @@
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
                                         <TextBlock Text="{DynamicResource Settings_HotkeyAddDeath}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
-                                        <TextBox Grid.Column="1" Text="{Binding ManualAddHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
+                                        <TextBox Grid.Column="1" Text="{Binding ManualAddHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14"
+                                                 IsReadOnly="True" Cursor="Hand" ToolTip="{DynamicResource Settings_HotkeyPrompt}" PreviewKeyDown="HotkeyBox_PreviewKeyDown" />
                                         <TextBlock Grid.Row="1" Text="{DynamicResource Settings_HotkeySubtractDeath}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
-                                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ManualSubtractHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
+                                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ManualSubtractHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14"
+                                                 IsReadOnly="True" Cursor="Hand" ToolTip="{DynamicResource Settings_HotkeyPrompt}" PreviewKeyDown="HotkeyBox_PreviewKeyDown" />
                                         <TextBlock Grid.Row="2" Text="{DynamicResource Settings_HotkeyBossKill}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
-                                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding ManualBossDefeatedHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
+                                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding ManualBossDefeatedHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14"
+                                                 IsReadOnly="True" Cursor="Hand" ToolTip="{DynamicResource Settings_HotkeyPrompt}" PreviewKeyDown="HotkeyBox_PreviewKeyDown" />
                                         <TextBlock Grid.Row="3" Text="{DynamicResource Settings_HotkeyToggleOverlay}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
-                                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding OverlayToggleHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
+                                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding OverlayToggleHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14"
+                                                 IsReadOnly="True" Cursor="Hand" ToolTip="{DynamicResource Settings_HotkeyPrompt}" PreviewKeyDown="HotkeyBox_PreviewKeyDown" />
                                         <TextBlock Grid.Row="4" Text="{DynamicResource Common_ToggleDetection}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
-                                        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding DetectionToggleHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14" />
+                                        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding DetectionToggleHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" Margin="0,0,0,14"
+                                                 IsReadOnly="True" Cursor="Hand" ToolTip="{DynamicResource Settings_HotkeyPrompt}" PreviewKeyDown="HotkeyBox_PreviewKeyDown" />
                                         <TextBlock Grid.Row="5" Text="{DynamicResource Common_SkipBoss}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" VerticalAlignment="Center" />
-                                        <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding BossSkipHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" />
+                                        <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding BossSkipHotkeyText, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center"
+                                                 IsReadOnly="True" Cursor="Hand" ToolTip="{DynamicResource Settings_HotkeyPrompt}" PreviewKeyDown="HotkeyBox_PreviewKeyDown" />
                                     </Grid>
                                 </StackPanel>
                             </Border>

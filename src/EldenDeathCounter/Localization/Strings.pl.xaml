@@ -127,6 +127,7 @@
     <sys:String x:Key="Settings_HotkeySubtractDeath">Odejmij śmierć</sys:String>
     <sys:String x:Key="Settings_HotkeyBossKill">Pokonanie bossa</sys:String>
     <sys:String x:Key="Settings_HotkeyToggleOverlay">Przełącz nakładkę</sys:String>
+    <sys:String x:Key="Settings_HotkeyPrompt">Kliknij tutaj i naciśnij kombinację klawiszy, którą chcesz przypisać. Naciśnij Esc, aby anulować.</sys:String>
     <sys:String x:Key="Settings_ProfileSection">| PROFIL / ZAPIS GRY</sys:String>
     <sys:String x:Key="Settings_ProfileDesc">Folder, w którym przechowywany jest licznik śmierci i historia bossów aktywnego profilu.</sys:String>
     <sys:String x:Key="Settings_SaveSettings">ZAPISZ USTAWIENIA</sys:String>

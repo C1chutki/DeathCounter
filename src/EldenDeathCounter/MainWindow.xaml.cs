@@ -51,6 +51,40 @@ public partial class MainWindow : Window
         Close();
     }
 
+    private void HotkeyBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+    {
+        if (sender is not System.Windows.Controls.TextBox box)
+        {
+            return;
+        }
+
+        // Alt-combinations arrive as Key.System with the real key in SystemKey.
+        var key = e.Key == System.Windows.Input.Key.System ? e.SystemKey : e.Key;
+
+        // Let Tab fall through so the field can still be left via keyboard navigation.
+        if (key == System.Windows.Input.Key.Tab)
+        {
+            return;
+        }
+
+        e.Handled = true;
+
+        // Escape abandons the capture without changing the existing binding.
+        if (key == System.Windows.Input.Key.Escape)
+        {
+            System.Windows.Input.Keyboard.ClearFocus();
+            return;
+        }
+
+        var hotkey = Hotkeys.HotkeyCapture.TryBuild(key, System.Windows.Input.Keyboard.Modifiers);
+        if (hotkey is not null)
+        {
+            // Two-way binding with UpdateSourceTrigger=PropertyChanged pushes this to the view model.
+            box.Text = hotkey;
+            box.CaretIndex = box.Text.Length;
+        }
+    }
+
     private void NavigationRadio_Checked(object sender, RoutedEventArgs e)
     {
         if (sender is System.Windows.Controls.RadioButton { Tag: string tag } && int.TryParse(tag, out var index))

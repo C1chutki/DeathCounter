@@ -127,6 +127,7 @@
     <sys:String x:Key="Settings_HotkeySubtractDeath">Subtract Death</sys:String>
     <sys:String x:Key="Settings_HotkeyBossKill">Boss Kill</sys:String>
     <sys:String x:Key="Settings_HotkeyToggleOverlay">Toggle Overlay</sys:String>
+    <sys:String x:Key="Settings_HotkeyPrompt">Click here and press the key combination you want to assign. Press Esc to cancel.</sys:String>
     <sys:String x:Key="Settings_ProfileSection">| PROFILE / SAVE GAME</sys:String>
     <sys:String x:Key="Settings_ProfileDesc">Folder where the active profile's death counter and boss history are stored.</sys:String>
     <sys:String x:Key="Settings_SaveSettings">SAVE SETTINGS</sys:String>
