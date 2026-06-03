@@ -14,7 +14,7 @@
     <Border x:Name="OverlayChrome"
             MinWidth="356"
             Background="#E60A1014"
-            BorderBrush="#4A3D27"
+            BorderBrush="#5A3A20"
             BorderThickness="1"
             CornerRadius="7"
             Padding="22,20,22,18">
@@ -42,7 +42,7 @@
                              Margin="0,0,10,0" />
                     <TextBlock x:Name="DetectionStatusTextBlock"
                                Text="{DynamicResource Overlay_DetectionStopped}"
-                               Foreground="#A18C52"
+                               Foreground="#B0702E"
                                FontFamily="{DynamicResource HeaderFontFamily}"
                                FontSize="12"
                                FontWeight="Bold" />
@@ -59,7 +59,7 @@
 
             <TextBlock x:Name="TotalDeathsLabelTextBlock"
                        Text="{DynamicResource Overlay_TotalDeaths}"
-                       Foreground="#A18C52"
+                       Foreground="#B0702E"
                        FontFamily="{DynamicResource HeaderFontFamily}"
                        FontSize="12"
                        FontWeight="Bold"
@@ -90,7 +90,7 @@
                            LineHeight="25" />
                 <TextBlock x:Name="BossDeathTextBlock"
                            Text=""
-                           Foreground="#D3B365"
+                           Foreground="#C9742E"
                            FontFamily="{DynamicResource HeaderFontFamily}"
                            FontSize="14"
                            FontWeight="Bold"

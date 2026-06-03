@@ -8,8 +8,20 @@ public sealed class AppGameThemeTests
     public void DarkSoulsThemesMatchEldenRingPaletteExceptTitleAndPrimaryAccent()
     {
         AssertThemeMatchesEldenRingPalette(AppGameTheme.DarkSouls1, "Dark Souls Death Counter", "#4A90E2");
-        AssertThemeMatchesEldenRingPalette(AppGameTheme.DarkSouls2, "Dark Souls 2 Death Counter", "#9FA8DA");
         AssertThemeMatchesEldenRingPalette(AppGameTheme.DarkSouls3, "Dark Souls 3 Death Counter", "#E65100");
+    }
+
+    [Fact]
+    public void DarkSouls2UsesItsOwnPalette()
+    {
+        var theme = AppGameTheme.DarkSouls2;
+
+        Assert.Equal("Dark Souls 2 Death Counter", theme.Title);
+        Assert.Equal("#5F7355", theme.Primary);
+        Assert.Equal("#2D3436", theme.Secondary);
+        Assert.Equal("#A68A4B", theme.Tertiary);
+        Assert.Equal("#10150F", theme.Neutral);
+        Assert.Equal(theme.Primary, theme.OverlayBorder);
     }
 
     [Fact]

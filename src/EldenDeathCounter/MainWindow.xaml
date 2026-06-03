@@ -12,35 +12,35 @@
     <Window.Resources>
         <SolidColorBrush x:Key="Ink" Color="#F1EEE7" />
         <SolidColorBrush x:Key="MutedInk" Color="#B8B1A6" />
-        <SolidColorBrush x:Key="Gold" Color="#EAC36D" />
+        <SolidColorBrush x:Key="Gold" Color="#E08A3C" />
         <SolidColorBrush x:Key="Panel" Color="#141414" />
-        <SolidColorBrush x:Key="PanelAlt" Color="#191815" />
+        <SolidColorBrush x:Key="PanelAlt" Color="#181818" />
         <SolidColorBrush x:Key="Secondary" Color="#191919" />
         <SolidColorBrush x:Key="Neutral" Color="#0B0B0B" />
         <SolidColorBrush x:Key="HeaderSurface" Color="#111111" />
-        <SolidColorBrush x:Key="HoverSurface" Color="#2D2518" />
-        <SolidColorBrush x:Key="AccentBorder" Color="#6F5B36" />
-        <SolidColorBrush x:Key="Separator" Color="#3A3122" />
-        <SolidColorBrush x:Key="ThumbSurface" Color="#8B744A" />
+        <SolidColorBrush x:Key="HoverSurface" Color="#2C2218" />
+        <SolidColorBrush x:Key="AccentBorder" Color="#7A4E28" />
+        <SolidColorBrush x:Key="Separator" Color="#34332E" />
+        <SolidColorBrush x:Key="ThumbSurface" Color="#9C6A3C" />
         <SolidColorBrush x:Key="HistoryCard" Color="#191919" />
-        <SolidColorBrush x:Key="DimBorder" Color="#26231E" />
-        <SolidColorBrush x:Key="StatusBarSurface" Color="#10100F" />
-        <SolidColorBrush x:Key="BorderGold" Color="#4A3D27" />
+        <SolidColorBrush x:Key="DimBorder" Color="#262420" />
+        <SolidColorBrush x:Key="StatusBarSurface" Color="#0F0F0F" />
+        <SolidColorBrush x:Key="BorderGold" Color="#5A3A20" />
         <SolidColorBrush x:Key="Danger" Color="#940E0C" />
         <SolidColorBrush x:Key="MonitorGreen" Color="#6EAF7A" />
         <!-- Claude Design accent tokens -->
-        <SolidColorBrush x:Key="Gold2" Color="#E8C66A" />
+        <SolidColorBrush x:Key="Gold2" Color="#E08A3C" />
         <SolidColorBrush x:Key="Grace" Color="#6EAF7A" />
-        <SolidColorBrush x:Key="Faint" Color="#5F543E" />
-        <SolidColorBrush x:Key="Line2" Color="#3A3122" />
-        <SolidColorBrush x:Key="Ink2" Color="#B9AD90" />
-        <SolidColorBrush x:Key="RailActiveFill" Color="#221C10" />
+        <SolidColorBrush x:Key="Faint" Color="#544E45" />
+        <SolidColorBrush x:Key="Line2" Color="#34332E" />
+        <SolidColorBrush x:Key="Ink2" Color="#B0A99B" />
+        <SolidColorBrush x:Key="RailActiveFill" Color="#241A10" />
         <LinearGradientBrush x:Key="GoldPill" StartPoint="0,0" EndPoint="0,1">
-            <GradientStop Color="#E8C66A" Offset="0" />
-            <GradientStop Color="#B8902F" Offset="1" />
+            <GradientStop Color="#E08A3C" Offset="0" />
+            <GradientStop Color="#A85A22" Offset="1" />
         </LinearGradientBrush>
         <SolidColorBrush x:Key="DashboardBackdropBrush" Color="#000000" />
-        <SolidColorBrush x:Key="DashboardParticleGold" Color="#D9B45A" />
+        <SolidColorBrush x:Key="DashboardParticleGold" Color="#C9742E" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
         <Style TargetType="TextBlock">
@@ -108,7 +108,7 @@
 
         <Style x:Key="GoldButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Background" Value="{DynamicResource Gold}" />
-            <Setter Property="Foreground" Value="#20160D" />
+            <Setter Property="Foreground" Value="#1E1A14" />
             <Setter Property="BorderBrush" Value="{DynamicResource Gold}" />
         </Style>
 
@@ -119,13 +119,20 @@
         </Style>
 
         <Style x:Key="MiniEditButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-            <Setter Property="Padding" Value="7,2" />
-            <Setter Property="MinHeight" Value="22" />
-            <Setter Property="MinWidth" Value="0" />
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="#D2A099" />
-            <Setter Property="BorderBrush" Value="#5D403C" />
-            <Setter Property="Background" Value="#1A1414" />
+            <Setter Property="Padding" Value="16,7" />
+            <Setter Property="MinHeight" Value="30" />
+            <Setter Property="MinWidth" Value="64" />
+            <Setter Property="FontSize" Value="11.5" />
+            <Setter Property="Foreground" Value="#F0C2BA" />
+            <Setter Property="BorderBrush" Value="#7A4F4A" />
+            <Setter Property="Background" Value="#241A1A" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#332323" />
+                    <Setter Property="Foreground" Value="#FFD8D1" />
+                    <Setter Property="BorderBrush" Value="#A6675F" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
         <Style x:Key="GameShortcutButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
@@ -324,8 +331,8 @@
             <Style.Resources>
                 <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#050505" />
                 <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#050505" />
-                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#2D2518" />
-                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#EAC36D" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#2C2218" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#E08A3C" />
                 <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="#F1EEE7" />
             </Style.Resources>
         </Style>
@@ -363,17 +370,17 @@
                                                   Direction="270"
                                                   Opacity="0.22"
                                                   ShadowDepth="0"
-                                                  Color="#EAC36D" />
+                                                  Color="#E08A3C" />
                             </Border.Effect>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ThumbBorder" Property="Background" Value="#C09B5A" />
-                                <Setter TargetName="ThumbBorder" Property="BorderBrush" Value="#FFD98A" />
+                                <Setter TargetName="ThumbBorder" Property="Background" Value="#C9742E" />
+                                <Setter TargetName="ThumbBorder" Property="BorderBrush" Value="#F2B074" />
                             </Trigger>
                             <Trigger Property="IsDragging" Value="True">
                                 <Setter TargetName="ThumbBorder" Property="Background" Value="{DynamicResource Gold}" />
-                                <Setter TargetName="ThumbBorder" Property="BorderBrush" Value="#FFE7A8" />
+                                <Setter TargetName="ThumbBorder" Property="BorderBrush" Value="#F8C794" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -382,8 +389,8 @@
         </Style>
 
         <Style TargetType="{x:Type ScrollBar}">
-            <Setter Property="Background" Value="#11100E" />
-            <Setter Property="BorderBrush" Value="#2D281E" />
+            <Setter Property="Background" Value="#101010" />
+            <Setter Property="BorderBrush" Value="#2A2824" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Width" Value="16" />
             <Setter Property="MinWidth" Value="16" />
@@ -398,7 +405,7 @@
                                 SnapsToDevicePixels="True">
                             <Grid>
                                 <Border Width="2"
-                                        Background="#3A3122"
+                                        Background="#34332E"
                                         CornerRadius="1"
                                         HorizontalAlignment="Center"
                                         Margin="0,8" />
@@ -439,7 +446,7 @@
                                         SnapsToDevicePixels="True">
                                     <Grid>
                                         <Border Height="2"
-                                                Background="#3A3122"
+                                                Background="#34332E"
                                                 CornerRadius="1"
                                                 VerticalAlignment="Center"
                                                 Margin="8,0" />
@@ -464,8 +471,8 @@
                     </Setter>
                 </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#171510" />
-                    <Setter Property="BorderBrush" Value="#4A3D27" />
+                    <Setter Property="Background" Value="#161616" />
+                    <Setter Property="BorderBrush" Value="#5A3A20" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -500,12 +507,12 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="ItemBorder" Property="Background" Value="#3A3020" />
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#34332C" />
                                 <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{DynamicResource Gold}" />
                                 <Setter Property="Foreground" Value="{DynamicResource Gold}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ItemBorder" Property="Background" Value="#241F17" />
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#222024" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Opacity" Value="0.5" />
@@ -541,7 +548,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#14D9B45A" />
+                                <Setter TargetName="Bd" Property="Background" Value="#14C9742E" />
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
                                 <Setter TargetName="Bd" Property="Background" Value="{DynamicResource RailActiveFill}" />
@@ -573,7 +580,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#14D9B45A" />
+                                <Setter TargetName="Bd" Property="Background" Value="#14C9742E" />
                                 <Setter Property="Foreground" Value="{DynamicResource Gold2}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -618,21 +625,21 @@
         </Style>
 
         <Style x:Key="GamePillActive" TargetType="Button" BasedOn="{StaticResource GamePill}">
-            <Setter Property="Foreground" Value="#1A1308" />
-            <Setter Property="Background" Value="{StaticResource GoldPill}" />
+            <Setter Property="Foreground" Value="#181712" />
+            <Setter Property="Background" Value="{DynamicResource GoldPill}" />
             <Setter Property="BorderBrush" Value="Transparent" />
         </Style>
 
         <Style x:Key="TopStatusDot" TargetType="Ellipse">
             <Setter Property="Width" Value="7" />
             <Setter Property="Height" Value="7" />
-            <Setter Property="Fill" Value="#5A5345" />
+            <Setter Property="Fill" Value="#54534B" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsDetectionRunning}" Value="True">
                     <Setter Property="Fill" Value="{DynamicResource Gold2}" />
                     <Setter Property="Effect">
                         <Setter.Value>
-                            <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#D9B45A" />
+                            <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#C9742E" />
                         </Setter.Value>
                     </Setter>
                 </DataTrigger>
@@ -642,7 +649,7 @@
         <Style x:Key="DashboardCounterInput" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
             <Setter Property="Width" Value="95" />
             <Setter Property="Height" Value="50" />
-            <Setter Property="Background" Value="#070503" />
+            <Setter Property="Background" Value="#060606" />
             <Setter Property="BorderBrush" Value="{DynamicResource BorderGold}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Padding" Value="0" />
@@ -658,8 +665,8 @@
             <Setter Property="Height" Value="60" />
             <Setter Property="MinHeight" Value="0" />
             <Setter Property="Padding" Value="0" />
-            <Setter Property="Background" Value="#070503" />
-            <Setter Property="BorderBrush" Value="#6A5425" />
+            <Setter Property="Background" Value="#060606" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CircleRestBorder}" />
             <Setter Property="BorderThickness" Value="2" />
             <Setter Property="Foreground" Value="{DynamicResource Ink}" />
             <Setter Property="FontFamily" Value="{DynamicResource MonoFontFamily}" />
@@ -733,7 +740,7 @@
             <Setter Property="Height" Value="58" />
             <Setter Property="MinHeight" Value="0" />
             <Setter Property="Padding" Value="0" />
-            <Setter Property="Background" Value="#0C0804" />
+            <Setter Property="Background" Value="#0A0A0A" />
             <Setter Property="BorderBrush" Value="{DynamicResource BorderGold}" />
             <Setter Property="Foreground" Value="{DynamicResource MutedInk}" />
             <Setter Property="FontSize" Value="11" />
@@ -743,7 +750,7 @@
             <Setter Property="Width" Value="170" />
             <Setter Property="Background" Value="{DynamicResource Gold}" />
             <Setter Property="BorderBrush" Value="{DynamicResource Gold}" />
-            <Setter Property="Foreground" Value="#060503" />
+            <Setter Property="Foreground" Value="#060606" />
         </Style>
     </Window.Resources>
 
@@ -766,11 +773,11 @@
                 </Grid.RowDefinitions>
 
                 <!-- Emblem -->
-                <Border Width="44" Height="44" Margin="0,16,0,27" CornerRadius="22"
+                <Border Width="44" Height="44" Margin="0,8,0,27" CornerRadius="22"
                         BorderBrush="{DynamicResource Gold}" BorderThickness="1"
                         HorizontalAlignment="Center">
                     <Border.Effect>
-                        <DropShadowEffect BlurRadius="18" ShadowDepth="0" Opacity="0.5" Color="#D9B45A" />
+                        <DropShadowEffect BlurRadius="18" ShadowDepth="0" Opacity="0.5" Color="#C9742E" />
                     </Border.Effect>
                     <TextBlock Text="D"
                                FontFamily="{DynamicResource EmblemFontFamily}"
@@ -816,7 +823,7 @@
             </Grid>
         </Border>
 
-        <Border x:Name="HeaderBorder" Grid.ColumnSpan="2" Grid.Row="0" Background="Transparent" BorderBrush="{DynamicResource Separator}" BorderThickness="0,0,0,1" Padding="110,0,32,0" Height="60">
+        <Border x:Name="HeaderBorder" Grid.ColumnSpan="2" Grid.Row="0" Background="Transparent" BorderThickness="0" Padding="110,0,32,0" Height="60">
             <Grid>
                 <!-- Game pills -->
                 <StackPanel Orientation="Horizontal"
@@ -1403,7 +1410,7 @@
                             Panel.ZIndex="0">
                         <Canvas.Resources>
                             <Style TargetType="{x:Type Ellipse}">
-                                <Setter Property="Fill" Value="{StaticResource DashboardParticleGold}" />
+                                <Setter Property="Fill" Value="{DynamicResource DashboardParticleGold}" />
                                 <Setter Property="Effect">
                                     <Setter.Value>
                                         <BlurEffect Radius="3.6" KernelType="Gaussian" />
@@ -1411,202 +1418,202 @@
                                 </Setter>
                             </Style>
                         </Canvas.Resources>
-                        <Ellipse x:Name="DashboardParticleBall01" Width="9" Height="9" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="110" Canvas.Top="82" Opacity="0.36">
+                        <Ellipse x:Name="DashboardParticleBall01" Width="9" Height="9" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="110" Canvas.Top="82" Opacity="0.36">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall01Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall02" Width="7" Height="7" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1280" Canvas.Top="112" Opacity="0.44">
+                        <Ellipse x:Name="DashboardParticleBall02" Width="7" Height="7" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="1280" Canvas.Top="112" Opacity="0.44">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall02Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall03" Width="12" Height="12" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="250" Canvas.Top="552" Opacity="0.26">
+                        <Ellipse x:Name="DashboardParticleBall03" Width="12" Height="12" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="250" Canvas.Top="552" Opacity="0.26">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall03Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall04" Width="8" Height="8" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1180" Canvas.Top="390" Opacity="0.42">
+                        <Ellipse x:Name="DashboardParticleBall04" Width="8" Height="8" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="1180" Canvas.Top="390" Opacity="0.42">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall04Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall05" Width="6" Height="6" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="520" Canvas.Top="128" Opacity="0.54">
+                        <Ellipse x:Name="DashboardParticleBall05" Width="6" Height="6" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="520" Canvas.Top="128" Opacity="0.54">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall05Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall06" Width="10" Height="10" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="980" Canvas.Top="604" Opacity="0.3">
+                        <Ellipse x:Name="DashboardParticleBall06" Width="10" Height="10" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="980" Canvas.Top="604" Opacity="0.3">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall06Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall07" Width="14" Height="14" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="398" Canvas.Top="302" Opacity="0.2">
+                        <Ellipse x:Name="DashboardParticleBall07" Width="14" Height="14" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="398" Canvas.Top="302" Opacity="0.2">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall07Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall08" Width="5" Height="5" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1348" Canvas.Top="578" Opacity="0.5">
+                        <Ellipse x:Name="DashboardParticleBall08" Width="5" Height="5" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="1348" Canvas.Top="578" Opacity="0.5">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall08Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall09" Width="11" Height="11" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="720" Canvas.Top="638" Opacity="0.3">
+                        <Ellipse x:Name="DashboardParticleBall09" Width="11" Height="11" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="720" Canvas.Top="638" Opacity="0.3">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall09Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall10" Width="8" Height="8" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1110" Canvas.Top="254" Opacity="0.38">
+                        <Ellipse x:Name="DashboardParticleBall10" Width="8" Height="8" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="1110" Canvas.Top="254" Opacity="0.38">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall10Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall11" Width="6" Height="6" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="156" Canvas.Top="512" Opacity="0.46">
+                        <Ellipse x:Name="DashboardParticleBall11" Width="6" Height="6" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="156" Canvas.Top="512" Opacity="0.46">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall11Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall12" Width="13" Height="13" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="876" Canvas.Top="92" Opacity="0.24">
+                        <Ellipse x:Name="DashboardParticleBall12" Width="13" Height="13" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="876" Canvas.Top="92" Opacity="0.24">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall12Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall13" Width="7" Height="7" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="72" Canvas.Top="326" Opacity="0.5">
+                        <Ellipse x:Name="DashboardParticleBall13" Width="7" Height="7" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="72" Canvas.Top="326" Opacity="0.5">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall13Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall14" Width="10" Height="10" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1410" Canvas.Top="286" Opacity="0.28">
+                        <Ellipse x:Name="DashboardParticleBall14" Width="10" Height="10" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="1410" Canvas.Top="286" Opacity="0.28">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall14Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall15" Width="5" Height="5" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="442" Canvas.Top="54" Opacity="0.55">
+                        <Ellipse x:Name="DashboardParticleBall15" Width="5" Height="5" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="442" Canvas.Top="54" Opacity="0.55">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall15Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall16" Width="12" Height="12" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1004" Canvas.Top="544" Opacity="0.24">
+                        <Ellipse x:Name="DashboardParticleBall16" Width="12" Height="12" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="1004" Canvas.Top="544" Opacity="0.24">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall16Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall17" Width="6" Height="6" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="178" Canvas.Top="214" Opacity="0.46">
+                        <Ellipse x:Name="DashboardParticleBall17" Width="6" Height="6" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="178" Canvas.Top="214" Opacity="0.46">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall17Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall18" Width="9" Height="9" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="930" Canvas.Top="184" Opacity="0.34">
+                        <Ellipse x:Name="DashboardParticleBall18" Width="9" Height="9" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="930" Canvas.Top="184" Opacity="0.34">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall18Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall19" Width="11" Height="11" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="560" Canvas.Top="590" Opacity="0.27">
+                        <Ellipse x:Name="DashboardParticleBall19" Width="11" Height="11" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="560" Canvas.Top="590" Opacity="0.27">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall19Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall20" Width="8" Height="8" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1288" Canvas.Top="472" Opacity="0.36">
+                        <Ellipse x:Name="DashboardParticleBall20" Width="8" Height="8" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="1288" Canvas.Top="472" Opacity="0.36">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall20Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall21" Width="6" Height="6" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="322" Canvas.Top="118" Opacity="0.42">
+                        <Ellipse x:Name="DashboardParticleBall21" Width="6" Height="6" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="322" Canvas.Top="118" Opacity="0.42">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall21Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall22" Width="10" Height="10" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1218" Canvas.Top="640" Opacity="0.24">
+                        <Ellipse x:Name="DashboardParticleBall22" Width="10" Height="10" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="1218" Canvas.Top="640" Opacity="0.24">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall22Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall23" Width="7" Height="7" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="42" Canvas.Top="602" Opacity="0.46">
+                        <Ellipse x:Name="DashboardParticleBall23" Width="7" Height="7" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="42" Canvas.Top="602" Opacity="0.46">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall23Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall24" Width="12" Height="12" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1372" Canvas.Top="190" Opacity="0.28">
+                        <Ellipse x:Name="DashboardParticleBall24" Width="12" Height="12" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="1372" Canvas.Top="190" Opacity="0.28">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall24Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall25" Width="5" Height="5" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="646" Canvas.Top="42" Opacity="0.5">
+                        <Ellipse x:Name="DashboardParticleBall25" Width="5" Height="5" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="646" Canvas.Top="42" Opacity="0.5">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall25Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall26" Width="9" Height="9" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1464" Canvas.Top="514" Opacity="0.32">
+                        <Ellipse x:Name="DashboardParticleBall26" Width="9" Height="9" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="1464" Canvas.Top="514" Opacity="0.32">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall26Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall27" Width="11" Height="11" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="82" Canvas.Top="452" Opacity="0.3">
+                        <Ellipse x:Name="DashboardParticleBall27" Width="11" Height="11" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="82" Canvas.Top="452" Opacity="0.3">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall27Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall28" Width="6" Height="6" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1066" Canvas.Top="54" Opacity="0.48">
+                        <Ellipse x:Name="DashboardParticleBall28" Width="6" Height="6" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="1066" Canvas.Top="54" Opacity="0.48">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall28Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall29" Width="13" Height="13" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="298" Canvas.Top="682" Opacity="0.22">
+                        <Ellipse x:Name="DashboardParticleBall29" Width="13" Height="13" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="298" Canvas.Top="682" Opacity="0.22">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall29Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall30" Width="8" Height="8" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1160" Canvas.Top="328" Opacity="0.4">
+                        <Ellipse x:Name="DashboardParticleBall30" Width="8" Height="8" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="1160" Canvas.Top="328" Opacity="0.4">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall30Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall31" Width="5" Height="5" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="770" Canvas.Top="708" Opacity="0.52">
+                        <Ellipse x:Name="DashboardParticleBall31" Width="5" Height="5" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="770" Canvas.Top="708" Opacity="0.52">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall31Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall32" Width="10" Height="10" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="138" Canvas.Top="706" Opacity="0.26">
+                        <Ellipse x:Name="DashboardParticleBall32" Width="10" Height="10" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="138" Canvas.Top="706" Opacity="0.26">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall32Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall33" Width="7" Height="7" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="514" Canvas.Top="414" Opacity="0.43">
+                        <Ellipse x:Name="DashboardParticleBall33" Width="7" Height="7" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="514" Canvas.Top="414" Opacity="0.43">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall33Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall34" Width="12" Height="12" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1490" Canvas.Top="92" Opacity="0.24">
+                        <Ellipse x:Name="DashboardParticleBall34" Width="12" Height="12" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="1490" Canvas.Top="92" Opacity="0.24">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall34Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall35" Width="6" Height="6" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="908" Canvas.Top="696" Opacity="0.46">
+                        <Ellipse x:Name="DashboardParticleBall35" Width="6" Height="6" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="908" Canvas.Top="696" Opacity="0.46">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall35Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall36" Width="9" Height="9" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1326" Canvas.Top="678" Opacity="0.34">
+                        <Ellipse x:Name="DashboardParticleBall36" Width="9" Height="9" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="1326" Canvas.Top="678" Opacity="0.34">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall36Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall37" Width="11" Height="11" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="186" Canvas.Top="34" Opacity="0.25">
+                        <Ellipse x:Name="DashboardParticleBall37" Width="11" Height="11" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="186" Canvas.Top="34" Opacity="0.25">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall37Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall38" Width="5" Height="5" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1116" Canvas.Top="686" Opacity="0.54">
+                        <Ellipse x:Name="DashboardParticleBall38" Width="5" Height="5" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="1116" Canvas.Top="686" Opacity="0.54">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall38Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall39" Width="8" Height="8" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="662" Canvas.Top="286" Opacity="0.38">
+                        <Ellipse x:Name="DashboardParticleBall39" Width="8" Height="8" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="662" Canvas.Top="286" Opacity="0.38">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall39Offset" />
                             </Ellipse.RenderTransform>
                         </Ellipse>
-                        <Ellipse x:Name="DashboardParticleBall40" Width="14" Height="14" Fill="{StaticResource DashboardParticleGold}" Canvas.Left="1240" Canvas.Top="216" Opacity="0.2">
+                        <Ellipse x:Name="DashboardParticleBall40" Width="14" Height="14" Fill="{DynamicResource DashboardParticleGold}" Canvas.Left="1240" Canvas.Top="216" Opacity="0.2">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="DashboardParticleBall40Offset" />
                             </Ellipse.RenderTransform>
@@ -1648,7 +1655,7 @@
                                        FontSize="172"
                                        FontWeight="Bold"
                                        LineHeight="172"
-                                       Foreground="#FFE8B8"
+                                       Foreground="#F8C794"
                                        Opacity="0.82"
                                        HorizontalAlignment="Center"
                                        TextAlignment="Center">
@@ -1656,7 +1663,7 @@
                                     <DropShadowEffect BlurRadius="156"
                                                       ShadowDepth="0"
                                                       Opacity="1"
-                                                      Color="#D9B45A" />
+                                                      Color="#C9742E" />
                                 </TextBlock.Effect>
                             </TextBlock>
                             <TextBlock x:Name="DashboardCountTextBlur"
@@ -1665,7 +1672,7 @@
                                        FontSize="172"
                                        FontWeight="Bold"
                                        LineHeight="172"
-                                       Foreground="#FFE8B8"
+                                       Foreground="#F8C794"
                                        Opacity="0.46"
                                        HorizontalAlignment="Center"
                                        TextAlignment="Center">
@@ -1678,14 +1685,14 @@
                                        FontSize="172"
                                        FontWeight="Bold"
                                        LineHeight="172"
-                                       Foreground="#FFF0D2"
+                                       Foreground="#FBD9B0"
                                        HorizontalAlignment="Center"
                                        TextAlignment="Center">
                                 <TextBlock.Effect>
                                     <DropShadowEffect BlurRadius="44"
                                                       ShadowDepth="0"
                                                       Opacity="0.62"
-                                                      Color="#D9B45A" />
+                                                      Color="#C9742E" />
                                 </TextBlock.Effect>
                             </TextBlock>
                         </Grid>
@@ -1930,7 +1937,7 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <Border Width="98" Height="98" BorderBrush="#5A4B31" BorderThickness="3" CornerRadius="49" Margin="0,0,28,0">
+                                <Border Width="98" Height="98" BorderBrush="#5E3E22" BorderThickness="3" CornerRadius="49" Margin="0,0,28,0">
                                     <TextBlock Text="◎" FontSize="44" Foreground="{DynamicResource Gold}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
@@ -1987,7 +1994,7 @@
                                                     </Border>
                                                     <DataTemplate.Triggers>
                                                         <DataTrigger Binding="{Binding IsEvent}" Value="True">
-                                                            <Setter TargetName="LogEntryBorder" Property="Background" Value="#211D17" />
+                                                            <Setter TargetName="LogEntryBorder" Property="Background" Value="#201E1A" />
                                                             <Setter TargetName="LogEntryBorder" Property="BorderBrush" Value="{DynamicResource Gold}" />
                                                             <Setter TargetName="LogEntryBorder" Property="BorderThickness" Value="3,0,0,0" />
                                                             <Setter TargetName="LogEntryBorder" Property="Padding" Value="14,8" />
@@ -2017,7 +2024,7 @@
                                        Style="{StaticResource LabelText}"
                                        Margin="0,0,0,20" />
                             <Border Background="{DynamicResource PanelAlt}"
-                                    BorderBrush="#7C653A"
+                                    BorderBrush="#875432"
                                     BorderThickness="2"
                                     CornerRadius="14"
                                     Padding="34">
@@ -2042,8 +2049,8 @@
                                                    Margin="0,18,0,0" />
                                     </StackPanel>
                                     <Border Grid.Column="1"
-                                            Background="#232220"
-                                            BorderBrush="#3F382B"
+                                            Background="#222220"
+                                            BorderBrush="#38362F"
                                             BorderThickness="1"
                                             CornerRadius="11"
                                             Padding="26"
@@ -2154,20 +2161,23 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Width="320"
-                                                MinHeight="184"
-                                                Background="{DynamicResource Panel}"
-                                                BorderBrush="#3A3326"
-                                                BorderThickness="1"
-                                                CornerRadius="14"
-                                                Margin="0,0,18,18">
-                                            <Border.Effect>
-                                                <DropShadowEffect BlurRadius="16"
-                                                                  Direction="270"
-                                                                  ShadowDepth="2"
-                                                                  Opacity="0.4"
-                                                                  Color="#000000" />
-                                            </Border.Effect>
+                                        <Grid Width="320" MinHeight="184" Margin="0,0,18,18">
+                                            <!-- Decorative shadow layer: the effect rasterizes this empty
+                                                 border only, keeping the card text crisp (ClearType). -->
+                                            <Border Background="{DynamicResource Panel}"
+                                                    CornerRadius="14">
+                                                <Border.Effect>
+                                                    <DropShadowEffect BlurRadius="16"
+                                                                      Direction="270"
+                                                                      ShadowDepth="2"
+                                                                      Opacity="0.4"
+                                                                      Color="#000000" />
+                                                </Border.Effect>
+                                            </Border>
+                                            <Border Background="{DynamicResource Panel}"
+                                                    BorderBrush="#34322C"
+                                                    BorderThickness="1"
+                                                    CornerRadius="14">
                                             <Grid>
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="Auto" />
@@ -2176,17 +2186,17 @@
                                                 <Border Height="4" CornerRadius="14,14,0,0">
                                                     <Border.Background>
                                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                                            <GradientStop Color="#5A4A2C" Offset="0" />
-                                                            <GradientStop Color="#EAC36D" Offset="0.5" />
-                                                            <GradientStop Color="#5A4A2C" Offset="1" />
+                                                            <GradientStop Color="#5E3E22" Offset="0" />
+                                                            <GradientStop Color="#E08A3C" Offset="0.5" />
+                                                            <GradientStop Color="#5E3E22" Offset="1" />
                                                         </LinearGradientBrush>
                                                     </Border.Background>
                                                 </Border>
                                                 <StackPanel Grid.Row="1" Margin="18,16,18,18">
                                                     <DockPanel Margin="0,0,0,16">
                                                         <Border DockPanel.Dock="Right"
-                                                                Background="#241E13"
-                                                                BorderBrush="#5A4A2C"
+                                                                Background="#201E1A"
+                                                                BorderBrush="#5E3E22"
                                                                 BorderThickness="1"
                                                                 CornerRadius="9"
                                                                 Padding="9,3"
@@ -2197,7 +2207,7 @@
                                                                        FontWeight="Bold"
                                                                        Foreground="#D2A099" />
                                                         </Border>
-                                                        <Border Background="#2A2113"
+                                                        <Border Background="#222024"
                                                                 BorderBrush="{DynamicResource Gold}"
                                                                 BorderThickness="1"
                                                                 CornerRadius="9"
@@ -2225,8 +2235,8 @@
                                                                Foreground="{DynamicResource Ink}"
                                                                TextWrapping="Wrap" />
                                                     <StackPanel Orientation="Horizontal" Margin="0,18,0,0">
-                                                        <Border Background="#1B1813"
-                                                                BorderBrush="#2F2A20"
+                                                        <Border Background="#1A1816"
+                                                                BorderBrush="#2A2824"
                                                                 BorderThickness="1"
                                                                 CornerRadius="8"
                                                                 Padding="10,4"
@@ -2237,15 +2247,15 @@
                                                                        FontWeight="Bold"
                                                                        Foreground="{DynamicResource Ink}" />
                                                         </Border>
-                                                        <Border Background="#1B1813"
-                                                                BorderBrush="#2F2A20"
+                                                        <Border Background="#1A1816"
+                                                                BorderBrush="#2A2824"
                                                                 BorderThickness="1"
                                                                 CornerRadius="8"
                                                                 Padding="10,4">
                                                             <TextBlock Text="{Binding FightDurationText}"
                                                                        FontFamily="{DynamicResource AppFontFamily}"
                                                                        FontSize="13"
-                                                                       Foreground="#A27A72"
+                                                                       Foreground="#978C84"
                                                                        VerticalAlignment="Center" />
                                                         </Border>
                                                     </StackPanel>
@@ -2264,13 +2274,14 @@
                                                             <TextBlock Text="{Binding RecordedText}"
                                                                        FontFamily="{DynamicResource AppFontFamily}"
                                                                        FontSize="12"
-                                                                       Foreground="#A27A72"
+                                                                       Foreground="#978C84"
                                                                        Margin="0,4,0,0" />
                                                         </StackPanel>
                                                     </DockPanel>
                                                 </StackPanel>
                                             </Grid>
-                                        </Border>
+                                            </Border>
+                                        </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -2288,18 +2299,26 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,34">
-                            <TextBlock Text="{DynamicResource Settings_Title}"
-                                       FontFamily="{DynamicResource HeaderFontFamily}"
-                                       FontSize="30"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource Gold}"
-                                       Margin="0,0,22,0" />
-                            <TextBlock Text="{DynamicResource Settings_Subtitle}"
-                                       Style="{StaticResource MutedText}"
-                                       FontFamily="{DynamicResource AppFontFamily}"
-                                       VerticalAlignment="Center" />
-                        </StackPanel>
+                        <Grid Margin="0,0,0,34">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <TextBlock Text="{DynamicResource Settings_Title}"
+                                           FontFamily="{DynamicResource HeaderFontFamily}"
+                                           FontSize="30"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource Gold}"
+                                           Margin="0,0,22,0" />
+                                <TextBlock Text="{DynamicResource Settings_Subtitle}"
+                                           Style="{StaticResource MutedText}"
+                                           FontFamily="{DynamicResource AppFontFamily}"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <Button Content="{DynamicResource Settings_SaveSettings}"
+                                    Command="{Binding SaveSettingsCommand}"
+                                    Style="{StaticResource GoldButton}"
+                                    MinWidth="170"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center" />
+                        </Grid>
 
                         <Grid Grid.Row="1" Margin="0,0,0,32">
                             <Grid.ColumnDefinitions>
@@ -2450,23 +2469,11 @@
 
                         <!-- PROFILE / SAVE GAME -->
                         <Border Grid.Row="3" Style="{StaticResource PanelBorder}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="200" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel>
-                                    <TextBlock Text="{DynamicResource Settings_ProfileSection}" Style="{StaticResource LabelText}" Margin="0,0,0,16" />
-                                    <TextBlock Text="{DynamicResource Settings_ProfileDesc}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
-                                    <TextBox Text="{Binding DataFolderPathText, UpdateSourceTrigger=PropertyChanged}" />
-                                </StackPanel>
-                                <Button Grid.Column="1"
-                                        Content="{DynamicResource Settings_SaveSettings}"
-                                        Command="{Binding SaveSettingsCommand}"
-                                        Style="{StaticResource GoldButton}"
-                                        Margin="24,28,0,0"
-                                        VerticalAlignment="Bottom" />
-                            </Grid>
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource Settings_ProfileSection}" Style="{StaticResource LabelText}" Margin="0,0,0,16" />
+                                <TextBlock Text="{DynamicResource Settings_ProfileDesc}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
+                                <TextBox Text="{Binding DataFolderPathText, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
                         </Border>
                     </Grid>
                 </ScrollViewer>

@@ -114,6 +114,15 @@ public partial class MainWindow : Window
         };
 
         SectionTitleText.Text = TryFindResource(key) as string ?? string.Empty;
+
+        // The Dashboard renders a full-bleed animated stage, so the header sits flush
+        // (transparent, no bottom rule). Every other section keeps the bottom separator.
+        if (HeaderBorder is not null)
+        {
+            HeaderBorder.BorderThickness = index == 0
+                ? new System.Windows.Thickness(0)
+                : new System.Windows.Thickness(0, 0, 0, 1);
+        }
     }
 
     private async void DarkSouls1Button_Click(object sender, RoutedEventArgs e)
@@ -171,6 +180,7 @@ public partial class MainWindow : Window
         HeaderBorder.BorderBrush = BrushFromHex(theme.Border);
 
         SetResourceBrush("Gold", theme.Primary);
+        SetResourceBrush("Gold2", theme.Primary);
         SetResourceBrush("Ink", theme.Ink);
         SetResourceBrush("MutedInk", theme.MutedInk);
         SetResourceBrush("Panel", theme.Panel);
@@ -187,7 +197,33 @@ public partial class MainWindow : Window
         SetResourceBrush("StatusBarSurface", theme.Panel);
         SetResourceBrush("BorderGold", theme.Border);
 
+        // Accent variants derived from the primary so every game recolors its chrome
+        // (emblem, rail nav icons, active game pill, dashboard circle buttons).
+        Resources["RailActiveFill"] = new SolidColorBrush(Darken(theme.Primary, 0.18));
+        Resources["CircleRestBorder"] = new SolidColorBrush(Darken(theme.Primary, 0.50));
+        Resources["GoldPill"] = BuildPrimaryPill(theme.Primary);
+        Resources["DashboardParticleGold"] = new SolidColorBrush(Darken(theme.Primary, 0.88));
+
         _viewModel.ApplyGameTheme(theme);
+    }
+
+    private static System.Windows.Media.LinearGradientBrush BuildPrimaryPill(string primary)
+    {
+        var brush = new System.Windows.Media.LinearGradientBrush(
+            ColorFromHex(primary),
+            Darken(primary, 0.70),
+            90);
+        brush.Freeze();
+        return brush;
+    }
+
+    private static System.Windows.Media.Color Darken(string hex, double factor)
+    {
+        var c = ColorFromHex(hex);
+        return System.Windows.Media.Color.FromRgb(
+            (byte)(c.R * factor),
+            (byte)(c.G * factor),
+            (byte)(c.B * factor));
     }
 
     private static System.Windows.Media.RadialGradientBrush BuildBackgroundBrush(AppGameTheme theme)

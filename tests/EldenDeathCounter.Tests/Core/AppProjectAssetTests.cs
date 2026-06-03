@@ -176,7 +176,7 @@ public sealed class AppProjectAssetTests
         Assert.Equal(40, Regex.Matches(dashboardTab, "x:Name=\"DashboardParticleBall\\d{2}\"").Count);
         Assert.Contains("<Canvas.Resources>", dashboardTab, StringComparison.Ordinal);
         Assert.Contains("TargetType=\"{x:Type Ellipse}\"", dashboardTab, StringComparison.Ordinal);
-        Assert.Contains("Fill\" Value=\"{StaticResource DashboardParticleGold}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Fill\" Value=\"{DynamicResource DashboardParticleGold}\"", dashboardTab, StringComparison.Ordinal);
         Assert.Contains("<BlurEffect Radius=\"3.6\"", dashboardTab, StringComparison.Ordinal);
         Assert.DoesNotContain("Fill=\"{StaticResource DashboardParticleGoldSoft}\"", dashboardTab, StringComparison.Ordinal);
         Assert.DoesNotContain("Fill=\"{StaticResource DashboardParticleRuneRed}\"", dashboardTab, StringComparison.Ordinal);
