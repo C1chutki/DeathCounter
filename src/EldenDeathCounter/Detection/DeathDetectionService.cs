@@ -47,6 +47,14 @@ public sealed class DeathDetectionService
     private DateTimeOffset? _fullDiagnosticsUntil;
     private AppSettings? _lastSettings;
     private long _detectionFrameIndex;
+    private DateTimeOffset _lastOcrRunAt = DateTimeOffset.MinValue;
+
+    // OCR is the fallback for death/victory text the template misses. It is the single most expensive
+    // step (PNG-free now, but still ~15ms × engines), so we no longer run it on every frame: only when
+    // the cheap template analyzer reports something text-like, while a confirmation is pending, or as a
+    // periodic safety net so a fully template-blind banner is still caught within OcrSafetyInterval.
+    private const double OcrWeakSignalFloor = 0.30;
+    private static readonly TimeSpan OcrSafetyInterval = TimeSpan.FromMilliseconds(750);
 
     public DeathDetectionService(
         IScreenCaptureService captureService,
@@ -195,6 +203,7 @@ public sealed class DeathDetectionService
     {
         var interval = TimeSpan.FromMilliseconds(Math.Max(300, settings.DetectionIntervalMs));
         var cooldown = TimeSpan.FromSeconds(Math.Max(1, settings.DetectionCooldownSeconds));
+        var ocrLanguageHints = BuildOcrLanguageHints(settings);
 
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -236,10 +245,11 @@ public sealed class DeathDetectionService
                     LogWeakImageSignal(imageSignal);
                 }
 
-                if (!signal.IsMatch)
+                if (!signal.IsMatch && ShouldRunOcr(imageSignal, _deathSignalStabilizer.IsPending, frameStartedAt))
                 {
+                    _lastOcrRunAt = frameStartedAt;
                     var ocrStartMs = frameStopwatch.ElapsedMilliseconds;
-                    ocrText = await _textRecognitionService.RecognizeTextAsync(frame.Bitmap, cancellationToken);
+                    ocrText = await _textRecognitionService.RecognizeTextAsync(frame.Bitmap, ocrLanguageHints, cancellationToken);
                     ocrMs = frameStopwatch.ElapsedMilliseconds - ocrStartMs;
                     match = _phraseMatcher.Match(ocrText, settings.DetectionPhrases, settings.DetectionSensitivity);
                     if (match.IsMatch)
@@ -381,6 +391,36 @@ public sealed class DeathDetectionService
                 break;
             }
         }
+    }
+
+    private bool ShouldRunOcr(ImageDeathSignalMatch imageSignal, bool stabilizerPending, DateTimeOffset now)
+    {
+        if (imageSignal.Score >= OcrWeakSignalFloor)
+        {
+            return true;
+        }
+
+        if (stabilizerPending)
+        {
+            return true;
+        }
+
+        return now - _lastOcrRunAt >= OcrSafetyInterval;
+    }
+
+    private static IReadOnlyList<string> BuildOcrLanguageHints(AppSettings settings)
+    {
+        // Dark Souls III renders its death/victory banners in English even when the UI/OCR language is
+        // Polish, so it needs both engines; every other game only needs the configured language.
+        if (string.Equals(settings.GameId?.Trim(), "DarkSouls3", StringComparison.OrdinalIgnoreCase))
+        {
+            return ["en", "pl"];
+        }
+
+        var language = settings.GameLanguage?.Trim();
+        var isEnglish = string.Equals(language, "ENG", StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(language, "EN", StringComparison.OrdinalIgnoreCase);
+        return isEnglish ? ["en"] : ["pl"];
     }
 
     private async Task HandleDeathSignalMatchAsync(long frameIndex, ImageDeathSignalMatch match, TimeSpan cooldown, AppSettings settings, Bitmap frame)

@@ -53,9 +53,9 @@ public sealed class AppSettings
     [JsonIgnore]
     public List<string> BossVictoryPhrases { get; set; } = CreateDefaultBossVictoryPhrases();
 
-    public string ManualAddHotkey { get; set; } = "F8";
+    public string ManualAddHotkey { get; set; } = "F9";
 
-    public string ManualSubtractHotkey { get; set; } = "F9";
+    public string ManualSubtractHotkey { get; set; } = "F8";
 
     public string BossDefeatedHotkey { get; set; } = "F7";
 
@@ -103,8 +103,8 @@ public sealed class AppSettings
             DetectionPhrases = CreateDefaultDetectionPhrases(),
             BossVictoryPhrases = CreateDefaultBossVictoryPhrases(),
             BossNameCorrections = CreateDefaultBossNameCorrections(),
-            ManualAddHotkey = "F8",
-            ManualSubtractHotkey = "F9",
+            ManualAddHotkey = "F9",
+            ManualSubtractHotkey = "F8",
             BossDefeatedHotkey = "F7",
             OverlayToggleHotkey = "Ctrl+Shift+O",
             DetectionToggleHotkey = "F6",

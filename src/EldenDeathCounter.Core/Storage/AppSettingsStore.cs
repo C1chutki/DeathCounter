@@ -126,6 +126,13 @@ public sealed class AppSettingsStore
         settings.ManualSubtractHotkey = string.IsNullOrWhiteSpace(settings.ManualSubtractHotkey)
             ? defaults.ManualSubtractHotkey
             : settings.ManualSubtractHotkey;
+        if (settings.ManualAddHotkey.Equals("F8", StringComparison.OrdinalIgnoreCase) &&
+            settings.ManualSubtractHotkey.Equals("F9", StringComparison.OrdinalIgnoreCase))
+        {
+            settings.ManualAddHotkey = defaults.ManualAddHotkey;
+            settings.ManualSubtractHotkey = defaults.ManualSubtractHotkey;
+        }
+
         settings.BossDefeatedHotkey = string.IsNullOrWhiteSpace(settings.BossDefeatedHotkey)
             ? defaults.BossDefeatedHotkey
             : settings.BossDefeatedHotkey;

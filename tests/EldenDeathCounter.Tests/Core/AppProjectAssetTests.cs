@@ -257,6 +257,10 @@ public sealed class AppProjectAssetTests
         Assert.Contains("Command=\"{Binding SetCounterCommand}\"", dashboardTab, StringComparison.Ordinal);
         Assert.Contains("Command=\"{Binding AddDeathCommand}\"", dashboardTab, StringComparison.Ordinal);
         Assert.Contains("Command=\"{Binding ResetCounterCommand}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Command=\"{Binding ToggleDetectionCommand}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Style=\"{StaticResource DashboardDetectionToggleButton}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Text=\"F8\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Text=\"F9\"", dashboardTab, StringComparison.Ordinal);
         Assert.DoesNotContain("Dash_QuickSettings", dashboardTab, StringComparison.Ordinal);
         Assert.DoesNotContain("Dash_BindingReminders", dashboardTab, StringComparison.Ordinal);
     }
@@ -364,6 +368,10 @@ public sealed class AppProjectAssetTests
         Assert.Contains("x:Name=\"HeaderBorder\" Grid.ColumnSpan=\"2\"", xaml, StringComparison.Ordinal);
         Assert.Contains("x:Name=\"SectionTitleText\"", xaml, StringComparison.Ordinal);
         Assert.Contains("Text=\"Dashboard\"", xaml, StringComparison.Ordinal);
+        Assert.DoesNotContain("<ColumnDefinition Width=\"260\" />", xaml, StringComparison.Ordinal);
+        Assert.Equal(2, Regex.Matches(xaml, "<ColumnDefinition Width=\"300\" />").Count);
+        Assert.Contains("Grid.Column=\"1\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("TextTrimming=\"CharacterEllipsis\"", xaml, StringComparison.Ordinal);
         Assert.Contains("FontSize=\"30\"", xaml, StringComparison.Ordinal);
         Assert.Contains("FontWeight=\"Bold\"", xaml, StringComparison.Ordinal);
         Assert.Contains("Foreground=\"{DynamicResource Gold}\"", xaml, StringComparison.Ordinal);
@@ -372,7 +380,8 @@ public sealed class AppProjectAssetTests
         Assert.Contains("Text=\"{Binding DetectionStatus}\"", xaml, StringComparison.Ordinal);
         Assert.Contains("Text=\"LAST\"", xaml, StringComparison.Ordinal);
         Assert.Contains("Text=\"{Binding LastDetectedDeathText}\"", xaml, StringComparison.Ordinal);
-        Assert.Contains("Text=\"Elden Ring Death Counter\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("StackPanel Orientation=\"Vertical\"", xaml, StringComparison.Ordinal);
+        Assert.DoesNotContain("Text=\"Elden Ring Death Counter\"", xaml, StringComparison.Ordinal);
 
         var ds = xaml.IndexOf("x:Name=\"DarkSouls1Button\"", StringComparison.Ordinal);
         var ds2 = xaml.IndexOf("x:Name=\"DarkSouls2Button\"", StringComparison.Ordinal);

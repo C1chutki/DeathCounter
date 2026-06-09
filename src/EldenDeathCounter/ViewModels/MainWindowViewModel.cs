@@ -449,7 +449,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    public string FooterText => "Use borderless fullscreen or windowed mode for Elden Ring. Exclusive fullscreen may hide the overlay. F6 toggles detection, F8 adds a death, F9 subtracts one, F7 marks the active boss defeated, and Ctrl+Shift+P skips the active boss by default.";
+    public string FooterText => "Use borderless fullscreen or windowed mode for Elden Ring. Exclusive fullscreen may hide the overlay. F6 toggles detection, F9 adds a death, F8 subtracts one, F7 marks the active boss defeated, and Ctrl+Shift+P skips the active boss by default.";
 
     public ICommand StartDetectionCommand { get; }
 

@@ -31,8 +31,8 @@ public sealed class AppSettingsTests
         Assert.Contains("ZABITO BOGA", settings.BossVictoryPhrases);
         Assert.Contains("ENEMY FELLED", settings.BossVictoryPhrases);
         Assert.Contains("GOD SLAIN", settings.BossVictoryPhrases);
-        Assert.Equal("F8", settings.ManualAddHotkey);
-        Assert.Equal("F9", settings.ManualSubtractHotkey);
+        Assert.Equal("F9", settings.ManualAddHotkey);
+        Assert.Equal("F8", settings.ManualSubtractHotkey);
         Assert.Equal("F7", settings.BossDefeatedHotkey);
         Assert.Equal("Ctrl+Shift+O", settings.OverlayToggleHotkey);
         Assert.Equal("F6", settings.DetectionToggleHotkey);
@@ -141,6 +141,21 @@ public sealed class AppSettingsTests
         var settings = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop");
 
         Assert.Equal("Ctrl+Shift+O", settings.OverlayToggleHotkey);
+    }
+
+    [Fact]
+    public async Task LoadingOldDefaultManualHotkeysSwapsAddAndSubtract()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var settingsPath = Path.Combine(folder, "appsettings.json");
+        await File.WriteAllTextAsync(settingsPath, """{"dataFolderPath":"C:\\Temp\\Counter","manualAddHotkey":"F8","manualSubtractHotkey":"F9"}""");
+        var store = new AppSettingsStore(new FileLogService(Path.Combine(folder, "log.txt")));
+
+        var settings = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop");
+
+        Assert.Equal("F9", settings.ManualAddHotkey);
+        Assert.Equal("F8", settings.ManualSubtractHotkey);
     }
 
     [Fact]

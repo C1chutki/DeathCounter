@@ -14,6 +14,15 @@ public sealed class ScreenCaptureService : IScreenCaptureService
     private string? _loggedDeathTextCaptureTarget;
     private string? _loggedBossHealthBarCaptureTarget;
 
+    // Resolving "EldenRingWindow" enumerates every top-level window and opens a process handle per
+    // visible window. That answer only changes when the game starts or moves monitors, so we cache it
+    // briefly instead of paying the EnumWindows cost on every capture (death + boss bar, ~3×/s each).
+    private static readonly TimeSpan ScreenResolutionCacheDuration = TimeSpan.FromSeconds(2);
+    private readonly object _screenCacheLock = new();
+    private string? _cachedScreenTarget;
+    private Screen? _cachedScreen;
+    private DateTimeOffset _cachedScreenAt = DateTimeOffset.MinValue;
+
     public ScreenCaptureService(ILogService log)
     {
         _log = log;
@@ -97,7 +106,33 @@ public sealed class ScreenCaptureService : IScreenCaptureService
         return new CapturedFrame(bitmap);
     }
 
-    private static Screen SelectScreen(string captureTarget)
+    private Screen SelectScreen(string captureTarget)
+    {
+        // Only the dynamic game-window lookup is expensive; explicit "Screen:N"/primary targets are
+        // cheap, so we cache exclusively the EldenRingWindow path and resolve the rest every time.
+        if (!captureTarget.Equals("EldenRingWindow", StringComparison.OrdinalIgnoreCase))
+        {
+            return SelectScreenUncached(captureTarget);
+        }
+
+        lock (_screenCacheLock)
+        {
+            if (_cachedScreen is not null &&
+                string.Equals(_cachedScreenTarget, captureTarget, StringComparison.OrdinalIgnoreCase) &&
+                DateTimeOffset.Now - _cachedScreenAt < ScreenResolutionCacheDuration)
+            {
+                return _cachedScreen;
+            }
+
+            var screen = SelectScreenUncached(captureTarget);
+            _cachedScreen = screen;
+            _cachedScreenTarget = captureTarget;
+            _cachedScreenAt = DateTimeOffset.Now;
+            return screen;
+        }
+    }
+
+    private static Screen SelectScreenUncached(string captureTarget)
     {
         var screens = Screen.AllScreens;
         if (screens.Length == 0)

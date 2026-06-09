@@ -2,6 +2,12 @@
 
 ## 2026-06-03
 
+- Wycentrowano naglowek sekcji dashboardu wzgledem glownej liczby smierci, wyrownujac boczne kolumny topbara. Dodano regresje XAML; wersje podniesiono do 1.12.11.
+
+- Usunieto napis `Elden Ring Death Counter` z prawej strony topbara i ustawiono status detekcji nad wierszem `LAST`, zeby prawy pasek nie ucinal tekstu przy mniejszej szerokosci. Dodano regresje XAML; wersje podniesiono do 1.12.10.
+
+- Poprawiono czytelnosc dashboardu: naglowek i status detekcji maja osobne kolumny, centralny licznik jest bardziej zwarty, obok resetu dodano okragly przycisk `START`/`STOP` detekcji, a domyslne skroty `F8`/`F9` zamieniono miejscami. Dodano regresje XAML i migracje starej domyslnej pary hotkeyow; wersje podniesiono do 1.12.9.
+
 - Powiekszono licznik smierci aktywnego encountera w dashboardzie, usunieto z niego nawiasy i dodano przyciski `-`/`+` przed `SET` w tym samym stylu. Wersje podniesiono do 1.12.8.
 
 - Powiekszono i wycentrowano naglowek aktywnej sekcji wzgledem calego okna oraz ujednolicono jego font z naglowkiem Settings. Wersje podniesiono do 1.12.7.
