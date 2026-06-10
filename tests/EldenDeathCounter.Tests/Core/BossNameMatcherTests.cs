@@ -6,7 +6,7 @@ public sealed class BossNameMatcherTests
 {
     private static BossNameMatcher CreateEnglishMatcher()
     {
-        var lines = File.ReadAllLines(GetAssetPath("ENG_BossList.txt"));
+        var lines = File.ReadAllLines(GetAssetPath(Path.Combine("Elden Ring", "ENG_ER_BossList.txt")));
         return new BossNameMatcher(BossNameMatcher.ParseList(lines));
     }
 

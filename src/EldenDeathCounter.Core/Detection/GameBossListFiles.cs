@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace EldenDeathCounter.Core.Detection;
 
 /// <summary>
@@ -8,25 +10,28 @@ namespace EldenDeathCounter.Core.Detection;
 /// <c>PL_BossList.txt</c>/<c>ENG_BossList.txt</c>, so Dark Souls boss names never matched even though
 /// the <c>*_DS1/2/3_BossList.txt</c> assets exist. Routing by game id fixes per-boss tracking for all
 /// four games from a single place.
+///
+/// The Elden Ring boss lists live in the <c>Assets/Elden Ring</c> subfolder (named
+/// <c>*_ER_BossList.txt</c>); the Dark Souls lists remain at the <c>Assets</c> root.
 /// </summary>
 public static class GameBossListFiles
 {
+    private const string EldenRingFolderName = "Elden Ring";
+
     public static string Resolve(string? gameId, string? language)
     {
-        var suffix = GameSuffix(gameId);
-        return IsPolish(language)
-            ? $"PL{suffix}_BossList.txt"
-            : $"ENG{suffix}_BossList.txt";
+        var prefix = IsPolish(language) ? "PL" : "ENG";
+        return Normalize(gameId) switch
+        {
+            "DARKSOULS1" => $"{prefix}_DS1_BossList.txt",
+            "DARKSOULS2" => $"{prefix}_DS2_BossList.txt",
+            "DARKSOULS3" => $"{prefix}_DS3_BossList.txt",
+            _ => Path.Combine(EldenRingFolderName, $"{prefix}_ER_BossList.txt")
+        };
     }
 
-    private static string GameSuffix(string? gameId) =>
-        (gameId?.Trim() ?? string.Empty).ToUpperInvariant() switch
-        {
-            "DARKSOULS1" => "_DS1",
-            "DARKSOULS2" => "_DS2",
-            "DARKSOULS3" => "_DS3",
-            _ => string.Empty
-        };
+    private static string Normalize(string? gameId) =>
+        (gameId?.Trim() ?? string.Empty).ToUpperInvariant();
 
     private static bool IsPolish(string? language) =>
         (language?.Trim() ?? "PL").StartsWith("PL", StringComparison.OrdinalIgnoreCase);

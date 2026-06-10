@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Content Include="..\..\Assets\*.*" Link="Assets\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\Assets\Elden Ring\*.*" Link="Assets\Elden Ring\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\Assets\Dark souls 3\*.*" Link="Assets\Dark souls 3\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
@@ -28,7 +29,7 @@
     <SatelliteResourceLanguages>en;pl</SatelliteResourceLanguages>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
-    <Version>1.12.11</Version>
+    <Version>1.12.15</Version>
   </PropertyGroup>
 
 </Project>

@@ -62,4 +62,16 @@ public sealed class ImageDeathSignalMatchTests
 
         Assert.False(signal.IsStrongTemplateMatch);
     }
+
+    [Fact]
+    public void PendingConfirmationUsesStructuredThresholdWhenPresent()
+    {
+        var signal = new ImageDeathSignalMatch(false, 0.426, "template:Death_Screen.png", 1.0)
+        {
+            Threshold = 0.436,
+            Details = "contrast=True; strokeRatio=0.80; verticalCoverage=0.90"
+        };
+
+        Assert.True(signal.CanConfirmPendingSignal);
+    }
 }

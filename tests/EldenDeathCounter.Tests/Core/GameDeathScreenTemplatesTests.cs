@@ -6,6 +6,8 @@ public sealed class GameDeathScreenTemplatesTests
 {
     private static string Ds3(string file) => Path.Combine("Dark souls 3", file);
 
+    private static string Er(string file) => Path.Combine("Elden Ring", file);
+
     [Fact]
     public void DarkSouls3DeathTemplatesIncludeEnglishYouDiedEvenWhenLanguageIsPolish()
     {
@@ -39,7 +41,7 @@ public sealed class GameDeathScreenTemplatesTests
     {
         var files = GameDeathScreenTemplates.DeathTemplateFiles("EldenRing", "PL");
 
-        Assert.Contains("PL_Death_Screen.png", files);
+        Assert.Contains(Er("PL_Death_Screen.png"), files);
         Assert.DoesNotContain(files, file => file.Contains("Dark souls 3", StringComparison.OrdinalIgnoreCase));
     }
 
@@ -48,7 +50,24 @@ public sealed class GameDeathScreenTemplatesTests
     {
         var files = GameDeathScreenTemplates.DeathTemplateFiles("EldenRing", "ENG");
 
-        Assert.Contains("ENG_Death_Screen.jpg", files);
-        Assert.DoesNotContain("PL_Death_Screen.png", files);
+        Assert.Contains(Er("ENG_Death_Screen.png"), files);
+        Assert.DoesNotContain(Er("PL_Death_Screen.png"), files);
+    }
+
+    [Fact]
+    public void EldenRingEnglishDeathTemplatesUseSixVisuallyDiverseScreens()
+    {
+        var files = GameDeathScreenTemplates.DeathTemplateFiles("EldenRing", "ENG");
+
+        Assert.Equal(
+            [
+                Er("ENG_Death_Screen_v9.png"),
+                Er("ENG_Death_Screen_v3.png"),
+                Er("ENG_Death_Screen.png"),
+                Er("ENG_Death_Screen_v8.png"),
+                Er("ENG_Death_Screen_v7.png"),
+                Er("ENG_Death_Screen_v11.png")
+            ],
+            files);
     }
 }

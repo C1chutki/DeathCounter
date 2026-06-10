@@ -160,7 +160,7 @@
     <sys:String x:Key="Vm_UsingDefaultFolder">Using default save folder</sys:String>
     <sys:String x:Key="Vm_UsingCharacterProfileFormat">Using character profile '{0}'</sys:String>
     <sys:String x:Key="Vm_SettingsSaved">Settings saved</sys:String>
-    <sys:String x:Key="Vm_DetectionIntervalInvalid">Detection interval must be at least 300 ms.</sys:String>
+    <sys:String x:Key="Vm_DetectionIntervalInvalid">Detection interval must be at least 350 ms.</sys:String>
     <sys:String x:Key="Vm_CooldownInvalid">Cooldown must be at least 1 second.</sys:String>
     <sys:String x:Key="Vm_SensitivityInvalid">Detection sensitivity must be a number from 0.1 to 1.0.</sys:String>
     <sys:String x:Key="Vm_OverlayXYInvalid">Overlay X and Y must be numbers.</sys:String>

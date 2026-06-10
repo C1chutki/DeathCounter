@@ -47,14 +47,11 @@ public sealed class DeathDetectionService
     private DateTimeOffset? _fullDiagnosticsUntil;
     private AppSettings? _lastSettings;
     private long _detectionFrameIndex;
-    private DateTimeOffset _lastOcrRunAt = DateTimeOffset.MinValue;
 
     // OCR is the fallback for death/victory text the template misses. It is the single most expensive
     // step (PNG-free now, but still ~15ms × engines), so we no longer run it on every frame: only when
     // the cheap template analyzer reports something text-like, while a confirmation is pending, or as a
     // periodic safety net so a fully template-blind banner is still caught within OcrSafetyInterval.
-    private const double OcrWeakSignalFloor = 0.30;
-    private static readonly TimeSpan OcrSafetyInterval = TimeSpan.FromMilliseconds(750);
 
     public DeathDetectionService(
         IScreenCaptureService captureService,
@@ -96,7 +93,9 @@ public sealed class DeathDetectionService
         _log.Info("Detection started.");
         _log.Info(
             "Detection settings: " +
-            $"intervalMs={settings.DetectionIntervalMs}, " +
+            $"intervalMs={DetectionTimingOptions.NormalizeBaseIntervalMs(settings.DetectionIntervalMs)}, " +
+            $"burstIntervalMs={DetectionTimingOptions.BurstIntervalMs}, " +
+            $"burstDurationMs={DetectionTimingOptions.BurstDurationMs}, " +
             $"cooldownSeconds={settings.DetectionCooldownSeconds}, " +
             $"sensitivity={FormatScore(settings.DetectionSensitivity)}, " +
             $"captureTarget='{settings.CaptureTarget}', " +
@@ -201,12 +200,19 @@ public sealed class DeathDetectionService
 
     private async Task RunAsync(AppSettings settings, CancellationToken cancellationToken)
     {
-        var interval = TimeSpan.FromMilliseconds(Math.Max(300, settings.DetectionIntervalMs));
+        var baseInterval = TimeSpan.FromMilliseconds(DetectionTimingOptions.NormalizeBaseIntervalMs(settings.DetectionIntervalMs));
+        var burstInterval = TimeSpan.FromMilliseconds(DetectionTimingOptions.BurstIntervalMs);
+        var burstDuration = TimeSpan.FromMilliseconds(DetectionTimingOptions.BurstDurationMs);
+        var burstUntil = DateTimeOffset.MinValue;
+        DateTimeOffset? previousFrameStartedAt = null;
+        DateTimeOffset? lastFullDiagnosticsScreenshotAt = null;
         var cooldown = TimeSpan.FromSeconds(Math.Max(1, settings.DetectionCooldownSeconds));
         var ocrLanguageHints = BuildOcrLanguageHints(settings);
 
         while (!cancellationToken.IsCancellationRequested)
         {
+            var frameStartedAt = DateTimeOffset.Now;
+            var useBurstForNextFrame = false;
             if (_fullDiagnosticsUntil is not null && DateTimeOffset.Now >= _fullDiagnosticsUntil.Value)
             {
                 _fullDiagnosticsUntil = null;
@@ -214,11 +220,15 @@ public sealed class DeathDetectionService
                 _log.Info("Full diagnostics session expired; returned to configured diagnostics mode.");
             }
 
-            var nextFrameDueAt = DateTimeOffset.Now + interval;
             try
             {
                 var frameIndex = Interlocked.Increment(ref _detectionFrameIndex);
-                var frameStartedAt = DateTimeOffset.Now;
+                frameStartedAt = DateTimeOffset.Now;
+                var frameDeltaMs = previousFrameStartedAt is null
+                    ? (long?)null
+                    : (long)Math.Round((frameStartedAt - previousFrameStartedAt.Value).TotalMilliseconds);
+                previousFrameStartedAt = frameStartedAt;
+                var timingMode = frameStartedAt < burstUntil ? "burst" : "base";
                 var frameStopwatch = Stopwatch.StartNew();
                 using var frame = await _captureService.CaptureAsync(settings.CaptureTarget, cancellationToken);
                 var captureMs = frameStopwatch.ElapsedMilliseconds;
@@ -245,14 +255,13 @@ public sealed class DeathDetectionService
                     LogWeakImageSignal(imageSignal);
                 }
 
-                if (!signal.IsMatch && ShouldRunOcr(imageSignal, _deathSignalStabilizer.IsPending, frameStartedAt))
+                if (!signal.IsMatch && DetectionOcrGate.ShouldRunOcr(imageSignal, _deathSignalStabilizer.IsPending))
                 {
-                    _lastOcrRunAt = frameStartedAt;
                     var ocrStartMs = frameStopwatch.ElapsedMilliseconds;
                     ocrText = await _textRecognitionService.RecognizeTextAsync(frame.Bitmap, ocrLanguageHints, cancellationToken);
                     ocrMs = frameStopwatch.ElapsedMilliseconds - ocrStartMs;
                     match = _phraseMatcher.Match(ocrText, settings.DetectionPhrases, settings.DetectionSensitivity);
-                    if (match.IsMatch)
+                    if (DetectionOcrGate.ShouldAcceptOcrPhrase(match.IsMatch, imageSignal, _deathSignalStabilizer.IsPending))
                     {
                         signal = new ImageDeathSignalMatch(true, match.Score, $"ocr:{match.MatchedPhrase ?? "death phrase"}", 1)
                         {
@@ -309,7 +318,16 @@ public sealed class DeathDetectionService
                     ocrMs,
                     imageAnalysisMs,
                     frameStopwatch.ElapsedMilliseconds,
-                    settings.DetectionSensitivity);
+                    settings.DetectionSensitivity,
+                    frameDeltaMs,
+                    timingMode);
+                if (_fullDiagnosticsUntil is not null &&
+                    DateTimeOffset.Now < _fullDiagnosticsUntil.Value &&
+                    DetectionTimingOptions.ShouldSaveFullDiagnosticsFrame(frameStartedAt, lastFullDiagnosticsScreenshotAt, frameIndex))
+                {
+                    lastFullDiagnosticsScreenshotAt = frameStartedAt;
+                    SaveFrameEvidence(settings, frame.Bitmap, frameStartedAt, $"diag-{timingMode}", "frame-sample", imageSignal.Score, frameIndex);
+                }
                 if (confirmedSignal is not null)
                 {
                     await HandleDeathSignalMatchAsync(frameIndex, confirmedSignal, cooldown, settings, frame.Bitmap);
@@ -330,6 +348,8 @@ public sealed class DeathDetectionService
                         $"evidence='{evidencePath ?? "not-saved"}'.");
                     RaiseStatus("Detection running", _lastDetectedDeath);
                 }
+
+                useBurstForNextFrame = DetectionTimingOptions.ShouldEnterBurst(imageSignal, _deathSignalStabilizer.IsPending, signal);
 
                 if (!signal.IsMatch)
                 {
@@ -380,7 +400,13 @@ public sealed class DeathDetectionService
 
             try
             {
-                var delay = nextFrameDueAt - DateTimeOffset.Now;
+                if (useBurstForNextFrame)
+                {
+                    burstUntil = DateTimeOffset.Now + burstDuration;
+                }
+
+                var nextInterval = DateTimeOffset.Now < burstUntil ? burstInterval : baseInterval;
+                var delay = frameStartedAt + nextInterval - DateTimeOffset.Now;
                 if (delay > TimeSpan.Zero)
                 {
                     await Task.Delay(delay, cancellationToken);
@@ -391,21 +417,6 @@ public sealed class DeathDetectionService
                 break;
             }
         }
-    }
-
-    private bool ShouldRunOcr(ImageDeathSignalMatch imageSignal, bool stabilizerPending, DateTimeOffset now)
-    {
-        if (imageSignal.Score >= OcrWeakSignalFloor)
-        {
-            return true;
-        }
-
-        if (stabilizerPending)
-        {
-            return true;
-        }
-
-        return now - _lastOcrRunAt >= OcrSafetyInterval;
     }
 
     private static IReadOnlyList<string> BuildOcrLanguageHints(AppSettings settings)
@@ -485,35 +496,36 @@ public sealed class DeathDetectionService
             return false;
         }
 
-        var phraseMatch = _phraseMatcher.Match(
-            ocrText,
-            settings.BossVictoryPhrases,
-            settings.DetectionSensitivity,
-            suppressOwnSettingsTextGuard: true);
         var signal = ImageDeathSignalMatch.NoMatch;
-        var imageSignal = ImageDeathSignalMatch.NoMatch;
-
-        if (phraseMatch.IsMatch)
-        {
-            signal = new ImageDeathSignalMatch(true, phraseMatch.Score, $"boss-victory-ocr:{phraseMatch.MatchedPhrase ?? "victory phrase"}", 1)
-            {
-                Details = phraseMatch.Details
-            };
-        }
-        else
-        {
-                imageSignal = _bossVictorySignalDetector.Analyze(frame, settings.DetectionSensitivity, settings.GameId, settings.GameLanguage);
-            if (imageSignal.IsMatch)
-            {
-                signal = imageSignal;
-            }
-            else if (imageSignal.Score >= 0.35)
-            {
-                LogWeakBossVictoryImageSignal(imageSignal);
-            }
-        }
-
+        var imageSignal = _bossVictorySignalDetector.Analyze(frame, settings.DetectionSensitivity, settings.GameId, settings.GameLanguage);
         var wasPending = _bossVictorySignalStabilizer.IsPending;
+        var phraseMatch = new DeathPhraseMatch(false, null, 0, string.Empty);
+
+        if (imageSignal.IsMatch)
+        {
+            signal = imageSignal;
+        }
+        else if (imageSignal.Score >= 0.35)
+        {
+            LogWeakBossVictoryImageSignal(imageSignal);
+        }
+
+        if (!signal.IsMatch && DetectionOcrGate.ShouldRunOcr(imageSignal, wasPending))
+        {
+            phraseMatch = _phraseMatcher.Match(
+                ocrText,
+                settings.BossVictoryPhrases,
+                settings.DetectionSensitivity,
+                suppressOwnSettingsTextGuard: true);
+            if (DetectionOcrGate.ShouldAcceptOcrPhrase(phraseMatch.IsMatch, imageSignal, wasPending))
+            {
+                signal = new ImageDeathSignalMatch(true, phraseMatch.Score, $"boss-victory-ocr:{phraseMatch.MatchedPhrase ?? "victory phrase"}", 1)
+                {
+                    Details = phraseMatch.Details
+                };
+            }
+        }
+
         if (!signal.IsMatch && wasPending && imageSignal.CanConfirmPendingSignal)
         {
             signal = imageSignal;
@@ -933,7 +945,7 @@ public sealed class DeathDetectionService
 
         _lastWeakImageSignalLog = now;
         LogDetectionEvent("death", "weak-signal", _detectionFrameIndex, ImageDeathSignalMatch.NoMatch, match, FormatCompactStabilizerState(_deathSignalStabilizer), FormatGateState(), match.Details);
-        _log.Info($"Weak image death-text candidate below threshold. Method='{match.Method}', score={FormatScore(match.Score)}, scale={FormatScore(match.Scale)}.");
+        _log.Info($"Weak image death-text candidate did not pass gate. Method='{match.Method}', score={FormatScore(match.Score)}, threshold={FormatScore(match.Threshold)}, scale={FormatScore(match.Scale)}.");
     }
 
     private void LogWeakBossVictoryImageSignal(ImageDeathSignalMatch match)
@@ -946,7 +958,7 @@ public sealed class DeathDetectionService
 
         _lastWeakBossVictoryImageSignalLog = now;
         LogDetectionEvent("boss-victory", "weak-signal", _detectionFrameIndex, ImageDeathSignalMatch.NoMatch, match, FormatCompactStabilizerState(_bossVictorySignalStabilizer), FormatBossVictoryGateState(), match.Details);
-        _log.Info($"Weak image boss-victory candidate below threshold. Method='{match.Method}', score={FormatScore(match.Score)}, scale={FormatScore(match.Scale)}.");
+        _log.Info($"Weak image boss-victory candidate did not pass gate. Method='{match.Method}', score={FormatScore(match.Score)}, threshold={FormatScore(match.Threshold)}, scale={FormatScore(match.Scale)}.");
     }
 
     private void HandlePendingSignal(long frameIndex, AppSettings settings, Bitmap frame, ImageDeathSignalMatch signal)
@@ -1083,7 +1095,9 @@ public sealed class DeathDetectionService
         long ocrMs,
         long imageAnalysisMs,
         long totalMs,
-        double sensitivity)
+        double sensitivity,
+        long? frameDeltaMs,
+        string timingMode)
     {
         _detectionEventLog.Log(new DetectionEventRecord
         {
@@ -1102,11 +1116,15 @@ public sealed class DeathDetectionService
                 $"phraseMatch={phraseMatch.IsMatch}; phrase='{phraseMatch.MatchedPhrase ?? ""}'; details='{Compact(phraseMatch.Details)}'; " +
                 $"image={FormatSignal(imageSignal)}; selected={FormatSignal(selectedSignal)}; " +
                 $"confirmed={(confirmedSignal is null ? "none" : FormatSignal(confirmedSignal))}; wasPending={wasPending}; " +
-                $"before={stabilizerBefore}; after={stabilizerAfter}; sensitivity={FormatScore(sensitivity)}",
+                $"before={stabilizerBefore}; after={stabilizerAfter}; sensitivity={FormatScore(sensitivity)}; " +
+                $"timingMode={timingMode}; frameDeltaMs={frameDeltaMs?.ToString(CultureInfo.InvariantCulture) ?? "none"}; " +
+                $"targetBaseMs={DetectionTimingOptions.MinimumBaseIntervalMs}; targetBurstMs={DetectionTimingOptions.BurstIntervalMs}",
             CaptureMs = captureMs,
             OcrMs = ocrMs,
             ImageMs = imageAnalysisMs,
             TotalMs = totalMs,
+            FrameDeltaMs = frameDeltaMs,
+            TimingMode = timingMode,
             IsFrameDiagnostic = true
         });
     }

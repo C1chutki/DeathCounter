@@ -6,6 +6,12 @@ namespace EldenDeathCounter.Core.Detection;
 /// (~y 0.481..0.553 of a full-screen capture) plus a small margin, so the template stays a
 /// subset of the live capture region (<see cref="DeathTextCaptureRegionCalculator"/>) and the
 /// matcher keeps enough vertical slide room to absorb the text's on-screen position jitter.
+///
+/// A reference image may instead be a <em>pre-cropped strip</em> — the live capture ROI itself
+/// (e.g. 1690x216 for a 2560x1440 screen) saved to disk rather than a whole screenshot. Cropping
+/// the full-screen central band out of such a strip would keep only a thin sliver of the letters,
+/// so a strip is detected by its wide aspect ratio and the band is taken at strip-relative
+/// fractions instead (see <see cref="StripTop"/>/<see cref="StripBottom"/>).
 /// </summary>
 public static class DeathTextTemplateReferenceRegion
 {
@@ -15,15 +21,42 @@ public static class DeathTextTemplateReferenceRegion
     private const double Top = 0.476;
     private const double Bottom = 0.558;
 
+    // A reference image whose width:height ratio is at least this is treated as a pre-cropped
+    // death/victory-text strip rather than a full-screen capture. Full-screen captures are ~16:9
+    // (~1.78); a capture-ROI strip is ~7.8:1.
+    private const double StripAspectThreshold = 3.0;
+
+    // Text-band fractions within a pre-cropped strip (the strip == the capture ROI). Derived by
+    // expressing the full-screen band relative to the capture ROI; these stay stable across 16:9
+    // resolutions, so the template built from a strip matches the one built from a full screenshot.
+    private const double StripTop = 0.22;
+    private const double StripBottom = 0.77;
+
     public static PixelRect DeathScreen(int width, int height)
     {
-        return Calculate(width, height, 0.33, 0.67);
+        return IsPreCroppedStrip(width, height)
+            ? Strip(width, height, 0.24, 0.76)
+            : Calculate(width, height, 0.33, 0.67);
     }
 
     public static PixelRect BossVictory(int width, int height)
     {
         // Boss-victory phrases ("ENEMY FELLED"/"POKONANO WROGA") are wider than "YOU DIED".
-        return Calculate(width, height, 0.24, 0.78);
+        return IsPreCroppedStrip(width, height)
+            ? Strip(width, height, 0.10, 0.92)
+            : Calculate(width, height, 0.24, 0.78);
+    }
+
+    private static bool IsPreCroppedStrip(int width, int height) =>
+        height > 0 && (double)width / height >= StripAspectThreshold;
+
+    private static PixelRect Strip(int width, int height, double left, double right)
+    {
+        return new PixelRect(
+            (int)(width * left),
+            (int)(height * StripTop),
+            (int)(width * right),
+            (int)(height * StripBottom));
     }
 
     private static PixelRect Calculate(int width, int height, double left, double right)

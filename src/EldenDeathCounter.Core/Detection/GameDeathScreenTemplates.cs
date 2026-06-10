@@ -14,6 +14,7 @@ namespace EldenDeathCounter.Core.Detection;
 public static class GameDeathScreenTemplates
 {
     private const string DarkSouls3FolderName = "Dark souls 3";
+    private const string EldenRingFolderName = "Elden Ring";
 
     public static IReadOnlyList<string> DeathTemplateFiles(string gameId, string language)
     {
@@ -28,8 +29,15 @@ public static class GameDeathScreenTemplates
         }
 
         return IsPolish(language)
-            ? ["PL_Death_Screen.png", "PL_Death_Screen_v2.jpg", "PL_Death_Screen_v3.jpg"]
-            : ["ENG_Death_Screen.jpg", "ENG_Death_Screen_v2.jpg"];
+            ? [Er("PL_Death_Screen.png"), Er("PL_Death_Screen_v2.jpg"), Er("PL_Death_Screen_v3.jpg")]
+            : [
+                Er("ENG_Death_Screen_v9.png"),
+                Er("ENG_Death_Screen_v3.png"),
+                Er("ENG_Death_Screen.png"),
+                Er("ENG_Death_Screen_v8.png"),
+                Er("ENG_Death_Screen_v7.png"),
+                Er("ENG_Death_Screen_v11.png")
+            ];
     }
 
     public static IReadOnlyList<string> VictoryTemplateFiles(string gameId, string language)
@@ -44,11 +52,13 @@ public static class GameDeathScreenTemplates
         }
 
         return IsPolish(language)
-            ? ["PL_Win_screen.jpg"]
-            : ["ENG_Win_Screen.jpg", "ENG_Win_Screen_v2.jpg"];
+            ? [Er("PL_Win_screen.jpg")]
+            : [Er("ENG_Win_Screen.jpg"), Er("ENG_Win_Screen_v2.jpg")];
     }
 
     private static string Ds3(string file) => Path.Combine(DarkSouls3FolderName, file);
+
+    private static string Er(string file) => Path.Combine(EldenRingFolderName, file);
 
     private static bool IsDarkSouls3(string? gameId) =>
         string.Equals(gameId?.Trim(), "DarkSouls3", StringComparison.OrdinalIgnoreCase);

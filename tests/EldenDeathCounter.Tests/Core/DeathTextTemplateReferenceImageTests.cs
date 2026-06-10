@@ -10,7 +10,7 @@ public sealed class DeathTextTemplateReferenceImageTests
     [Fact]
     public void BuildsTemplateFromProvidedDeathScreenAndMatchesItBack()
     {
-        var imagePath = GetAssetPath("PL_Death_Screen.png");
+        var imagePath = GetAssetPath(Path.Combine("Elden Ring", "PL_Death_Screen.png"));
         Assert.True(File.Exists(imagePath), imagePath);
 
         using var bitmap = new Bitmap(imagePath);
@@ -39,8 +39,8 @@ public sealed class DeathTextTemplateReferenceImageTests
     [Fact]
     public void MatchesSecondProvidedDeathScreen()
     {
-        var templatePath = GetAssetPath("PL_Death_Screen.png");
-        var screenshotPath = GetAssetPath("PL_Death_Screen_v2.jpg");
+        var templatePath = GetAssetPath(Path.Combine("Elden Ring", "PL_Death_Screen.png"));
+        var screenshotPath = GetAssetPath(Path.Combine("Elden Ring", "PL_Death_Screen_v2.jpg"));
         Assert.True(File.Exists(templatePath), templatePath);
         Assert.True(File.Exists(screenshotPath), screenshotPath);
 
@@ -71,7 +71,7 @@ public sealed class DeathTextTemplateReferenceImageTests
     [Fact]
     public void MatchesSecondEnglishDeathScreen()
     {
-        var templatePath = GetAssetPath("ENG_Death_Screen_v2.jpg");
+        var templatePath = GetAssetPath(Path.Combine("Elden Ring", "ENG_Death_Screen_v2.png"));
         Assert.True(File.Exists(templatePath), templatePath);
 
         using var bitmap = new Bitmap(templatePath);
@@ -83,11 +83,12 @@ public sealed class DeathTextTemplateReferenceImageTests
             crop.Height,
             (x, y) => getPixel(crop.Left + x, crop.Top + y)));
         var analyzer = new DeathTextTemplateAnalyzer();
-        var capture = DeathTextCaptureRegionCalculator.Calculate(bitmap.Width, bitmap.Height);
+        // ENG_Death_Screen_v2.png is a pre-cropped strip (the live capture ROI saved to disk), so it
+        // stands in for a frame directly; re-cropping the capture region would chop the text ends.
         var result = WithLockedPixels(bitmap, getPixel => analyzer.Analyze(
-            capture.Width,
-            capture.Height,
-            (x, y) => getPixel(capture.Left + x, capture.Top + y),
+            bitmap.Width,
+            bitmap.Height,
+            getPixel,
             [template],
             0.8));
 

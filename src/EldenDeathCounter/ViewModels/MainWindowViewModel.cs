@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using EldenDeathCounter.Core.Configuration;
+using EldenDeathCounter.Core.Detection;
 using EldenDeathCounter.Core.Hotkeys;
 using EldenDeathCounter.Core.Logging;
 using EldenDeathCounter.Core.Storage;
@@ -935,7 +936,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         error = string.Empty;
 
-        if (!int.TryParse(DetectionIntervalMsText, NumberStyles.Integer, CultureInfo.InvariantCulture, out var interval) || interval < 300)
+        if (!int.TryParse(DetectionIntervalMsText, NumberStyles.Integer, CultureInfo.InvariantCulture, out var interval) ||
+            interval < DetectionTimingOptions.MinimumBaseIntervalMs)
         {
             error = L("Vm_DetectionIntervalInvalid");
             return false;

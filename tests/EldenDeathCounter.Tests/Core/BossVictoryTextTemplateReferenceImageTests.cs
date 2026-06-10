@@ -10,7 +10,7 @@ public sealed class BossVictoryTextTemplateReferenceImageTests
     [Fact]
     public void BuildsTemplateFromProvidedWinScreenAndMatchesItBack()
     {
-        var imagePath = GetAssetPath("PL_Win_screen.jpg");
+        var imagePath = GetAssetPath(Path.Combine("Elden Ring", "PL_Win_screen.jpg"));
         Assert.True(File.Exists(imagePath), imagePath);
 
         using var bitmap = new Bitmap(imagePath);

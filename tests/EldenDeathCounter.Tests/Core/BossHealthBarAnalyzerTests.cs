@@ -62,7 +62,7 @@ public sealed class BossHealthBarAnalyzerTests
     public void FindsEnglishBossHealthBarWhenCurrentHealthIsBelowMinimumBossBarWidth(string assetName)
     {
         var analyzer = new BossHealthBarAnalyzer();
-        using var bitmap = new Bitmap(GetAssetPath(assetName));
+        using var bitmap = new Bitmap(GetAssetPath(Path.Combine("Elden Ring", assetName)));
 
         var bars = analyzer.Analyze(bitmap.Width, bitmap.Height, (x, y) =>
         {

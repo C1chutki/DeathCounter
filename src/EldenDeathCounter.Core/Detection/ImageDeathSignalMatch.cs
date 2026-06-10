@@ -12,12 +12,14 @@ public sealed record ImageDeathSignalMatch(
 
     public string Details { get; init; } = string.Empty;
 
+    public double Threshold { get; init; }
+
     public bool CanConfirmPendingSignal =>
         !IsMatch &&
         Score > 0 &&
         Method.StartsWith("template:", StringComparison.Ordinal) &&
         HasStrongTemplateContrast() &&
-        TryGetDetailScore("threshold", out var threshold) &&
+        TryGetThreshold(out var threshold) &&
         Score >= threshold - PendingConfirmationTolerance;
 
     // A confirmed template match whose shape metrics are strong enough to count on a single frame.
@@ -56,5 +58,16 @@ public sealed record ImageDeathSignalMatch(
 
         value = 0;
         return false;
+    }
+
+    private bool TryGetThreshold(out double threshold)
+    {
+        if (Threshold > 0)
+        {
+            threshold = Threshold;
+            return true;
+        }
+
+        return TryGetDetailScore("threshold", out threshold);
     }
 }

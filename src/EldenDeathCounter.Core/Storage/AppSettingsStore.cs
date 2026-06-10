@@ -1,5 +1,6 @@
 using System.Text.Json;
 using EldenDeathCounter.Core.Configuration;
+using EldenDeathCounter.Core.Detection;
 using EldenDeathCounter.Core.Logging;
 
 namespace EldenDeathCounter.Core.Storage;
@@ -86,10 +87,7 @@ public sealed class AppSettingsStore
 
         settings.GameLanguage = NormalizeGameLanguage(settings.GameLanguage, defaults.GameLanguage);
 
-        if (settings.DetectionIntervalMs <= 0)
-        {
-            settings.DetectionIntervalMs = defaults.DetectionIntervalMs;
-        }
+        settings.DetectionIntervalMs = DetectionTimingOptions.NormalizeBaseIntervalMs(settings.DetectionIntervalMs);
 
         if (settings.DetectionCooldownSeconds <= 0)
         {

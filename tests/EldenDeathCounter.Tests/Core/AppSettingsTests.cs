@@ -14,7 +14,7 @@ public sealed class AppSettingsTests
         Assert.Equal(@"C:\Users\TestUser\Desktop\DeathCounter\EldenRing", settings.DataFolderPath);
         Assert.True(settings.OverlayEnabled);
         Assert.True(settings.AutoDetectBossNames);
-        Assert.Equal(300, settings.DetectionIntervalMs);
+        Assert.Equal(350, settings.DetectionIntervalMs);
         Assert.Equal(25, settings.DetectionCooldownSeconds);
         Assert.Equal("EldenRingWindow", settings.CaptureTarget);
         Assert.Equal(DiagnosticsMode.Events, settings.DiagnosticsMode);
@@ -171,6 +171,20 @@ public sealed class AppSettingsTests
 
         Assert.Equal("F6", settings.DetectionToggleHotkey);
         Assert.Equal("Ctrl+Shift+P", settings.BossSkipHotkey);
+    }
+
+    [Fact]
+    public async Task LoadingOldFastDetectionIntervalRaisesItToCurrentMinimum()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var settingsPath = Path.Combine(folder, "appsettings.json");
+        await File.WriteAllTextAsync(settingsPath, """{"dataFolderPath":"C:\\Temp\\Counter","detectionIntervalMs":300}""");
+        var store = new AppSettingsStore(new FileLogService(Path.Combine(folder, "log.txt")));
+
+        var settings = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop");
+
+        Assert.Equal(350, settings.DetectionIntervalMs);
     }
 
     [Fact]

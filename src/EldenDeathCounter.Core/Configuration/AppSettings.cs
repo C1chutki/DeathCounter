@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using EldenDeathCounter.Core.Detection;
 
 namespace EldenDeathCounter.Core.Configuration;
 
@@ -27,7 +28,7 @@ public sealed class AppSettings
 
     public Dictionary<string, string> BossNameCorrections { get; set; } = [];
 
-    public int DetectionIntervalMs { get; set; } = 300;
+    public int DetectionIntervalMs { get; set; } = DetectionTimingOptions.DefaultBaseIntervalMs;
 
     public int DetectionCooldownSeconds { get; set; } = 25;
 
@@ -90,7 +91,7 @@ public sealed class AppSettings
             GameId = profile.Id,
             GameLanguage = "PL",
             AppLanguage = "en",
-            DetectionIntervalMs = 300,
+            DetectionIntervalMs = DetectionTimingOptions.DefaultBaseIntervalMs,
             DetectionCooldownSeconds = 25,
             DetectionSensitivity = 0.8,
             CaptureTarget = "EldenRingWindow",

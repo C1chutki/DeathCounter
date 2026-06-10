@@ -160,7 +160,7 @@
     <sys:String x:Key="Vm_UsingDefaultFolder">Używanie domyślnego folderu zapisu</sys:String>
     <sys:String x:Key="Vm_UsingCharacterProfileFormat">Używanie profilu postaci '{0}'</sys:String>
     <sys:String x:Key="Vm_SettingsSaved">Ustawienia zapisane</sys:String>
-    <sys:String x:Key="Vm_DetectionIntervalInvalid">Interwał wykrywania musi wynosić co najmniej 300 ms.</sys:String>
+    <sys:String x:Key="Vm_DetectionIntervalInvalid">Interwał wykrywania musi wynosić co najmniej 350 ms.</sys:String>
     <sys:String x:Key="Vm_CooldownInvalid">Czas odnowienia musi wynosić co najmniej 1 sekundę.</sys:String>
     <sys:String x:Key="Vm_SensitivityInvalid">Czułość wykrywania musi być liczbą od 0.1 do 1.0.</sys:String>
     <sys:String x:Key="Vm_OverlayXYInvalid">Pozycje X i Y nakładki muszą być liczbami.</sys:String>

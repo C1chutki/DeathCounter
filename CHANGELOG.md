@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-06-10
+
+- Ograniczono OCR death/boss-victory do potwierdzania podejrzanych sygnalow obrazowych lub aktywnego pendingu, zeby tekst z innych aplikacji na `PrimaryScreen` nie zliczal smierci ani zwyciestw bossa. Dodano regresje bramki OCR; wersje podniesiono do 1.12.15.
+
+- Rozszerzono 10-minutowa diagnostyke full frames: zapisuje teraz okresowe screenshoty probek oraz loguje `frameDeltaMs` i `timingMode`, zeby zweryfikowac realne interwaly 350 ms i burst 200 ms. Dodano regresje dla samplera screenshotow i pol timingowych eventow; wersje podniesiono do 1.12.14.
+
+- Przyspieszono probkowanie detekcji: domyslny i minimalny interwal bazowy wynosi teraz 350 ms, a po slabym/pending sygnale wlacza sie krotki burst 200 ms przez 1.5 s. Dodano testy timing helpera i migracje starych ustawien interwalu; wersje podniesiono do 1.12.13.
+
+- Usprawniono angielska detekcje death screena Elden Ring: z 11 obrazow wybrano 6 najbardziej roznych graficznie templatek, a log slabych kandydatow pokazuje teraz threshold obok score. Dodano regresje dla listy templatek i strukturalnego progu; wersje podniesiono do 1.12.12.
+
 ## 2026-06-03
 
 - Wycentrowano naglowek sekcji dashboardu wzgledem glownej liczby smierci, wyrownujac boczne kolumny topbara. Dodano regresje XAML; wersje podniesiono do 1.12.11.

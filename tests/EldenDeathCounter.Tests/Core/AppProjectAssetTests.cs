@@ -19,23 +19,26 @@ public sealed class AppProjectAssetTests
             .Where(value => !string.IsNullOrWhiteSpace(value))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        // The wildcard Assets include copies the boss lists and reference images to the build output.
+        // The wildcard Assets include copies root assets, and the Elden Ring subfolder include copies
+        // the relocated Elden Ring boss lists and reference images to the build output.
         Assert.Contains(@"..\..\Assets\*.*", includes);
+        Assert.Contains(@"..\..\Assets\Elden Ring\*.*", includes);
 
-        var assetRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(projectPath)!, "..", "..", "Assets"));
+        var eldenRingRoot = Path.GetFullPath(Path.Combine(
+            Path.GetDirectoryName(projectPath)!, "..", "..", "Assets", "Elden Ring"));
         foreach (var file in new[]
                  {
-                     "ENG_BossList.txt", "PL_BossList.txt",
+                     "ENG_ER_BossList.txt", "PL_ER_BossList.txt",
                      "ENG_DoubleBoss.jpg", "ENG_DoubleBoss_02.jpg",
                      "ENG_TrippleBoss.jpg", "ENG_TrippleBoss_02.jpg",
                  })
         {
-            Assert.True(File.Exists(Path.Combine(assetRoot, file)), $"Missing asset: {file}");
+            Assert.True(File.Exists(Path.Combine(eldenRingRoot, file)), $"Missing asset: {file}");
         }
 
         // Both boss lists must provide a source of truth for the matcher.
-        Assert.True(BossNameMatcher.ParseList(File.ReadAllLines(Path.Combine(assetRoot, "ENG_BossList.txt"))).Count > 100);
-        Assert.True(BossNameMatcher.ParseList(File.ReadAllLines(Path.Combine(assetRoot, "PL_BossList.txt"))).Count > 100);
+        Assert.True(BossNameMatcher.ParseList(File.ReadAllLines(Path.Combine(eldenRingRoot, "ENG_ER_BossList.txt"))).Count > 100);
+        Assert.True(BossNameMatcher.ParseList(File.ReadAllLines(Path.Combine(eldenRingRoot, "PL_ER_BossList.txt"))).Count > 100);
     }
 
     [Fact]
@@ -58,16 +61,21 @@ public sealed class AppProjectAssetTests
             .Where(value => !string.IsNullOrWhiteSpace(value))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        Assert.Contains(@"..\..\Assets\*.*", includes);
+        Assert.Contains(@"..\..\Assets\Elden Ring\*.*", includes);
 
-        var assetRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(projectPath)!, "..", "..", "Assets"));
-        Assert.True(File.Exists(Path.Combine(assetRoot, "PL_Death_Screen.png")));
-        Assert.True(File.Exists(Path.Combine(assetRoot, "PL_Death_Screen_v2.jpg")));
-        Assert.True(File.Exists(Path.Combine(assetRoot, "PL_Death_Screen_v3.jpg")));
-        Assert.True(File.Exists(Path.Combine(assetRoot, "PL_Win_screen.jpg")));
-        Assert.True(File.Exists(Path.Combine(assetRoot, "ENG_Death_Screen.jpg")));
-        Assert.True(File.Exists(Path.Combine(assetRoot, "ENG_Death_Screen_v2.jpg")));
-        Assert.True(File.Exists(Path.Combine(assetRoot, "ENG_Win_Screen.jpg")));
+        var eldenRingRoot = Path.GetFullPath(Path.Combine(
+            Path.GetDirectoryName(projectPath)!, "..", "..", "Assets", "Elden Ring"));
+        Assert.True(File.Exists(Path.Combine(eldenRingRoot, "PL_Death_Screen.png")));
+        Assert.True(File.Exists(Path.Combine(eldenRingRoot, "PL_Death_Screen_v2.jpg")));
+        Assert.True(File.Exists(Path.Combine(eldenRingRoot, "PL_Death_Screen_v3.jpg")));
+        Assert.True(File.Exists(Path.Combine(eldenRingRoot, "PL_Win_screen.jpg")));
+        Assert.True(File.Exists(Path.Combine(eldenRingRoot, "ENG_Death_Screen.png")));
+        Assert.True(File.Exists(Path.Combine(eldenRingRoot, "ENG_Death_Screen_v3.png")));
+        Assert.True(File.Exists(Path.Combine(eldenRingRoot, "ENG_Death_Screen_v7.png")));
+        Assert.True(File.Exists(Path.Combine(eldenRingRoot, "ENG_Death_Screen_v8.png")));
+        Assert.True(File.Exists(Path.Combine(eldenRingRoot, "ENG_Death_Screen_v9.png")));
+        Assert.True(File.Exists(Path.Combine(eldenRingRoot, "ENG_Death_Screen_v11.png")));
+        Assert.True(File.Exists(Path.Combine(eldenRingRoot, "ENG_Win_Screen.jpg")));
     }
 
     [Fact]
@@ -76,8 +84,13 @@ public sealed class AppProjectAssetTests
         // English death-screen templates are resolved by the per-game template helper.
         var english = GameDeathScreenTemplates.DeathTemplateFiles("EldenRing", "ENG");
 
-        Assert.Contains("ENG_Death_Screen.jpg", english);
-        Assert.Contains("ENG_Death_Screen_v2.jpg", english);
+        Assert.Contains(Path.Combine("Elden Ring", "ENG_Death_Screen.png"), english);
+        Assert.Contains(Path.Combine("Elden Ring", "ENG_Death_Screen_v3.png"), english);
+        Assert.Contains(Path.Combine("Elden Ring", "ENG_Death_Screen_v7.png"), english);
+        Assert.Contains(Path.Combine("Elden Ring", "ENG_Death_Screen_v8.png"), english);
+        Assert.Contains(Path.Combine("Elden Ring", "ENG_Death_Screen_v9.png"), english);
+        Assert.Contains(Path.Combine("Elden Ring", "ENG_Death_Screen_v11.png"), english);
+        Assert.Equal(6, english.Count);
     }
 
     [Fact]
