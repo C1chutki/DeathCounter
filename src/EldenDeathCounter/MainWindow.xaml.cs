@@ -1,7 +1,10 @@
 using System.Windows;
+using System.Globalization;
 using System.Windows.Media;
+using System.Windows.Input;
 using EldenDeathCounter.Core.Configuration;
 using EldenDeathCounter.ViewModels;
+using WpfTextBox = System.Windows.Controls.TextBox;
 
 namespace EldenDeathCounter;
 
@@ -85,6 +88,104 @@ public partial class MainWindow : Window
         }
     }
 
+    private void NumericBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+    {
+        if (sender is not WpfTextBox box || !TryGetNumericBounds(box, out var bounds))
+        {
+            return;
+        }
+
+        e.Handled = !IsPotentialNumericText(GetTextAfterInput(box, e.Text), bounds);
+    }
+
+    private void NumericBox_Pasting(object sender, DataObjectPastingEventArgs e)
+    {
+        if (sender is not WpfTextBox box || !TryGetNumericBounds(box, out var bounds))
+        {
+            return;
+        }
+
+        if (!e.DataObject.GetDataPresent(System.Windows.DataFormats.Text))
+        {
+            e.CancelCommand();
+            return;
+        }
+
+        var pasted = e.DataObject.GetData(System.Windows.DataFormats.Text) as string ?? string.Empty;
+        if (!IsPotentialNumericText(GetTextAfterInput(box, pasted), bounds))
+        {
+            e.CancelCommand();
+        }
+    }
+
+    private void NumericBox_LostFocus(object sender, RoutedEventArgs e)
+    {
+        if (sender is not WpfTextBox box || !TryGetNumericBounds(box, out var bounds))
+        {
+            return;
+        }
+
+        if (!double.TryParse(NormalizeNumberText(box.Text), NumberStyles.Float, CultureInfo.InvariantCulture, out var value))
+        {
+            value = bounds.Min;
+        }
+
+        var clamped = Math.Clamp(value, bounds.Min, bounds.Max);
+        box.Text = bounds.Decimals == 0
+            ? Math.Round(clamped).ToString("0", CultureInfo.InvariantCulture)
+            : clamped.ToString("0." + new string('0', bounds.Decimals), CultureInfo.InvariantCulture);
+        box.CaretIndex = box.Text.Length;
+    }
+
+    private static string GetTextAfterInput(WpfTextBox box, string input)
+    {
+        var start = Math.Min(box.SelectionStart, box.Text.Length);
+        var length = Math.Min(box.SelectionLength, box.Text.Length - start);
+        return box.Text.Remove(start, length).Insert(start, input);
+    }
+
+    private static bool IsPotentialNumericText(string text, NumericBounds bounds)
+    {
+        var normalized = NormalizeNumberText(text);
+        if (string.IsNullOrEmpty(normalized))
+        {
+            return true;
+        }
+
+        if (normalized == "-" && bounds.Min < 0)
+        {
+            return true;
+        }
+
+        if (bounds.Decimals == 0 && normalized.Contains('.', StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        return double.TryParse(normalized, NumberStyles.Float, CultureInfo.InvariantCulture, out _);
+    }
+
+    private static string NormalizeNumberText(string text)
+    {
+        return text.Trim().Replace(',', '.');
+    }
+
+    private static bool TryGetNumericBounds(WpfTextBox box, out NumericBounds bounds)
+    {
+        bounds = default;
+        var parts = (box.Tag as string)?.Split('|');
+        if (parts?.Length != 3 ||
+            !double.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out var min) ||
+            !double.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out var max) ||
+            !int.TryParse(parts[2], NumberStyles.Integer, CultureInfo.InvariantCulture, out var decimals))
+        {
+            return false;
+        }
+
+        bounds = new NumericBounds(min, max, decimals);
+        return true;
+    }
+
     private void NavigationRadio_Checked(object sender, RoutedEventArgs e)
     {
         if (sender is System.Windows.Controls.RadioButton { Tag: string tag } && int.TryParse(tag, out var index))
@@ -116,14 +217,7 @@ public partial class MainWindow : Window
 
         SectionTitleText.Text = TryFindResource(key) as string ?? string.Empty;
 
-        // The Dashboard renders a full-bleed animated stage, so the header sits flush
-        // (transparent, no bottom rule). Every other section keeps the bottom separator.
-        if (HeaderBorder is not null)
-        {
-            HeaderBorder.BorderThickness = index == 0
-                ? new System.Windows.Thickness(0)
-                : new System.Windows.Thickness(0, 0, 0, 1);
-        }
+        // Header chrome stays transparent; the bottom rule follows the active game accent.
     }
 
     private async void DarkSouls1Button_Click(object sender, RoutedEventArgs e)
@@ -178,7 +272,7 @@ public partial class MainWindow : Window
         MainTabs.Background = System.Windows.Media.Brushes.Transparent;
         SidebarBorder.Background = BrushFromHex(theme.Secondary);
         SidebarBorder.BorderBrush = BrushFromHex(theme.Border);
-        HeaderBorder.BorderBrush = BrushFromHex(theme.Border);
+        HeaderBorder.BorderBrush = BrushFromHex(theme.Primary);
 
         SetResourceBrush("Gold", theme.Primary);
         SetResourceBrush("Gold2", theme.Primary);
@@ -256,4 +350,6 @@ public partial class MainWindow : Window
     {
         return (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(color);
     }
+
+    private readonly record struct NumericBounds(double Min, double Max, int Decimals);
 }

@@ -33,7 +33,8 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal"
+                <StackPanel x:Name="DetectionStatusPanel"
+                            Orientation="Horizontal"
                             VerticalAlignment="Center">
                     <Ellipse x:Name="DetectionDot"
                              Width="9"

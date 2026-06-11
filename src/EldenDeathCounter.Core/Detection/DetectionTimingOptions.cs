@@ -2,7 +2,7 @@ namespace EldenDeathCounter.Core.Detection;
 
 public static class DetectionTimingOptions
 {
-    public const int MinimumBaseIntervalMs = 350;
+    public const int MinimumBaseIntervalMs = 250;
     public const int DefaultBaseIntervalMs = 350;
     public const int BurstIntervalMs = 200;
     public const int BurstDurationMs = 1500;

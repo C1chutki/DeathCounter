@@ -9,6 +9,11 @@ public sealed record CounterStatsSummary(
     int ActiveBossDeaths,
     string BestBossName,
     int BestBossDeaths,
+    TimeSpan BestBossDuration,
     string HardestBossName,
     int HardestBossDeaths,
+    TimeSpan HardestBossDuration,
+    string LongestBossName,
+    int LongestBossDeaths,
+    TimeSpan LongestBossDuration,
     IReadOnlyList<DeathEvent> RecentEvents);

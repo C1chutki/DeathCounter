@@ -50,6 +50,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private bool _isShuttingDown;
     private DateTimeOffset? _lastDetectedDeath;
     private string _selectedAppLanguageValue = "en";
+    private string _selectedDetectionModeValue = DetectionModePresets.Balanced;
+    private string _overlayFontScaleInput = string.Empty;
+    private string _overlayBackgroundOpacityInput = string.Empty;
     private readonly DateTimeOffset _sessionStartedAt = DateTimeOffset.Now;
     private CounterStatsSummary _statsSummary = CounterStatsService.CreateSummary(new DeathCounterState(), DateTimeOffset.Now, DateTimeOffset.Now);
     private string _exportStatusText = string.Empty;
@@ -96,6 +99,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             AppLanguageOptions.Add(option);
         }
 
+        foreach (var option in CreateDetectionModeOptions())
+        {
+            DetectionModeOptions.Add(option);
+        }
+
         foreach (var option in CreateBossSortModeOptions())
         {
             BossSortModeOptions.Add(option);
@@ -108,6 +116,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         SelectedCaptureTargetValue = string.Empty;
         SelectedGameLanguageValue = string.Empty;
+        SelectedDetectionModeValue = string.Empty;
         OverlayXText = string.Empty;
         OverlayYText = string.Empty;
         ManualAddHotkeyText = string.Empty;
@@ -136,6 +145,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OpenDataFileCommand = new RelayCommand(_ => OpenPath(Path.Combine(Settings.DataFolderPath, "deaths.json")));
         OpenDataFolderCommand = new RelayCommand(_ => OpenPath(Settings.DataFolderPath));
         SaveSettingsCommand = new RelayCommand(_ => _ = SaveSettingsAsync());
+        ResetDetectionSettingsCommand = new RelayCommand(_ => _ = ResetDetectionSettingsAsync());
+        ResetProfileSettingsCommand = new RelayCommand(_ => _ = ResetProfileSettingsAsync());
         ApplyCharacterProfileCommand = new RelayCommand(_ => _ = ApplyCharacterProfileAsync());
         SetActiveBossCommand = new RelayCommand(_ => _ = SetActiveBossAsync());
         ClearActiveBossCommand = new RelayCommand(_ => _ = ClearActiveBossAsync("manual-button"));
@@ -231,11 +242,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public string StatsBestBossText => string.IsNullOrWhiteSpace(_statsSummary.BestBossName)
         ? L("Common_None")
-        : $"{_statsSummary.BestBossName} ({_statsSummary.BestBossDeaths})";
+        : FormatBossStat(_statsSummary.BestBossName, _statsSummary.BestBossDeaths, _statsSummary.BestBossDuration);
 
     public string StatsHardestBossText => string.IsNullOrWhiteSpace(_statsSummary.HardestBossName)
         ? L("Common_None")
-        : $"{_statsSummary.HardestBossName} ({_statsSummary.HardestBossDeaths})";
+        : FormatBossStat(_statsSummary.HardestBossName, _statsSummary.HardestBossDeaths, _statsSummary.HardestBossDuration);
+
+    public string StatsLongestBossText => string.IsNullOrWhiteSpace(_statsSummary.LongestBossName)
+        ? L("Common_None")
+        : FormatBossStat(_statsSummary.LongestBossName, _statsSummary.LongestBossDeaths, _statsSummary.LongestBossDuration);
 
     public string ExportStatusText
     {
@@ -312,6 +327,60 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    public bool DetectDeaths
+    {
+        get => Settings.DetectDeaths;
+        set
+        {
+            if (Settings.DetectDeaths != value)
+            {
+                Settings.DetectDeaths = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public bool DetectBossVictories
+    {
+        get => Settings.DetectBossVictories;
+        set
+        {
+            if (Settings.DetectBossVictories != value)
+            {
+                Settings.DetectBossVictories = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public bool ShowBossTimer
+    {
+        get => Settings.ShowBossTimer;
+        set
+        {
+            if (Settings.ShowBossTimer != value)
+            {
+                Settings.ShowBossTimer = value;
+                _overlayWindow.ApplyBossTimerVisibility(value);
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public bool ShowDetectionStatus
+    {
+        get => Settings.ShowDetectionStatus;
+        set
+        {
+            if (Settings.ShowDetectionStatus != value)
+            {
+                Settings.ShowDetectionStatus = value;
+                _overlayWindow.ApplyDetectionStatusVisibility(value);
+                OnPropertyChanged();
+            }
+        }
+    }
+
     public const double OverlayFontScaleMin = 0.6;
 
     public const double OverlayFontScaleMax = 1.6;
@@ -322,42 +391,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public string OverlayFontScaleInput
     {
-        get => Settings.OverlayFontScale.ToString("0.0", CultureInfo.InvariantCulture);
-        set
-        {
-            if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
-            {
-                var clamped = Math.Clamp(parsed, OverlayFontScaleMin, OverlayFontScaleMax);
-                if (Math.Abs(Settings.OverlayFontScale - clamped) > 0.0001)
-                {
-                    Settings.OverlayFontScale = clamped;
-                    _overlayWindow.ApplyScale(clamped);
-                    _ = _settingsStore.SaveAsync(_settingsPath, Settings);
-                }
-            }
-
-            OnPropertyChanged();
-        }
+        get => _overlayFontScaleInput;
+        set => SetField(ref _overlayFontScaleInput, value);
     }
 
     public string OverlayBackgroundOpacityInput
     {
-        get => Settings.OverlayBackgroundOpacity.ToString("0.0", CultureInfo.InvariantCulture);
-        set
-        {
-            if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
-            {
-                var clamped = Math.Clamp(parsed, OverlayBackgroundOpacityMin, OverlayBackgroundOpacityMax);
-                if (Math.Abs(Settings.OverlayBackgroundOpacity - clamped) > 0.0001)
-                {
-                    Settings.OverlayBackgroundOpacity = clamped;
-                    _overlayWindow.ApplyBackgroundOpacity(clamped);
-                    _ = _settingsStore.SaveAsync(_settingsPath, Settings);
-                }
-            }
-
-            OnPropertyChanged();
-        }
+        get => _overlayBackgroundOpacityInput;
+        set => SetField(ref _overlayBackgroundOpacityInput, value);
     }
 
     public string DetectionIntervalMsText { get; set; }
@@ -369,6 +410,19 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public string SelectedCaptureTargetValue { get; set; }
 
     public string SelectedGameLanguageValue { get; set; }
+
+    public string SelectedDetectionModeValue
+    {
+        get => _selectedDetectionModeValue;
+        set
+        {
+            var mode = DetectionModePresets.Get(value).Mode;
+            if (SetField(ref _selectedDetectionModeValue, mode))
+            {
+                ApplyDetectionModePreset(DetectionModePresets.Get(mode));
+            }
+        }
+    }
 
     public string SelectedAppLanguageValue
     {
@@ -509,6 +563,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public ICommand SaveSettingsCommand { get; }
 
+    public ICommand ResetDetectionSettingsCommand { get; }
+
+    public ICommand ResetProfileSettingsCommand { get; }
+
     public ICommand ApplyCharacterProfileCommand { get; }
 
     public ICommand SetActiveBossCommand { get; }
@@ -546,6 +604,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ObservableCollection<GameLanguageOption> GameLanguageOptions { get; } = [];
 
     public ObservableCollection<AppLanguageOption> AppLanguageOptions { get; } = [];
+
+    public ObservableCollection<DetectionModeOption> DetectionModeOptions { get; } = [];
 
     public ObservableCollection<BossSortModeOption> BossSortModeOptions { get; } = [];
 
@@ -893,6 +953,31 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         await ApplySettingsFromTextAsync();
     }
 
+    private async Task ResetDetectionSettingsAsync()
+    {
+        ApplyDetectionModePreset(DetectionModePresets.Get(DetectionModePresets.Balanced));
+        SelectedDetectionModeValue = DetectionModePresets.Balanced;
+        await ApplySettingsFromTextAsync();
+    }
+
+    private async Task ResetProfileSettingsAsync()
+    {
+        var currentDataFolderPath = Settings.DataFolderPath;
+        var currentCharacterProfileName = Settings.CharacterProfileName;
+        var currentAppLanguage = Settings.AppLanguage;
+        var defaults = AppSettings.CreateDefault(_desktopPath, _activeGameProfile);
+        defaults.DataFolderPath = currentDataFolderPath;
+        defaults.CharacterProfileName = currentCharacterProfileName;
+        defaults.AppLanguage = currentAppLanguage;
+        Settings = defaults;
+        RefreshSettingsTextFields();
+        _overlayWindow.ApplyScale(Settings.OverlayFontScale);
+        _overlayWindow.ApplyBackgroundOpacity(Settings.OverlayBackgroundOpacity);
+        _overlayWindow.ApplyBossTimerVisibility(Settings.ShowBossTimer);
+        _overlayWindow.ApplyDetectionStatusVisibility(Settings.ShowDetectionStatus);
+        await ApplySettingsFromTextAsync();
+    }
+
     private async Task ApplyCharacterProfileAsync()
     {
         var characterName = AppCharacterProfile.NormalizeName(CharacterProfileNameText);
@@ -939,6 +1024,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         await _settingsStore.SaveAsync(_settingsPath, Settings);
         ConfigureDetectionDiagnostics();
         _overlayWindow.ApplyPosition(Settings.OverlayX, Settings.OverlayY);
+        _overlayWindow.ApplyScale(Settings.OverlayFontScale);
+        _overlayWindow.ApplyBackgroundOpacity(Settings.OverlayBackgroundOpacity);
+        _overlayWindow.ApplyBossTimerVisibility(Settings.ShowBossTimer);
+        _overlayWindow.ApplyDetectionStatusVisibility(Settings.ShowDetectionStatus);
         _overlayWindow.UpdateCount(_counterService.State.CurrentDeathCount, _counterService.State.ActiveBoss, Settings.AppLanguage);
         ApplyOverlayState();
         RegisterHotkeys();
@@ -1026,6 +1115,18 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return false;
         }
 
+        if (!double.TryParse(OverlayFontScaleInput, NumberStyles.Float, CultureInfo.InvariantCulture, out var overlayScale))
+        {
+            error = L("Vm_OverlayScaleInvalid");
+            return false;
+        }
+
+        if (!double.TryParse(OverlayBackgroundOpacityInput, NumberStyles.Float, CultureInfo.InvariantCulture, out var overlayOpacity))
+        {
+            error = L("Vm_OverlayOpacityInvalid");
+            return false;
+        }
+
         var addHotkey = HotkeyDefinition.Parse(ManualAddHotkeyText);
         if (!addHotkey.IsValid)
         {
@@ -1078,12 +1179,19 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         Settings.DetectionIntervalMs = interval;
         Settings.DetectionCooldownSeconds = cooldown;
         Settings.DetectionSensitivity = Math.Clamp(sensitivity, 0.1, 1.0);
+        Settings.DetectionMode = DetectionModePresets.Get(SelectedDetectionModeValue).Mode;
         Settings.CaptureTarget = string.IsNullOrWhiteSpace(SelectedCaptureTargetValue)
             ? "PrimaryScreen"
             : SelectedCaptureTargetValue.Trim();
         Settings.GameLanguage = NormalizeGameLanguage(SelectedGameLanguageValue, Settings.GameLanguage);
         Settings.OverlayX = overlayX;
         Settings.OverlayY = overlayY;
+        Settings.OverlayFontScale = Math.Clamp(overlayScale, OverlayFontScaleMin, OverlayFontScaleMax);
+        Settings.OverlayBackgroundOpacity = Math.Clamp(overlayOpacity, OverlayBackgroundOpacityMin, OverlayBackgroundOpacityMax);
+        _overlayFontScaleInput = Settings.OverlayFontScale.ToString("0.0", CultureInfo.InvariantCulture);
+        _overlayBackgroundOpacityInput = Settings.OverlayBackgroundOpacity.ToString("0.0", CultureInfo.InvariantCulture);
+        OnPropertyChanged(nameof(OverlayFontScaleInput));
+        OnPropertyChanged(nameof(OverlayBackgroundOpacityInput));
         Settings.DetectionPhrases = AppSettings.CreateDefaultDetectionPhrases();
         Settings.BossVictoryPhrases = AppSettings.CreateDefaultBossVictoryPhrases();
         Settings.ManualAddHotkey = ManualAddHotkeyText.Trim();
@@ -1179,6 +1287,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         DetectionIntervalMsText = Settings.DetectionIntervalMs.ToString(CultureInfo.InvariantCulture);
         DetectionCooldownSecondsText = Settings.DetectionCooldownSeconds.ToString(CultureInfo.InvariantCulture);
         DetectionSensitivityText = Settings.DetectionSensitivity.ToString("0.00", CultureInfo.InvariantCulture);
+        _selectedDetectionModeValue = DetectionModePresets.Get(Settings.DetectionMode).Mode;
         SelectedCaptureTargetValue = CaptureTargetOptions.Any(option => option.Value.Equals(Settings.CaptureTarget, StringComparison.OrdinalIgnoreCase))
             ? Settings.CaptureTarget
             : "PrimaryScreen";
@@ -1188,6 +1297,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         _selectedAppLanguageValue = LocalizationService.NormalizeLanguage(Settings.AppLanguage);
         OverlayXText = Settings.OverlayX.ToString(CultureInfo.InvariantCulture);
         OverlayYText = Settings.OverlayY.ToString(CultureInfo.InvariantCulture);
+        _overlayFontScaleInput = Settings.OverlayFontScale.ToString("0.0", CultureInfo.InvariantCulture);
+        _overlayBackgroundOpacityInput = Settings.OverlayBackgroundOpacity.ToString("0.0", CultureInfo.InvariantCulture);
         ManualAddHotkeyText = Settings.ManualAddHotkey;
         ManualSubtractHotkeyText = Settings.ManualSubtractHotkey;
         ManualBossDefeatedHotkeyText = Settings.BossDefeatedHotkey;
@@ -1200,6 +1311,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(DetectionIntervalMsText));
         OnPropertyChanged(nameof(DetectionCooldownSecondsText));
         OnPropertyChanged(nameof(DetectionSensitivityText));
+        OnPropertyChanged(nameof(SelectedDetectionModeValue));
         OnPropertyChanged(nameof(SelectedCaptureTargetValue));
         OnPropertyChanged(nameof(SelectedGameLanguageValue));
         OnPropertyChanged(nameof(SelectedAppLanguageValue));
@@ -1216,6 +1328,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(OverlayEnabled));
         OnPropertyChanged(nameof(DetectionEnabledOnStartup));
         OnPropertyChanged(nameof(AutoDetectBossNames));
+        OnPropertyChanged(nameof(DetectDeaths));
+        OnPropertyChanged(nameof(DetectBossVictories));
+        OnPropertyChanged(nameof(ShowBossTimer));
+        OnPropertyChanged(nameof(ShowDetectionStatus));
         OnPropertyChanged(nameof(OverlayFontScaleInput));
         OnPropertyChanged(nameof(OverlayBackgroundOpacityInput));
         OnPropertyChanged(nameof(StatusOverlayStateText));
@@ -1275,6 +1391,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(StatsActiveBossText));
         OnPropertyChanged(nameof(StatsBestBossText));
         OnPropertyChanged(nameof(StatsHardestBossText));
+        OnPropertyChanged(nameof(StatsLongestBossText));
     }
 
     private static string FormatAttempts(int deathCount)
@@ -1285,6 +1402,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private static string FormatDefeatedAttempts(int deathCount)
     {
         return deathCount == 0 ? L("Bosses_FirstTry") : string.Format(L("Bosses_DeathsFormat"), deathCount);
+    }
+
+    private static string FormatBossStat(string name, int deathCount, TimeSpan duration)
+    {
+        return string.Format(L("Stats_BossStatFormat"), name, FormatDefeatedAttempts(deathCount), FormatDuration(duration));
     }
 
     private static TimeSpan GetBossKillDuration(BossHistoryEntry boss)
@@ -1336,6 +1458,23 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         return LocalizationService.Instance.AvailableLanguages
             .Select(language => new AppLanguageOption(language.Code, language.DisplayName))
             .ToList();
+    }
+
+    private static IReadOnlyList<DetectionModeOption> CreateDetectionModeOptions()
+    {
+        return DetectionModePresets.All
+            .Select(preset => new DetectionModeOption(preset.Mode, L($"DetectionMode_{preset.Mode}")))
+            .ToList();
+    }
+
+    private void ApplyDetectionModePreset(DetectionModePreset preset)
+    {
+        DetectionIntervalMsText = preset.IntervalMs.ToString(CultureInfo.InvariantCulture);
+        DetectionCooldownSecondsText = preset.CooldownSeconds.ToString(CultureInfo.InvariantCulture);
+        DetectionSensitivityText = preset.Sensitivity.ToString("0.00", CultureInfo.InvariantCulture);
+        OnPropertyChanged(nameof(DetectionIntervalMsText));
+        OnPropertyChanged(nameof(DetectionCooldownSecondsText));
+        OnPropertyChanged(nameof(DetectionSensitivityText));
     }
 
     private async Task ApplyAppLanguageAsync(string language)
@@ -1426,6 +1565,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(StatsActiveBossText));
             OnPropertyChanged(nameof(StatsBestBossText));
             OnPropertyChanged(nameof(StatsHardestBossText));
+            OnPropertyChanged(nameof(StatsLongestBossText));
         });
     }
 
@@ -1440,6 +1580,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         SelectedCaptureTargetValue = captureTarget;
         OnPropertyChanged(nameof(SelectedCaptureTargetValue));
+
+        var detectionMode = SelectedDetectionModeValue;
+        DetectionModeOptions.Clear();
+        foreach (var option in CreateDetectionModeOptions())
+        {
+            DetectionModeOptions.Add(option);
+        }
+
+        _selectedDetectionModeValue = detectionMode;
+        OnPropertyChanged(nameof(SelectedDetectionModeValue));
 
         var sortMode = SelectedBossSortMode;
         BossSortModeOptions.Clear();
@@ -1494,6 +1644,8 @@ public sealed record CaptureTargetOption(string Value, string DisplayName);
 public sealed record GameLanguageOption(string Value, string DisplayName);
 
 public sealed record AppLanguageOption(string Value, string DisplayName);
+
+public sealed record DetectionModeOption(string Value, string DisplayName);
 
 public sealed record BossSortModeOption(BossHistorySortMode Value, string DisplayName);
 

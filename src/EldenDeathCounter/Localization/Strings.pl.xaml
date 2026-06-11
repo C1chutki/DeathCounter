@@ -89,6 +89,8 @@
     <sys:String x:Key="Stats_ActiveBoss">AKTYWNY BOSS</sys:String>
     <sys:String x:Key="Stats_BestBoss">NAJLEPSZY BOSS</sys:String>
     <sys:String x:Key="Stats_HardestBoss">NAJTRUDNIEJSZY BOSS</sys:String>
+    <sys:String x:Key="Stats_LongestBoss">NAJDŁUŻSZY BOSS</sys:String>
+    <sys:String x:Key="Stats_BossStatFormat">{0} ({1}, {2})</sys:String>
     <sys:String x:Key="Stats_RecentEvents">OSTATNIE ZDARZENIA</sys:String>
     <sys:String x:Key="Stats_ExportedFormat">Wyeksportowano do {0}</sys:String>
     <sys:String x:Key="Stats_ExportFailed">Eksport nie powiódł się</sys:String>
@@ -123,17 +125,27 @@
     <sys:String x:Key="Settings_ShowOverlayDesc">Włącz nakładkę licznika śmierci zawsze na wierzchu.</sys:String>
     <sys:String x:Key="Settings_OverlayX">Pozycja X nakładki</sys:String>
     <sys:String x:Key="Settings_OverlayY">Pozycja Y nakładki</sys:String>
+    <sys:String x:Key="Settings_OverlayScale">Skala nakładki (0.6-1.6)</sys:String>
     <sys:String x:Key="Settings_OverlayOpacity">Przezroczystość tła (0.0-1.0)</sys:String>
+    <sys:String x:Key="Settings_ShowBossTimer">Pokaż timer bossa</sys:String>
+    <sys:String x:Key="Settings_ShowDetectionStatus">Pokaż status wykrywania</sys:String>
     <sys:String x:Key="Settings_DetectionSection">| WYKRYWANIE</sys:String>
+    <sys:String x:Key="Settings_DetectionMode">Tryb wykrywania</sys:String>
     <sys:String x:Key="Settings_DetectionInterval">Interwał wykrywania (ms)</sys:String>
-    <sys:String x:Key="Settings_DetectionIntervalHint">Minimum/domyślnie: 350 ms. Niżej oznacza częstsze sprawdzanie.</sys:String>
+    <sys:String x:Key="Settings_DetectionIntervalHint">Domyślnie: 350 ms. Niżej oznacza częstsze sprawdzanie.</sys:String>
     <sys:String x:Key="Settings_Cooldown">Czas odnowienia (sekundy)</sys:String>
     <sys:String x:Key="Settings_CooldownHint">Domyślnie: 25 s. Blokuje podwójne zliczenie jednego ekranu śmierci.</sys:String>
     <sys:String x:Key="Settings_Sensitivity">Czułość wykrywania</sys:String>
     <sys:String x:Key="Settings_SensitivityHint">Zakres: 0.10-1.00. Wyżej oznacza bardziej rygorystyczne dopasowanie.</sys:String>
+    <sys:String x:Key="Settings_ResetDetectionDefaults">RESETUJ DOMYŚLNE WYKRYWANIE</sys:String>
     <sys:String x:Key="Settings_CaptureRegion">Obszar przechwytywania</sys:String>
     <sys:String x:Key="Settings_StartDetectionOnLaunch">Uruchom wykrywanie przy starcie aplikacji</sys:String>
+    <sys:String x:Key="Settings_DetectDeaths">Wykrywaj śmierci</sys:String>
+    <sys:String x:Key="Settings_DetectBossVictories">Wykrywaj zwycięstwa bossów</sys:String>
     <sys:String x:Key="Settings_AutoReadBossName">Automatycznie odczytuj nazwę bossa</sys:String>
+    <sys:String x:Key="DetectionMode_Conservative">Ostrożny</sys:String>
+    <sys:String x:Key="DetectionMode_Balanced">Zbalansowany</sys:String>
+    <sys:String x:Key="DetectionMode_Aggressive">Agresywny</sys:String>
     <sys:String x:Key="Settings_CharacterSection">| POSTAĆ &amp; ZAPIS GRY</sys:String>
     <sys:String x:Key="Settings_CharacterDesc">Śmierci i historia bossów są śledzone osobno dla każdego profilu postaci.</sys:String>
     <sys:String x:Key="Settings_CharacterName">Nazwa postaci</sys:String>
@@ -150,6 +162,8 @@
     <sys:String x:Key="Settings_HotkeyPrompt">Kliknij tutaj i naciśnij kombinację klawiszy, którą chcesz przypisać. Naciśnij Esc, aby anulować.</sys:String>
     <sys:String x:Key="Settings_ProfileSection">| PROFIL / ZAPIS GRY</sys:String>
     <sys:String x:Key="Settings_ProfileDesc">Folder, w którym przechowywany jest licznik śmierci i historia bossów aktywnego profilu.</sys:String>
+    <sys:String x:Key="Settings_OpenProfileFolder">OTWÓRZ FOLDER PROFILU</sys:String>
+    <sys:String x:Key="Settings_ResetProfileDefaults">RESETUJ USTAWIENIA PROFILU</sys:String>
     <sys:String x:Key="Settings_SaveSettings">ZAPISZ USTAWIENIA</sys:String>
 
     <!-- Status bar -->
@@ -180,10 +194,12 @@
     <sys:String x:Key="Vm_UsingDefaultFolder">Używanie domyślnego folderu zapisu</sys:String>
     <sys:String x:Key="Vm_UsingCharacterProfileFormat">Używanie profilu postaci '{0}'</sys:String>
     <sys:String x:Key="Vm_SettingsSaved">Ustawienia zapisane</sys:String>
-    <sys:String x:Key="Vm_DetectionIntervalInvalid">Interwał wykrywania musi wynosić co najmniej 350 ms.</sys:String>
+    <sys:String x:Key="Vm_DetectionIntervalInvalid">Interwał wykrywania musi wynosić co najmniej 250 ms.</sys:String>
     <sys:String x:Key="Vm_CooldownInvalid">Czas odnowienia musi wynosić co najmniej 1 sekundę.</sys:String>
     <sys:String x:Key="Vm_SensitivityInvalid">Czułość wykrywania musi być liczbą od 0.1 do 1.0.</sys:String>
     <sys:String x:Key="Vm_OverlayXYInvalid">Pozycje X i Y nakładki muszą być liczbami.</sys:String>
+    <sys:String x:Key="Vm_OverlayScaleInvalid">Skala nakładki musi być liczbą od 0.6 do 1.6.</sys:String>
+    <sys:String x:Key="Vm_OverlayOpacityInvalid">Przezroczystość nakładki musi być liczbą od 0.0 do 1.0.</sys:String>
     <sys:String x:Key="Vm_AddHotkeyInvalidFormat">Skrót dodawania jest nieprawidłowy: {0}</sys:String>
     <sys:String x:Key="Vm_SubtractHotkeyInvalidFormat">Skrót odejmowania jest nieprawidłowy: {0}</sys:String>
     <sys:String x:Key="Vm_BossDefeatedHotkeyInvalidFormat">Skrót pokonania bossa jest nieprawidłowy: {0}</sys:String>

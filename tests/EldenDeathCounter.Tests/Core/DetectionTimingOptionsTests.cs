@@ -5,10 +5,10 @@ namespace EldenDeathCounter.Tests.Core;
 public sealed class DetectionTimingOptionsTests
 {
     [Fact]
-    public void NormalizesBaseIntervalToAtLeast350Milliseconds()
+    public void NormalizesBaseIntervalToAtLeast250Milliseconds()
     {
-        Assert.Equal(350, DetectionTimingOptions.NormalizeBaseIntervalMs(0));
-        Assert.Equal(350, DetectionTimingOptions.NormalizeBaseIntervalMs(300));
+        Assert.Equal(250, DetectionTimingOptions.NormalizeBaseIntervalMs(0));
+        Assert.Equal(300, DetectionTimingOptions.NormalizeBaseIntervalMs(300));
         Assert.Equal(500, DetectionTimingOptions.NormalizeBaseIntervalMs(500));
     }
 

@@ -63,9 +63,59 @@ public sealed class CounterStatsServiceTests
         Assert.Equal(2, summary.ActiveBossDeaths);
         Assert.Equal("Soldier of Godrick", summary.BestBossName);
         Assert.Equal(0, summary.BestBossDeaths);
+        Assert.Equal(TimeSpan.FromMinutes(1), summary.BestBossDuration);
         Assert.Equal("Margit", summary.HardestBossName);
         Assert.Equal(12, summary.HardestBossDeaths);
+        Assert.Equal(TimeSpan.FromMinutes(25), summary.HardestBossDuration);
+        Assert.Equal("Margit", summary.LongestBossName);
+        Assert.Equal(12, summary.LongestBossDeaths);
+        Assert.Equal(TimeSpan.FromMinutes(25), summary.LongestBossDuration);
         Assert.Equal(3, summary.RecentEvents.Count);
         Assert.Equal(DateTimeOffset.Parse("2026-06-09T11:30:00+02:00"), summary.RecentEvents[0].Timestamp);
+    }
+
+    [Fact]
+    public void ChoosesBestBossByFewestDeathsThenFastestKill()
+    {
+        var now = DateTimeOffset.Parse("2026-06-09T12:00:00+02:00");
+        var state = new DeathCounterState
+        {
+            BossHistory =
+            [
+                new() { Name = "Slow clean kill", DeathCount = 1, KillDuration = TimeSpan.FromMinutes(12), CompletedBy = "manual" },
+                new() { Name = "Fast clean kill", DeathCount = 1, KillDuration = TimeSpan.FromMinutes(3), CompletedBy = "manual" },
+                new() { Name = "Messy quick kill", DeathCount = 2, KillDuration = TimeSpan.FromMinutes(1), CompletedBy = "manual" },
+            ]
+        };
+
+        var summary = CounterStatsService.CreateSummary(state, DateTimeOffset.Parse("2026-06-09T10:00:00+02:00"), now);
+
+        Assert.Equal("Fast clean kill", summary.BestBossName);
+        Assert.Equal(1, summary.BestBossDeaths);
+        Assert.Equal(TimeSpan.FromMinutes(3), summary.BestBossDuration);
+    }
+
+    [Fact]
+    public void ChoosesHardestBossByMostDeathsAndLongestBossByMostTime()
+    {
+        var now = DateTimeOffset.Parse("2026-06-09T12:00:00+02:00");
+        var state = new DeathCounterState
+        {
+            BossHistory =
+            [
+                new() { Name = "Death wall", DeathCount = 22, KillDuration = TimeSpan.FromMinutes(18), CompletedBy = "manual" },
+                new() { Name = "Long duel", DeathCount = 8, KillDuration = TimeSpan.FromMinutes(41), CompletedBy = "manual" },
+                new() { Name = "Short fight", DeathCount = 2, KillDuration = TimeSpan.FromMinutes(4), CompletedBy = "manual" },
+            ]
+        };
+
+        var summary = CounterStatsService.CreateSummary(state, DateTimeOffset.Parse("2026-06-09T10:00:00+02:00"), now);
+
+        Assert.Equal("Death wall", summary.HardestBossName);
+        Assert.Equal(22, summary.HardestBossDeaths);
+        Assert.Equal(TimeSpan.FromMinutes(18), summary.HardestBossDuration);
+        Assert.Equal("Long duel", summary.LongestBossName);
+        Assert.Equal(8, summary.LongestBossDeaths);
+        Assert.Equal(TimeSpan.FromMinutes(41), summary.LongestBossDuration);
     }
 }

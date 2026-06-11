@@ -1,5 +1,23 @@
 # Changelog
 
+## 2026-06-11
+
+- Podmieniono ikone przycisku `RESET COUNTER` w dashboardzie na `Assets/Icons/Reset.png`, renderowana jako maska w kolorze przycisku. Dodano regresje XAML dla resetowej ikony; wersje podniesiono do 1.13.6.
+
+- Naprawiono crash startowy WPF po kolorowaniu ikon: maski `ImageBrush` uzywaja teraz jawnych `pack://siteoforigin` URI dla kopiowanych plikow `Assets/Icons`. Dodano regresje blokujaca powrot wzglednych `ImageSource`; wersje podniesiono do 1.13.5.
+
+- Zmieniono ikony paska bocznego na maski kolorowane aktualnym akcentem gry oraz dodano transparentnemu gornemu headerowi dolna ramke w kolorze aktywnej gry. Dodano regresje XAML dla kolorowania chrome; wersje podniesiono do 1.13.4.
+
+- Podmieniono glify paska bocznego na podpisane ikony PNG z `Assets/Icons` dla Dashboard, Detection, Bosses, Stats i Settings oraz dodano kopiowanie tego folderu do outputu. Dodano regresje XAML/projektu dla nowych ikon; wersje podniesiono do 1.13.3.
+
+- Poprawiono liczbowe pola Settings: interval, cooldown, sensitivity, pozycja, skala i opacity overlaya maja teraz reczne wpisywanie z min/max, filtrowaniem wklejania i clampem po opuszczeniu pola zamiast natychmiastowego nadpisywania podczas pisania. Dodano regresje XAML dla bounded numeric input; wersje podniesiono do 1.13.2.
+
+- Dodano regresje sprawdzajaca, ze wszystkie nowe teksty `DynamicResource` w Settings istnieja w slownikach EN/PL, zeby przyciski i checkboxy nie renderowaly sie bez etykiet. Przebudowano aplikacje po aktualizacji slownikow; wersje podniesiono do 1.13.1.
+
+- Rozszerzono Settings o skale overlaya, przelaczniki timera/statusu overlay, tryby detekcji Conservative/Balanced/Aggressive, osobne wlaczniki death i boss-victory detection oraz akcje otwarcia folderu i resetu ustawien profilu. Dodano regresje ustawien i presetow; wersje podniesiono do 1.13.0.
+
+- Rozszerzono statystyki bossow w zakladce Stats: Best boss wybiera najmniej smierci i szybszy kill przy remisie, Hardest boss wybiera najwiecej smierci, a Longest boss pokazuje najdluzsza walke. Dodano regresje statystyk i XAML; wersje podniesiono do 1.12.19.
+
 ## 2026-06-10
 
 - Dodano migracje legacy ustawien detekcji: zapisany zestaw `500 ms / 5 s` jest przy ladowaniu profilu przepisywany na obecne domyslne `350 ms / 25 s`, zeby stare appsettings nie przykrywaly nowych defaultow w UI. Dodano regresje ustawien; wersje podniesiono do 1.12.18.

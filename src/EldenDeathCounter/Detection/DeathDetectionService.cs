@@ -241,64 +241,77 @@ public sealed class DeathDetectionService
                 long imageAnalysisMs = 0;
                 var imageAnalysisStatus = "template-no-match";
 
-                var imageStartMs = frameStopwatch.ElapsedMilliseconds;
-                imageSignal = _imageDeathSignalDetector.Analyze(frame.Bitmap, settings.DetectionSensitivity, settings.GameId, settings.GameLanguage);
-                imageAnalysisMs = frameStopwatch.ElapsedMilliseconds - imageStartMs;
-                if (imageSignal.IsMatch)
+                var wasPending = _deathSignalStabilizer.IsPending;
+                var confirmedSignal = (ImageDeathSignalMatch?)null;
+                if (settings.DetectDeaths)
                 {
-                    signal = imageSignal;
-                    imageAnalysisStatus = "template-match";
-                }
-                else if (imageSignal.Score >= 0.35)
-                {
-                    imageAnalysisStatus = "weak-template";
-                    LogWeakImageSignal(imageSignal);
-                }
-
-                if (!signal.IsMatch && DetectionOcrGate.ShouldRunOcr(imageSignal, _deathSignalStabilizer.IsPending))
-                {
-                    var ocrStartMs = frameStopwatch.ElapsedMilliseconds;
-                    ocrText = await _textRecognitionService.RecognizeTextAsync(frame.Bitmap, ocrLanguageHints, cancellationToken);
-                    ocrMs = frameStopwatch.ElapsedMilliseconds - ocrStartMs;
-                    match = _phraseMatcher.Match(ocrText, settings.DetectionPhrases, settings.DetectionSensitivity);
-                    if (DetectionOcrGate.ShouldAcceptOcrPhrase(match.IsMatch, imageSignal, _deathSignalStabilizer.IsPending))
+                    var imageStartMs = frameStopwatch.ElapsedMilliseconds;
+                    imageSignal = _imageDeathSignalDetector.Analyze(frame.Bitmap, settings.DetectionSensitivity, settings.GameId, settings.GameLanguage);
+                    imageAnalysisMs = frameStopwatch.ElapsedMilliseconds - imageStartMs;
+                    if (imageSignal.IsMatch)
                     {
-                        signal = new ImageDeathSignalMatch(true, match.Score, $"ocr:{match.MatchedPhrase ?? "death phrase"}", 1)
+                        signal = imageSignal;
+                        imageAnalysisStatus = "template-match";
+                    }
+                    else if (imageSignal.Score >= 0.35)
+                    {
+                        imageAnalysisStatus = "weak-template";
+                        LogWeakImageSignal(imageSignal);
+                    }
+
+                    if (!signal.IsMatch && DetectionOcrGate.ShouldRunOcr(imageSignal, _deathSignalStabilizer.IsPending))
+                    {
+                        var ocrStartMs = frameStopwatch.ElapsedMilliseconds;
+                        ocrText = await _textRecognitionService.RecognizeTextAsync(frame.Bitmap, ocrLanguageHints, cancellationToken);
+                        ocrMs = frameStopwatch.ElapsedMilliseconds - ocrStartMs;
+                        match = _phraseMatcher.Match(ocrText, settings.DetectionPhrases, settings.DetectionSensitivity);
+                        if (DetectionOcrGate.ShouldAcceptOcrPhrase(match.IsMatch, imageSignal, _deathSignalStabilizer.IsPending))
                         {
-                            Details = match.Details
-                        };
-                        imageAnalysisStatus = "ocr-match-after-template";
+                            signal = new ImageDeathSignalMatch(true, match.Score, $"ocr:{match.MatchedPhrase ?? "death phrase"}", 1)
+                            {
+                                Details = match.Details
+                            };
+                            imageAnalysisStatus = "ocr-match-after-template";
+                        }
+                    }
+
+                    if (!signal.IsMatch && wasPending && imageSignal.CanConfirmPendingSignal)
+                    {
+                        signal = imageSignal;
+                        imageAnalysisStatus = "near-threshold-template";
                     }
                 }
-
-                var wasPending = _deathSignalStabilizer.IsPending;
-                if (!signal.IsMatch && wasPending && imageSignal.CanConfirmPendingSignal)
+                else
                 {
-                    signal = imageSignal;
-                    imageAnalysisStatus = "near-threshold-template";
+                    _deathSignalStabilizer.Reset();
                 }
 
                 var stabilizerBefore = FormatStabilizerState();
-                var confirmedSignal = _deathSignalStabilizer.Observe(signal);
-                if (confirmedSignal is null && signal.IsStrongTemplateMatch)
+                if (settings.DetectDeaths)
                 {
-                    // A fully-gated template match (strong contrast/stroke/vertical coverage) is specific
-                    // enough to count on a single frame. Fast-fading death banners (DS3 at 500ms) often
-                    // appear above threshold on only one frame, so waiting for a second would drop the death.
-                    _deathSignalStabilizer.Reset();
-                    confirmedSignal = signal;
+                    confirmedSignal = _deathSignalStabilizer.Observe(signal);
+                    if (confirmedSignal is null && signal.IsStrongTemplateMatch)
+                    {
+                        // A fully-gated template match (strong contrast/stroke/vertical coverage) is specific
+                        // enough to count on a single frame. Fast-fading death banners (DS3 at 500ms) often
+                        // appear above threshold on only one frame, so waiting for a second would drop the death.
+                        _deathSignalStabilizer.Reset();
+                        confirmedSignal = signal;
+                    }
                 }
 
                 var stabilizerAfter = FormatStabilizerState();
-                var frameOutcome = confirmedSignal is not null
-                    ? "confirmed"
-                    : signal.IsMatch
-                        ? "pending-signal"
-                        : wasPending && !_deathSignalStabilizer.IsPending
-                            ? "pending-expired"
-                            : _deathSignalStabilizer.IsPending
-                                ? "pending-waiting"
-                                : "no-signal";
+                var frameOutcome = !settings.DetectDeaths
+                    ? "death-disabled"
+                    : confirmedSignal is not null
+                        ? "confirmed"
+                        : signal.IsMatch
+                            ? "pending-signal"
+                            : wasPending && !_deathSignalStabilizer.IsPending
+                                ? "pending-expired"
+                                : _deathSignalStabilizer.IsPending
+                                    ? "pending-waiting"
+                                    : "no-signal";
                 frameStopwatch.Stop();
                 LogDetectionFrameDiagnostics(
                     frameIndex,
@@ -328,60 +341,72 @@ public sealed class DeathDetectionService
                     lastFullDiagnosticsScreenshotAt = frameStartedAt;
                     SaveFrameEvidence(settings, frame.Bitmap, frameStartedAt, $"diag-{timingMode}", "frame-sample", imageSignal.Score, frameIndex);
                 }
-                if (confirmedSignal is not null)
-                {
-                    await HandleDeathSignalMatchAsync(frameIndex, confirmedSignal, cooldown, settings, frame.Bitmap);
-                }
-                else if (signal.IsMatch)
-                {
-                    HandlePendingSignal(frameIndex, settings, frame.Bitmap, signal);
-                }
-                else if (wasPending && !_deathSignalStabilizer.IsPending)
-                {
-                    var evidencePath = SaveFrameEvidence(settings, frame.Bitmap, DateTimeOffset.Now, "pending-expired", "no-signal", null, frameIndex);
-                    LogDetectionEvent("death", "pending-expired", frameIndex, signal, imageSignal, FormatCompactStabilizerState(_deathSignalStabilizer), FormatGateState(), match.Details, evidencePath);
-                    _log.Info(
-                        $"Death signal pending confirmation expired on frame #{frameIndex}. " +
-                        $"stabilizerBefore={stabilizerBefore}, stabilizerAfter={stabilizerAfter}, " +
-                        $"ocrRaw='{Compact(ocrText)}', ocrNormalized='{Compact(match.NormalizedText)}', ocrDetails='{Compact(match.Details)}', " +
-                        $"image={FormatSignal(imageSignal)}, selected={FormatSignal(signal)}, " +
-                        $"evidence='{evidencePath ?? "not-saved"}'.");
-                    RaiseStatus("Detection running", _lastDetectedDeath);
-                }
 
-                useBurstForNextFrame = DetectionTimingOptions.ShouldEnterBurst(imageSignal, _deathSignalStabilizer.IsPending, signal);
-
-                if (!signal.IsMatch)
+                if (settings.DetectDeaths)
                 {
-                    var wasGateLatched = _detectionGate.IsScreenLatched;
-                    var gateBefore = FormatGateState();
-                    var noSignalDecision = _detectionGate.Evaluate(false, DateTimeOffset.Now, cooldown);
-                    var gateAfter = FormatGateState();
-                    if (wasGateLatched || noSignalDecision == DeathDetectionDecision.Rearmed)
+                    if (confirmedSignal is not null)
                     {
-                        if (noSignalDecision == DeathDetectionDecision.Rearmed)
+                        await HandleDeathSignalMatchAsync(frameIndex, confirmedSignal, cooldown, settings, frame.Bitmap);
+                    }
+                    else if (signal.IsMatch)
+                    {
+                        HandlePendingSignal(frameIndex, settings, frame.Bitmap, signal);
+                    }
+                    else if (wasPending && !_deathSignalStabilizer.IsPending)
+                    {
+                        var evidencePath = SaveFrameEvidence(settings, frame.Bitmap, DateTimeOffset.Now, "pending-expired", "no-signal", null, frameIndex);
+                        LogDetectionEvent("death", "pending-expired", frameIndex, signal, imageSignal, FormatCompactStabilizerState(_deathSignalStabilizer), FormatGateState(), match.Details, evidencePath);
+                        _log.Info(
+                            $"Death signal pending confirmation expired on frame #{frameIndex}. " +
+                            $"stabilizerBefore={stabilizerBefore}, stabilizerAfter={stabilizerAfter}, " +
+                            $"ocrRaw='{Compact(ocrText)}', ocrNormalized='{Compact(match.NormalizedText)}', ocrDetails='{Compact(match.Details)}', " +
+                            $"image={FormatSignal(imageSignal)}, selected={FormatSignal(signal)}, " +
+                            $"evidence='{evidencePath ?? "not-saved"}'.");
+                        RaiseStatus("Detection running", _lastDetectedDeath);
+                    }
+
+                    useBurstForNextFrame = DetectionTimingOptions.ShouldEnterBurst(imageSignal, _deathSignalStabilizer.IsPending, signal);
+
+                    if (!signal.IsMatch)
+                    {
+                        var wasGateLatched = _detectionGate.IsScreenLatched;
+                        var gateBefore = FormatGateState();
+                        var noSignalDecision = _detectionGate.Evaluate(false, DateTimeOffset.Now, cooldown);
+                        var gateAfter = FormatGateState();
+                        if (wasGateLatched || noSignalDecision == DeathDetectionDecision.Rearmed)
                         {
-                            LogDetectionEvent("death", "rearmed", frameIndex, ImageDeathSignalMatch.NoMatch, null, FormatCompactStabilizerState(_deathSignalStabilizer), FormatGateState(), "screen-cleared");
+                            if (noSignalDecision == DeathDetectionDecision.Rearmed)
+                            {
+                                LogDetectionEvent("death", "rearmed", frameIndex, ImageDeathSignalMatch.NoMatch, null, FormatCompactStabilizerState(_deathSignalStabilizer), FormatGateState(), "screen-cleared");
+                            }
+
+                            _log.Info(
+                                $"Death gate no-signal evaluation on frame #{frameIndex}. " +
+                                $"decision={noSignalDecision}, gateBefore={gateBefore}, gateAfter={gateAfter}.");
                         }
 
-                        _log.Info(
-                            $"Death gate no-signal evaluation on frame #{frameIndex}. " +
-                            $"decision={noSignalDecision}, gateBefore={gateBefore}, gateAfter={gateAfter}.");
-                    }
-
-                    if (noSignalDecision == DeathDetectionDecision.Rearmed)
-                    {
-                        _log.Info("Death screen signal cleared; detector rearmed.");
+                        if (noSignalDecision == DeathDetectionDecision.Rearmed)
+                        {
+                            _log.Info("Death screen signal cleared; detector rearmed.");
+                        }
                     }
                 }
 
-                var hasBossVictorySignal = await UpdateBossVictoryFromFrameAsync(
-                    frameIndex,
-                    settings,
-                    frame.Bitmap,
-                    ocrText,
-                    signal.IsMatch,
-                    cooldown);
+                var hasBossVictorySignal = false;
+                if (settings.DetectBossVictories)
+                {
+                    hasBossVictorySignal = await UpdateBossVictoryFromFrameAsync(
+                        frameIndex,
+                        settings,
+                        frame.Bitmap,
+                        ocrText,
+                        signal.IsMatch,
+                        cooldown);
+                }
+                else
+                {
+                    _bossVictorySignalStabilizer.Reset();
+                }
 
                 if (settings.AutoDetectBossNames)
                 {

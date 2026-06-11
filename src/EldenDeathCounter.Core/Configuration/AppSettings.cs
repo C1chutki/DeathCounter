@@ -15,6 +15,12 @@ public sealed class AppSettings
 
     public bool AutoDetectBossNames { get; set; } = true;
 
+    public bool DetectDeaths { get; set; } = true;
+
+    public bool DetectBossVictories { get; set; } = true;
+
+    public string DetectionMode { get; set; } = DetectionModePresets.Balanced;
+
     public string GameLanguage { get; set; } = "PL";
 
     // Active game profile id (EldenRing/DarkSouls1/DarkSouls2/DarkSouls3). Derived from the loaded
@@ -74,6 +80,10 @@ public sealed class AppSettings
     // Default 0.9 matches the previous look (background alpha 0xE6 ≈ 0.90).
     public double OverlayBackgroundOpacity { get; set; } = 0.9;
 
+    public bool ShowBossTimer { get; set; } = true;
+
+    public bool ShowDetectionStatus { get; set; } = true;
+
     public static AppSettings CreateDefault(string desktopPath)
     {
         return CreateDefault(desktopPath, AppGameProfile.EldenRing);
@@ -88,6 +98,9 @@ public sealed class AppSettings
             OverlayY = 40,
             DetectionEnabledOnStartup = false,
             AutoDetectBossNames = true,
+            DetectDeaths = true,
+            DetectBossVictories = true,
+            DetectionMode = DetectionModePresets.Balanced,
             GameId = profile.Id,
             GameLanguage = "PL",
             AppLanguage = "en",
@@ -111,7 +124,9 @@ public sealed class AppSettings
             DetectionToggleHotkey = "F6",
             BossSkipHotkey = "Ctrl+Shift+P",
             OverlayFontScale = 1.0,
-            OverlayBackgroundOpacity = 0.9
+            OverlayBackgroundOpacity = 0.9,
+            ShowBossTimer = true,
+            ShowDetectionStatus = true
         };
     }
 

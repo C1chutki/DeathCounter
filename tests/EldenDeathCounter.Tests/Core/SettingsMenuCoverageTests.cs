@@ -15,9 +15,16 @@ public sealed class SettingsMenuCoverageTests
         Assert.Contains("OverlayEnabled", settingsTab);
         Assert.Contains("OverlayXText", settingsTab);
         Assert.Contains("OverlayYText", settingsTab);
+        Assert.Contains("OverlayFontScaleInput", settingsTab);
         Assert.Contains("OverlayBackgroundOpacityInput", settingsTab);
+        Assert.Contains("ShowBossTimer", settingsTab);
+        Assert.Contains("ShowDetectionStatus", settingsTab);
         Assert.Contains("DetectionEnabledOnStartup", settingsTab);
         Assert.Contains("AutoDetectBossNames", settingsTab);
+        Assert.Contains("SelectedDetectionModeValue", settingsTab);
+        Assert.Contains("ResetDetectionSettingsCommand", settingsTab);
+        Assert.Contains("DetectDeaths", settingsTab);
+        Assert.Contains("DetectBossVictories", settingsTab);
         Assert.Contains("DetectionIntervalMsText", settingsTab);
         Assert.Contains("DetectionCooldownSecondsText", settingsTab);
         Assert.Contains("DetectionSensitivityText", settingsTab);
@@ -26,6 +33,8 @@ public sealed class SettingsMenuCoverageTests
         Assert.Contains("CharacterProfileNameText", settingsTab);
         Assert.Contains("ApplyCharacterProfileCommand", settingsTab);
         Assert.Contains("DataFolderPathText", settingsTab);
+        Assert.Contains("OpenDataFolderCommand", settingsTab);
+        Assert.Contains("ResetProfileSettingsCommand", settingsTab);
         Assert.Contains("ManualAddHotkeyText", settingsTab);
         Assert.Contains("ManualSubtractHotkeyText", settingsTab);
         Assert.Contains("ManualBossDefeatedHotkeyText", settingsTab);
@@ -100,6 +109,40 @@ public sealed class SettingsMenuCoverageTests
         Assert.Contains("Settings_DetectionIntervalHint", settingsTab);
         Assert.Contains("Settings_CooldownHint", settingsTab);
         Assert.Contains("Settings_SensitivityHint", settingsTab);
+    }
+
+    [Fact]
+    public void SettingsNumericTextBoxesDeclareBoundsAndUseNumericInputHandlers()
+    {
+        var xaml = File.ReadAllText(GetMainWindowXamlPath());
+        var settingsTab = Regex.Match(
+            xaml,
+            """<TabItem Header="Settings">(?<content>[\s\S]*?)</TabItem>""",
+            RegexOptions.CultureInvariant).Groups["content"].Value;
+        var numericBindings = new[]
+        {
+            "OverlayXText",
+            "OverlayYText",
+            "OverlayFontScaleInput",
+            "OverlayBackgroundOpacityInput",
+            "DetectionIntervalMsText",
+            "DetectionCooldownSecondsText",
+            "DetectionSensitivityText"
+        };
+
+        foreach (var binding in numericBindings)
+        {
+            var textBox = Regex.Match(
+                settingsTab,
+                "<TextBox[^>]*Text=\"\\{Binding " + Regex.Escape(binding) + "[^\"]*\"[^>]*/>",
+                RegexOptions.CultureInvariant).Value;
+
+            Assert.NotEmpty(textBox);
+            Assert.Contains("PreviewTextInput=\"NumericBox_PreviewTextInput\"", textBox);
+            Assert.Contains("DataObject.Pasting=\"NumericBox_Pasting\"", textBox);
+            Assert.Contains("LostFocus=\"NumericBox_LostFocus\"", textBox);
+            Assert.Contains("Tag=\"", textBox);
+        }
     }
 
     [Fact]
@@ -180,6 +223,7 @@ public sealed class SettingsMenuCoverageTests
         Assert.Contains("Stats_ActiveBoss", statsTab);
         Assert.Contains("Stats_BestBoss", statsTab);
         Assert.Contains("Stats_HardestBoss", statsTab);
+        Assert.Contains("Stats_LongestBoss", statsTab);
         Assert.Contains("Stats_RecentEvents", statsTab);
         Assert.Contains("ExportProfileCommand", statsTab);
         Assert.Contains("StatsRecentEvents", statsTab);

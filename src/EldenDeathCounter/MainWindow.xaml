@@ -804,30 +804,60 @@
 
                 <!-- Navigation -->
                 <StackPanel Grid.Row="1" HorizontalAlignment="Center">
-                    <RadioButton GroupName="Navigation" IsChecked="True" Tag="0" Content="&#x25A6;"
+                    <RadioButton GroupName="Navigation" IsChecked="True" Tag="0"
                                  Style="{StaticResource RailNavButton}"
                                  ToolTip="{DynamicResource Section_Dashboard}"
-                                 Checked="NavigationRadio_Checked" />
-                    <RadioButton GroupName="Navigation" Tag="1" Content="&#x25CE;"
+                                 Checked="NavigationRadio_Checked">
+                        <Rectangle Width="25" Height="25" Fill="{DynamicResource Gold2}">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/dashboard-monitor.png" Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </RadioButton>
+                    <RadioButton GroupName="Navigation" Tag="1"
                                  Style="{StaticResource RailNavButton}"
                                  ToolTip="{DynamicResource Section_Detection}"
-                                 Checked="NavigationRadio_Checked" />
-                    <RadioButton GroupName="Navigation" Tag="2" Content="&#x25C7;"
+                                 Checked="NavigationRadio_Checked">
+                        <Rectangle Width="25" Height="25" Fill="{DynamicResource Gold2}">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/Detection.png" Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </RadioButton>
+                    <RadioButton GroupName="Navigation" Tag="2"
                                  Style="{StaticResource RailNavButton}"
                                  ToolTip="{DynamicResource Section_Bosses}"
-                                 Checked="NavigationRadio_Checked" />
-                    <RadioButton GroupName="Navigation" Tag="3" Content="&#x25A9;"
+                                 Checked="NavigationRadio_Checked">
+                        <Rectangle Width="25" Height="25" Fill="{DynamicResource Gold2}">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/listpng.png" Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </RadioButton>
+                    <RadioButton GroupName="Navigation" Tag="3"
                                  Style="{StaticResource RailNavButton}"
                                  ToolTip="{DynamicResource Section_Stats}"
-                                 Checked="NavigationRadio_Checked" />
-                    <RadioButton GroupName="Navigation" Tag="4" Content="&#x2630;"
+                                 Checked="NavigationRadio_Checked">
+                        <Rectangle Width="25" Height="25" Fill="{DynamicResource Gold2}">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/Stats.png" Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </RadioButton>
+                    <RadioButton GroupName="Navigation" Tag="4"
                                  Style="{StaticResource RailNavButton}"
                                  ToolTip="{DynamicResource Section_Settings}"
-                                 Checked="NavigationRadio_Checked" />
+                                 Checked="NavigationRadio_Checked">
+                        <Rectangle Width="25" Height="25" Fill="{DynamicResource Gold2}">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/Settings.png" Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </RadioButton>
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,8">
-                    <TextBlock Text="v1.12.18"
+                    <TextBlock Text="v1.13.6"
                                FontFamily="{DynamicResource MonoFontFamily}"
                                FontSize="8.5"
                                Foreground="{DynamicResource Faint}"
@@ -837,7 +867,7 @@
             </Grid>
         </Border>
 
-        <Border x:Name="HeaderBorder" Grid.ColumnSpan="2" Grid.Row="0" Background="Transparent" BorderThickness="0" Padding="110,0,32,0" Height="60">
+        <Border x:Name="HeaderBorder" Grid.ColumnSpan="2" Grid.Row="0" Background="Transparent" BorderBrush="{DynamicResource Gold2}" BorderThickness="0,0,0,1" Padding="110,0,32,0" Height="60">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="300" />
@@ -1783,15 +1813,11 @@
                             <StackPanel Grid.Column="6">
                                 <Button Command="{Binding ResetCounterCommand}"
                                         Style="{StaticResource DashboardCircleButton}">
-                                    <Viewbox Width="26" Height="26">
-                                        <Path Data="M19,9 L19,4 L24,4 M19,4 C16.9,2.2 14.2,1.2 11.3,1.5 C5.5,2.1 1,7 1,12.8 C1,19 6,24 12.2,24 C17.4,24 21.8,20.4 23,15.5"
-                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                                              StrokeThickness="2.4"
-                                              StrokeStartLineCap="Round"
-                                              StrokeEndLineCap="Round"
-                                              StrokeLineJoin="Round"
-                                              Fill="Transparent" />
-                                    </Viewbox>
+                                    <Rectangle Width="28" Height="28" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}">
+                                        <Rectangle.OpacityMask>
+                                            <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/Reset.png" Stretch="Uniform" />
+                                        </Rectangle.OpacityMask>
+                                    </Rectangle>
                                 </Button>
                                 <TextBlock Text="RESET COUNTER" Style="{StaticResource DashboardActionCaption}" />
                             </StackPanel>
@@ -2423,6 +2449,12 @@
                                         <TextBlock Text="{Binding StatsHardestBossText}" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="24" FontWeight="Bold" TextWrapping="Wrap" />
                                     </StackPanel>
                                 </Border>
+                                <Border Style="{StaticResource PanelBorder}">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource Stats_LongestBoss}" Style="{StaticResource LabelText}" />
+                                        <TextBlock Text="{Binding StatsLongestBossText}" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="24" FontWeight="Bold" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
                             </UniformGrid>
 
                             <Border Grid.Column="2" Style="{StaticResource PanelBorder}">
@@ -2507,15 +2539,39 @@
                                         </Grid.ColumnDefinitions>
                                         <StackPanel>
                                             <TextBlock Text="{DynamicResource Settings_OverlayX}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
-                                            <TextBox Text="{Binding OverlayXText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,0" />
+                                            <TextBox Text="{Binding OverlayXText, UpdateSourceTrigger=PropertyChanged}"
+                                                     Tag="-10000|10000|0"
+                                                     PreviewTextInput="NumericBox_PreviewTextInput"
+                                                     DataObject.Pasting="NumericBox_Pasting"
+                                                     LostFocus="NumericBox_LostFocus"
+                                                     Margin="0,6,0,0" />
                                         </StackPanel>
                                         <StackPanel Grid.Column="2">
                                             <TextBlock Text="{DynamicResource Settings_OverlayY}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
-                                            <TextBox Text="{Binding OverlayYText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,0" />
+                                            <TextBox Text="{Binding OverlayYText, UpdateSourceTrigger=PropertyChanged}"
+                                                     Tag="-10000|10000|0"
+                                                     PreviewTextInput="NumericBox_PreviewTextInput"
+                                                     DataObject.Pasting="NumericBox_Pasting"
+                                                     LostFocus="NumericBox_LostFocus"
+                                                     Margin="0,6,0,0" />
                                         </StackPanel>
                                     </Grid>
+                                    <TextBlock Text="{DynamicResource Settings_OverlayScale}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" Margin="0,24,0,0" />
+                                    <TextBox Text="{Binding OverlayFontScaleInput, UpdateSourceTrigger=PropertyChanged}"
+                                             Tag="0.6|1.6|1"
+                                             PreviewTextInput="NumericBox_PreviewTextInput"
+                                             DataObject.Pasting="NumericBox_Pasting"
+                                             LostFocus="NumericBox_LostFocus"
+                                             Margin="0,6,0,0" />
                                     <TextBlock Text="{DynamicResource Settings_OverlayOpacity}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" Margin="0,24,0,0" />
-                                    <TextBox Text="{Binding OverlayBackgroundOpacityInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,0" />
+                                    <TextBox Text="{Binding OverlayBackgroundOpacityInput, UpdateSourceTrigger=PropertyChanged}"
+                                             Tag="0|1|1"
+                                             PreviewTextInput="NumericBox_PreviewTextInput"
+                                             DataObject.Pasting="NumericBox_Pasting"
+                                             LostFocus="NumericBox_LostFocus"
+                                             Margin="0,6,0,14" />
+                                    <CheckBox Content="{DynamicResource Settings_ShowBossTimer}" IsChecked="{Binding ShowBossTimer}" Margin="0,0,0,4" />
+                                    <CheckBox Content="{DynamicResource Settings_ShowDetectionStatus}" IsChecked="{Binding ShowDetectionStatus}" />
                                 </StackPanel>
                             </Border>
 
@@ -2523,6 +2579,13 @@
                             <Border Grid.Column="2" Style="{StaticResource PanelBorder}">
                                 <StackPanel>
                                     <TextBlock Text="{DynamicResource Settings_DetectionSection}" Style="{StaticResource LabelText}" Margin="0,0,0,24" />
+                                    <TextBlock Text="{DynamicResource Settings_DetectionMode}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
+                                    <ComboBox ItemsSource="{Binding DetectionModeOptions}"
+                                              SelectedValue="{Binding SelectedDetectionModeValue, UpdateSourceTrigger=PropertyChanged}"
+                                              SelectedValuePath="Value"
+                                              DisplayMemberPath="DisplayName"
+                                              Style="{StaticResource DarkComboBox}"
+                                              Margin="0,6,0,14" />
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
@@ -2531,18 +2594,36 @@
                                         </Grid.ColumnDefinitions>
                                         <StackPanel>
                                             <TextBlock Text="{DynamicResource Settings_DetectionInterval}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
-                                            <TextBox Text="{Binding DetectionIntervalMsText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,4" />
+                                            <TextBox Text="{Binding DetectionIntervalMsText, UpdateSourceTrigger=PropertyChanged}"
+                                                     Tag="250|5000|0"
+                                                     PreviewTextInput="NumericBox_PreviewTextInput"
+                                                     DataObject.Pasting="NumericBox_Pasting"
+                                                     LostFocus="NumericBox_LostFocus"
+                                                     Margin="0,6,0,4" />
                                             <TextBlock Text="{DynamicResource Settings_DetectionIntervalHint}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontStyle="Italic" FontSize="12" Margin="0,0,0,18" />
                                         </StackPanel>
                                         <StackPanel Grid.Column="2">
                                             <TextBlock Text="{DynamicResource Settings_Cooldown}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
-                                            <TextBox Text="{Binding DetectionCooldownSecondsText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,4" />
+                                            <TextBox Text="{Binding DetectionCooldownSecondsText, UpdateSourceTrigger=PropertyChanged}"
+                                                     Tag="1|300|0"
+                                                     PreviewTextInput="NumericBox_PreviewTextInput"
+                                                     DataObject.Pasting="NumericBox_Pasting"
+                                                     LostFocus="NumericBox_LostFocus"
+                                                     Margin="0,6,0,4" />
                                             <TextBlock Text="{DynamicResource Settings_CooldownHint}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontStyle="Italic" FontSize="12" Margin="0,0,0,18" />
                                         </StackPanel>
                                     </Grid>
                                     <TextBlock Text="{DynamicResource Settings_Sensitivity}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
-                                    <TextBox Text="{Binding DetectionSensitivityText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,4" />
+                                    <TextBox Text="{Binding DetectionSensitivityText, UpdateSourceTrigger=PropertyChanged}"
+                                             Tag="0.1|1|2"
+                                             PreviewTextInput="NumericBox_PreviewTextInput"
+                                             DataObject.Pasting="NumericBox_Pasting"
+                                             LostFocus="NumericBox_LostFocus"
+                                             Margin="0,6,0,4" />
                                     <TextBlock Text="{DynamicResource Settings_SensitivityHint}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontStyle="Italic" FontSize="12" Margin="0,0,0,18" />
+                                    <Button Content="{DynamicResource Settings_ResetDetectionDefaults}"
+                                            Command="{Binding ResetDetectionSettingsCommand}"
+                                            Margin="0,0,0,18" />
                                     <TextBlock Text="{DynamicResource Settings_CaptureRegion}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
                                     <ComboBox ItemsSource="{Binding CaptureTargetOptions}"
                                               SelectedValue="{Binding SelectedCaptureTargetValue, UpdateSourceTrigger=PropertyChanged}"
@@ -2551,6 +2632,8 @@
                                               Style="{StaticResource DarkComboBox}"
                                               Margin="0,6,0,14" />
                                     <CheckBox Content="{DynamicResource Settings_StartDetectionOnLaunch}" IsChecked="{Binding DetectionEnabledOnStartup}" />
+                                    <CheckBox Content="{DynamicResource Settings_DetectDeaths}" IsChecked="{Binding DetectDeaths}" />
+                                    <CheckBox Content="{DynamicResource Settings_DetectBossVictories}" IsChecked="{Binding DetectBossVictories}" />
                                     <CheckBox Content="{DynamicResource Settings_AutoReadBossName}" IsChecked="{Binding AutoDetectBossNames}" />
                                 </StackPanel>
                             </Border>
@@ -2644,6 +2727,16 @@
                                 <TextBlock Text="{DynamicResource Settings_ProfileSection}" Style="{StaticResource LabelText}" Margin="0,0,0,16" />
                                 <TextBlock Text="{DynamicResource Settings_ProfileDesc}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" Margin="0,0,0,12" />
                                 <TextBox Text="{Binding DataFolderPathText, UpdateSourceTrigger=PropertyChanged}" />
+                                <DockPanel Margin="0,18,0,0" LastChildFill="False">
+                                    <Button Content="{DynamicResource Settings_OpenProfileFolder}"
+                                            Command="{Binding OpenDataFolderCommand}"
+                                            MinWidth="150"
+                                            Margin="0,0,12,0" />
+                                    <Button Content="{DynamicResource Settings_ResetProfileDefaults}"
+                                            Command="{Binding ResetProfileSettingsCommand}"
+                                            Style="{StaticResource DangerButton}"
+                                            MinWidth="180" />
+                                </DockPanel>
                             </StackPanel>
                         </Border>
                     </Grid>

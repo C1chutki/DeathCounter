@@ -16,6 +16,12 @@ public sealed class AppSettingsTests
         Assert.True(settings.AutoDetectBossNames);
         Assert.Equal(350, settings.DetectionIntervalMs);
         Assert.Equal(25, settings.DetectionCooldownSeconds);
+        Assert.Equal(0.8, settings.DetectionSensitivity);
+        Assert.Equal("Balanced", settings.DetectionMode);
+        Assert.True(settings.DetectDeaths);
+        Assert.True(settings.DetectBossVictories);
+        Assert.True(settings.ShowBossTimer);
+        Assert.True(settings.ShowDetectionStatus);
         Assert.Equal("EldenRingWindow", settings.CaptureTarget);
         Assert.Equal(DiagnosticsMode.Events, settings.DiagnosticsMode);
         Assert.Equal(10, settings.DiagnosticsSessionMinutes);
@@ -179,12 +185,12 @@ public sealed class AppSettingsTests
         var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(folder);
         var settingsPath = Path.Combine(folder, "appsettings.json");
-        await File.WriteAllTextAsync(settingsPath, """{"dataFolderPath":"C:\\Temp\\Counter","detectionIntervalMs":300}""");
+        await File.WriteAllTextAsync(settingsPath, """{"dataFolderPath":"C:\\Temp\\Counter","detectionIntervalMs":200}""");
         var store = new AppSettingsStore(new FileLogService(Path.Combine(folder, "log.txt")));
 
         var settings = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop");
 
-        Assert.Equal(350, settings.DetectionIntervalMs);
+        Assert.Equal(250, settings.DetectionIntervalMs);
     }
 
     [Fact]
@@ -200,6 +206,33 @@ public sealed class AppSettingsTests
 
         Assert.Equal(350, settings.DetectionIntervalMs);
         Assert.Equal(25, settings.DetectionCooldownSeconds);
+    }
+
+    [Fact]
+    public async Task LoadingOldSettingsAddsNewOverlayAndDetectionOptionDefaults()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var settingsPath = Path.Combine(folder, "appsettings.json");
+        await File.WriteAllTextAsync(settingsPath, """{"dataFolderPath":"C:\\Temp\\Counter"}""");
+        var store = new AppSettingsStore(new FileLogService(Path.Combine(folder, "log.txt")));
+
+        var settings = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop");
+
+        Assert.Equal("Balanced", settings.DetectionMode);
+        Assert.True(settings.DetectDeaths);
+        Assert.True(settings.DetectBossVictories);
+        Assert.True(settings.ShowBossTimer);
+        Assert.True(settings.ShowDetectionStatus);
+    }
+
+    [Fact]
+    public void DetectionModePresetsExposeConservativeBalancedAndAggressiveValues()
+    {
+        Assert.Equal(new DetectionModePreset("Conservative", 500, 35, 0.9), DetectionModePresets.Get("Conservative"));
+        Assert.Equal(new DetectionModePreset("Balanced", 350, 25, 0.8), DetectionModePresets.Get("Balanced"));
+        Assert.Equal(new DetectionModePreset("Aggressive", 250, 10, 0.65), DetectionModePresets.Get("Aggressive"));
+        Assert.Equal(DetectionModePresets.Get("Balanced"), DetectionModePresets.Get("unknown"));
     }
 
     [Fact]

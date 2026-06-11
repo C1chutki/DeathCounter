@@ -25,6 +25,7 @@ public partial class OverlayWindow : Window
     private string _appLanguage;
     private ActiveBossState? _activeBoss;
     private bool _isDetectionRunning;
+    private bool _showBossTimer = true;
     private System.Windows.Media.Color _overlayBackgroundColor = DefaultOverlayBackgroundColor;
     private double _backgroundOpacity = 0.9;
 
@@ -48,6 +49,8 @@ public partial class OverlayWindow : Window
         UpdateDetectionState(false);
         ApplyScale(settings.OverlayFontScale);
         ApplyBackgroundOpacity(settings.OverlayBackgroundOpacity);
+        ApplyBossTimerVisibility(settings.ShowBossTimer);
+        ApplyDetectionStatusVisibility(settings.ShowDetectionStatus);
 
         // The detection status label is set in code, so {DynamicResource} cannot refresh it on a
         // live language swap. Re-apply it whenever the UI language changes.
@@ -84,6 +87,23 @@ public partial class OverlayWindow : Window
         });
     }
 
+    public void ApplyBossTimerVisibility(bool isVisible)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            _showBossTimer = isVisible;
+            TimerChrome.Visibility = isVisible && _activeBoss is not null ? Visibility.Visible : Visibility.Collapsed;
+        });
+    }
+
+    public void ApplyDetectionStatusVisibility(bool isVisible)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            DetectionStatusPanel.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+        });
+    }
+
     public void UpdateCount(int count, ActiveBossState? activeBoss = null, string? appLanguage = null)
     {
         Dispatcher.Invoke(() =>
@@ -108,6 +128,7 @@ public partial class OverlayWindow : Window
             BossTextBlock.Text = DeathCounterText.FormatBossOverlayName(activeBoss.Name);
             BossDeathTextBlock.Text = DeathCounterText.FormatBossDeath(activeBoss.DeathCount, _appLanguage);
             BossPanel.Visibility = Visibility.Visible;
+            TimerChrome.Visibility = _showBossTimer ? Visibility.Visible : Visibility.Collapsed;
             UpdateBossTimerText();
             if (activeBoss.IsTimerRunning && !_bossTimer.IsEnabled)
             {

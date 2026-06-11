@@ -89,6 +89,8 @@
     <sys:String x:Key="Stats_ActiveBoss">ACTIVE BOSS</sys:String>
     <sys:String x:Key="Stats_BestBoss">BEST BOSS</sys:String>
     <sys:String x:Key="Stats_HardestBoss">HARDEST BOSS</sys:String>
+    <sys:String x:Key="Stats_LongestBoss">LONGEST BOSS</sys:String>
+    <sys:String x:Key="Stats_BossStatFormat">{0} ({1}, {2})</sys:String>
     <sys:String x:Key="Stats_RecentEvents">RECENT EVENTS</sys:String>
     <sys:String x:Key="Stats_ExportedFormat">Exported to {0}</sys:String>
     <sys:String x:Key="Stats_ExportFailed">Export failed</sys:String>
@@ -123,17 +125,27 @@
     <sys:String x:Key="Settings_ShowOverlayDesc">Toggle the always-on-top death counter overlay.</sys:String>
     <sys:String x:Key="Settings_OverlayX">Overlay X Position</sys:String>
     <sys:String x:Key="Settings_OverlayY">Overlay Y Position</sys:String>
+    <sys:String x:Key="Settings_OverlayScale">Overlay scale (0.6-1.6)</sys:String>
     <sys:String x:Key="Settings_OverlayOpacity">Background opacity (0.0-1.0)</sys:String>
+    <sys:String x:Key="Settings_ShowBossTimer">Show boss timer</sys:String>
+    <sys:String x:Key="Settings_ShowDetectionStatus">Show detection status</sys:String>
     <sys:String x:Key="Settings_DetectionSection">| DETECTION</sys:String>
+    <sys:String x:Key="Settings_DetectionMode">Detection mode</sys:String>
     <sys:String x:Key="Settings_DetectionInterval">Detection Interval (ms)</sys:String>
-    <sys:String x:Key="Settings_DetectionIntervalHint">Minimum/default: 350 ms. Lower checks more often.</sys:String>
+    <sys:String x:Key="Settings_DetectionIntervalHint">Default: 350 ms. Lower checks more often.</sys:String>
     <sys:String x:Key="Settings_Cooldown">Cooldown (seconds)</sys:String>
     <sys:String x:Key="Settings_CooldownHint">Default: 25 s. Blocks duplicate counts from one death screen.</sys:String>
     <sys:String x:Key="Settings_Sensitivity">Detection Sensitivity</sys:String>
     <sys:String x:Key="Settings_SensitivityHint">Range: 0.10-1.00. Higher means stricter matching.</sys:String>
+    <sys:String x:Key="Settings_ResetDetectionDefaults">RESET DETECTION DEFAULTS</sys:String>
     <sys:String x:Key="Settings_CaptureRegion">Capture Region</sys:String>
     <sys:String x:Key="Settings_StartDetectionOnLaunch">Start detection on app launch</sys:String>
+    <sys:String x:Key="Settings_DetectDeaths">Detect deaths</sys:String>
+    <sys:String x:Key="Settings_DetectBossVictories">Detect boss victories</sys:String>
     <sys:String x:Key="Settings_AutoReadBossName">Auto-read boss name</sys:String>
+    <sys:String x:Key="DetectionMode_Conservative">Conservative</sys:String>
+    <sys:String x:Key="DetectionMode_Balanced">Balanced</sys:String>
+    <sys:String x:Key="DetectionMode_Aggressive">Aggressive</sys:String>
     <sys:String x:Key="Settings_CharacterSection">| CHARACTER &amp; SAVE GAME</sys:String>
     <sys:String x:Key="Settings_CharacterDesc">Deaths and boss history are tracked separately per character profile.</sys:String>
     <sys:String x:Key="Settings_CharacterName">Character name</sys:String>
@@ -150,6 +162,8 @@
     <sys:String x:Key="Settings_HotkeyPrompt">Click here and press the key combination you want to assign. Press Esc to cancel.</sys:String>
     <sys:String x:Key="Settings_ProfileSection">| PROFILE / SAVE GAME</sys:String>
     <sys:String x:Key="Settings_ProfileDesc">Folder where the active profile's death counter and boss history are stored.</sys:String>
+    <sys:String x:Key="Settings_OpenProfileFolder">OPEN PROFILE FOLDER</sys:String>
+    <sys:String x:Key="Settings_ResetProfileDefaults">RESET PROFILE SETTINGS</sys:String>
     <sys:String x:Key="Settings_SaveSettings">SAVE SETTINGS</sys:String>
 
     <!-- Status bar -->
@@ -180,10 +194,12 @@
     <sys:String x:Key="Vm_UsingDefaultFolder">Using default save folder</sys:String>
     <sys:String x:Key="Vm_UsingCharacterProfileFormat">Using character profile '{0}'</sys:String>
     <sys:String x:Key="Vm_SettingsSaved">Settings saved</sys:String>
-    <sys:String x:Key="Vm_DetectionIntervalInvalid">Detection interval must be at least 350 ms.</sys:String>
+    <sys:String x:Key="Vm_DetectionIntervalInvalid">Detection interval must be at least 250 ms.</sys:String>
     <sys:String x:Key="Vm_CooldownInvalid">Cooldown must be at least 1 second.</sys:String>
     <sys:String x:Key="Vm_SensitivityInvalid">Detection sensitivity must be a number from 0.1 to 1.0.</sys:String>
     <sys:String x:Key="Vm_OverlayXYInvalid">Overlay X and Y must be numbers.</sys:String>
+    <sys:String x:Key="Vm_OverlayScaleInvalid">Overlay scale must be a number from 0.6 to 1.6.</sys:String>
+    <sys:String x:Key="Vm_OverlayOpacityInvalid">Overlay opacity must be a number from 0.0 to 1.0.</sys:String>
     <sys:String x:Key="Vm_AddHotkeyInvalidFormat">Add hotkey is invalid: {0}</sys:String>
     <sys:String x:Key="Vm_SubtractHotkeyInvalidFormat">Subtract hotkey is invalid: {0}</sys:String>
     <sys:String x:Key="Vm_BossDefeatedHotkeyInvalidFormat">Boss defeated hotkey is invalid: {0}</sys:String>

@@ -22,6 +22,7 @@ public sealed class AppProjectAssetTests
         // The wildcard Assets include copies root assets, and the Elden Ring subfolder include copies
         // the relocated Elden Ring boss lists and reference images to the build output.
         Assert.Contains(@"..\..\Assets\*.*", includes);
+        Assert.Contains(@"..\..\Assets\Icons\*.*", includes);
         Assert.Contains(@"..\..\Assets\Elden Ring\*.*", includes);
 
         var eldenRingRoot = Path.GetFullPath(Path.Combine(
@@ -238,6 +239,9 @@ public sealed class AppProjectAssetTests
         Assert.Contains("Command=\"{Binding SubtractDeathCommand}\"", dashboardTab, StringComparison.Ordinal);
         Assert.Contains("Content=\"+\"", dashboardTab, StringComparison.Ordinal);
         Assert.Contains("Command=\"{Binding AddDeathCommand}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("Command=\"{Binding ResetCounterCommand}\"", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("ImageSource=\"pack://siteoforigin:,,,/Assets/Icons/Reset.png\"", dashboardTab, StringComparison.Ordinal);
+        Assert.DoesNotContain("Path Data=\"M19,9", dashboardTab, StringComparison.Ordinal);
         Assert.Contains("Style=\"{StaticResource EncounterButton}\"", dashboardTab, StringComparison.Ordinal);
         Assert.Contains("Command=\"{Binding SetActiveBossCommand}\"", dashboardTab, StringComparison.Ordinal);
         Assert.Contains("Command=\"{Binding BossDefeatedCommand}\"", dashboardTab, StringComparison.Ordinal);
@@ -389,6 +393,7 @@ public sealed class AppProjectAssetTests
         Assert.Contains("FontWeight=\"Bold\"", xaml, StringComparison.Ordinal);
         Assert.Contains("Foreground=\"{DynamicResource Gold}\"", xaml, StringComparison.Ordinal);
         Assert.Contains("HorizontalAlignment=\"Center\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("x:Name=\"HeaderBorder\" Grid.ColumnSpan=\"2\" Grid.Row=\"0\" Background=\"Transparent\" BorderBrush=\"{DynamicResource Gold2}\" BorderThickness=\"0,0,0,1\"", xaml, StringComparison.Ordinal);
         Assert.Contains("Style=\"{StaticResource TopStatusDot}\"", xaml, StringComparison.Ordinal);
         Assert.Contains("Text=\"{Binding DetectionStatus}\"", xaml, StringComparison.Ordinal);
         Assert.Contains("Text=\"LAST\"", xaml, StringComparison.Ordinal);
@@ -402,9 +407,24 @@ public sealed class AppProjectAssetTests
         var er = xaml.IndexOf("x:Name=\"EldenRingButton\"", StringComparison.Ordinal);
         Assert.True(ds >= 0 && ds < ds2 && ds2 < ds3 && ds3 < er);
 
-        // The narrow icon rail provides the emblem and glyph navigation.
+        // The narrow icon rail provides the emblem and image navigation.
         Assert.Contains("EmblemFontFamily", xaml, StringComparison.Ordinal);
         Assert.Contains("Style=\"{StaticResource RailNavButton}\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("ImageSource=\"pack://siteoforigin:,,,/Assets/Icons/dashboard-monitor.png\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("ImageSource=\"pack://siteoforigin:,,,/Assets/Icons/Detection.png\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("ImageSource=\"pack://siteoforigin:,,,/Assets/Icons/listpng.png\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("ImageSource=\"pack://siteoforigin:,,,/Assets/Icons/Stats.png\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("ImageSource=\"pack://siteoforigin:,,,/Assets/Icons/Settings.png\"", xaml, StringComparison.Ordinal);
+        Assert.DoesNotContain("ImageSource=\"Assets/Icons/", xaml, StringComparison.Ordinal);
+        Assert.Equal(5, Regex.Matches(xaml, "Fill=\"\\{DynamicResource Gold2\\}\"").Count);
+        Assert.Equal(5, Regex.Matches(xaml, "<Rectangle Width=\"25\" Height=\"25\" Fill=\"\\{DynamicResource Gold2\\}\"").Count);
+        Assert.DoesNotContain("Content=\"&#x25A6;\"", xaml, StringComparison.Ordinal);
+        Assert.DoesNotContain("Content=\"&#x25CE;\"", xaml, StringComparison.Ordinal);
+        Assert.DoesNotContain("Content=\"&#x25C7;\"", xaml, StringComparison.Ordinal);
+        Assert.DoesNotContain("Content=\"&#x25A9;\"", xaml, StringComparison.Ordinal);
+        Assert.DoesNotContain("Content=\"&#x2630;\"", xaml, StringComparison.Ordinal);
+        Assert.DoesNotContain("HeaderBorder.BorderThickness = index == 0", code, StringComparison.Ordinal);
+        Assert.Contains("HeaderBorder.BorderBrush = BrushFromHex(theme.Primary)", code, StringComparison.Ordinal);
         Assert.DoesNotContain("ToUpperInvariant", code, StringComparison.Ordinal);
         Assert.DoesNotContain("string.Join", code, StringComparison.Ordinal);
     }
