@@ -97,7 +97,6 @@
                            FontWeight="Bold"
                            Margin="0,6,0,0" />
                 <Border x:Name="TimerChrome"
-                        Background="#B3000000"
                         BorderBrush="#293522"
                         BorderThickness="1"
                         CornerRadius="8"

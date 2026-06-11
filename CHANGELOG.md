@@ -2,6 +2,10 @@
 
 ## 2026-06-11
 
+- Podpieto tlo panelu timera w overlay pod ustawienie opacity, tak jak glowne tlo overlaya, bez zmiany przezroczystosci tekstu i ikon. Dodano regresje blokujaca powrot stalego tla timera; wersje podniesiono do 1.13.8.
+
+- Przeniesiono odswiezanie sekund timera aktywnego bossa w overlay z `DispatcherTimer` na timer thread-pool publikujacy aktualizacje do renderowania WPF, zeby tekst czasu nie przestawal tykac przy obciazonym dispatcherze, mimo poprawnego koncowego czasu walki. Dodano regresje pilnujaca mechanizmu odswiezania; wersje podniesiono do 1.13.7.
+
 - Podmieniono ikone przycisku `RESET COUNTER` w dashboardzie na `Assets/Icons/Reset.png`, renderowana jako maska w kolorze przycisku. Dodano regresje XAML dla resetowej ikony; wersje podniesiono do 1.13.6.
 
 - Naprawiono crash startowy WPF po kolorowaniu ikon: maski `ImageBrush` uzywaja teraz jawnych `pack://siteoforigin` URI dla kopiowanych plikow `Assets/Icons`. Dodano regresje blokujaca powrot wzglednych `ImageSource`; wersje podniesiono do 1.13.5.

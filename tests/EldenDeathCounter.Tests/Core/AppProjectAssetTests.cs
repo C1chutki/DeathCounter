@@ -166,6 +166,47 @@ public sealed class AppProjectAssetTests
     }
 
     [Fact]
+    public void OverlayBossTimerUsesThreadPoolRefreshInsteadOfDispatcherTimer()
+    {
+        var overlayCodePath = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory,
+            "..",
+            "..",
+            "..",
+            "..",
+            "..",
+            "src",
+            "EldenDeathCounter",
+            "OverlayWindow.xaml.cs"));
+        var overlayCode = File.ReadAllText(overlayCodePath);
+
+        Assert.Contains("System.Threading.Timer", overlayCode, StringComparison.Ordinal);
+        Assert.Contains("Change(TimeSpan.Zero, TimeSpan.FromSeconds(1))", overlayCode, StringComparison.Ordinal);
+        Assert.Contains("Dispatcher.BeginInvoke(UpdateBossTimerText", overlayCode, StringComparison.Ordinal);
+        Assert.DoesNotContain("private readonly DispatcherTimer _bossTimer", overlayCode, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void OverlayBackgroundOpacityAlsoControlsTimerChrome()
+    {
+        var appProjectPath = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory,
+            "..",
+            "..",
+            "..",
+            "..",
+            "..",
+            "src",
+            "EldenDeathCounter"));
+        var overlayXaml = File.ReadAllText(Path.Combine(appProjectPath, "OverlayWindow.xaml"));
+        var overlayCode = File.ReadAllText(Path.Combine(appProjectPath, "OverlayWindow.xaml.cs"));
+
+        Assert.DoesNotContain("Background=\"#B3000000\"", overlayXaml, StringComparison.Ordinal);
+        Assert.Contains("TimerChrome.Background = CreateOverlayBrush(TimerOverlayBackgroundColor, _backgroundOpacity)", overlayCode, StringComparison.Ordinal);
+        Assert.Contains("OverlayChrome.Background = CreateOverlayBrush(_overlayBackgroundColor, _backgroundOpacity)", overlayCode, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void DashboardUsesReferenceCounterStageLayout()
     {
         var xamlPath = Path.GetFullPath(Path.Combine(

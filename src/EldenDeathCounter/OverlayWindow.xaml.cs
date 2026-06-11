@@ -14,8 +14,10 @@ public partial class OverlayWindow : Window
     // Default overlay background color (matches OverlayWindow.xaml OverlayChrome.Background).
     private static readonly System.Windows.Media.Color DefaultOverlayBackgroundColor =
         (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#0A1014");
+    private static readonly System.Windows.Media.Color TimerOverlayBackgroundColor =
+        (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#000000");
 
-    private readonly DispatcherTimer _bossTimer;
+    private readonly System.Threading.Timer _bossTimer;
     // Re-asserts the overlay into the topmost z-order band on a steady cadence. A borderless
     // fullscreen game grabbing the foreground demotes our one-shot Topmost, so without this the
     // overlay disappears behind the game. (Exclusive fullscreen cannot be overlaid either way.)
@@ -35,11 +37,7 @@ public partial class OverlayWindow : Window
         Left = settings.OverlayX;
         Top = settings.OverlayY;
         _appLanguage = settings.AppLanguage;
-        _bossTimer = new DispatcherTimer
-        {
-            Interval = TimeSpan.FromSeconds(1)
-        };
-        _bossTimer.Tick += (_, _) => UpdateBossTimerText();
+        _bossTimer = new System.Threading.Timer(_ => QueueBossTimerRefresh());
         _topMostTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1)
@@ -59,7 +57,7 @@ public partial class OverlayWindow : Window
         {
             LocalizationService.Instance.LanguageChanged -= OnLanguageChanged;
             _topMostTimer.Stop();
-            _bossTimer.Stop();
+            _bossTimer.Dispose();
         };
     }
 
@@ -121,7 +119,7 @@ public partial class OverlayWindow : Window
                 BossDeathTextBlock.Text = string.Empty;
                 TimerTextBlock.Text = string.Empty;
                 BossPanel.Visibility = Visibility.Collapsed;
-                _bossTimer.Stop();
+                _bossTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
                 return;
             }
 
@@ -130,13 +128,13 @@ public partial class OverlayWindow : Window
             BossPanel.Visibility = Visibility.Visible;
             TimerChrome.Visibility = _showBossTimer ? Visibility.Visible : Visibility.Collapsed;
             UpdateBossTimerText();
-            if (activeBoss.IsTimerRunning && !_bossTimer.IsEnabled)
+            if (activeBoss.IsTimerRunning)
             {
-                _bossTimer.Start();
+                _bossTimer.Change(TimeSpan.Zero, TimeSpan.FromSeconds(1));
             }
             else if (!activeBoss.IsTimerRunning)
             {
-                _bossTimer.Stop();
+                _bossTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             }
         });
     }
@@ -208,6 +206,16 @@ public partial class OverlayWindow : Window
         TimerTextBlock.Text = FormatDuration(_activeBoss.GetElapsedDuration(DateTimeOffset.Now));
     }
 
+    private void QueueBossTimerRefresh()
+    {
+        if (Dispatcher.HasShutdownStarted)
+        {
+            return;
+        }
+
+        Dispatcher.BeginInvoke(UpdateBossTimerText, DispatcherPriority.Render);
+    }
+
     private static string FormatDuration(TimeSpan duration)
     {
         var safeDuration = duration < TimeSpan.Zero ? TimeSpan.Zero : duration;
@@ -223,10 +231,16 @@ public partial class OverlayWindow : Window
     // opacity. The opacity is applied to the brush alpha only, so overlay text stays opaque.
     private void RefreshOverlayBackground()
     {
-        var alpha = (byte)Math.Round(Math.Clamp(_backgroundOpacity, 0.0, 1.0) * 255);
-        var top = System.Windows.Media.Color.FromArgb(alpha, _overlayBackgroundColor.R, _overlayBackgroundColor.G, _overlayBackgroundColor.B);
+        OverlayChrome.Background = CreateOverlayBrush(_overlayBackgroundColor, _backgroundOpacity);
+        TimerChrome.Background = CreateOverlayBrush(TimerOverlayBackgroundColor, _backgroundOpacity);
+    }
+
+    private static LinearGradientBrush CreateOverlayBrush(System.Windows.Media.Color color, double opacity)
+    {
+        var alpha = (byte)Math.Round(Math.Clamp(opacity, 0.0, 1.0) * 255);
+        var top = System.Windows.Media.Color.FromArgb(alpha, color.R, color.G, color.B);
         var bottom = LiftColor(top, 16);
-        OverlayChrome.Background = new LinearGradientBrush
+        return new LinearGradientBrush
         {
             StartPoint = new System.Windows.Point(0, 0),
             EndPoint = new System.Windows.Point(0, 1),
