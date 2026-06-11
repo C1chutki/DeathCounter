@@ -2,6 +2,12 @@
 
 ## 2026-06-10
 
+- Dodano migracje legacy ustawien detekcji: zapisany zestaw `500 ms / 5 s` jest przy ladowaniu profilu przepisywany na obecne domyslne `350 ms / 25 s`, zeby stare appsettings nie przykrywaly nowych defaultow w UI. Dodano regresje ustawien; wersje podniesiono do 1.12.18.
+
+- Dodano do Settings edycje przezroczystosci tla overlaya oraz dopisano przy polach detection podpowiedzi z zakresem i domyslnymi wartosciami, zeby aktualne wartosci byly czytelne w aplikacji. Dodano regresje XAML dla tych ustawien; wersje podniesiono do 1.12.17.
+
+- Przywrocono z `new-ocr` zakladke Stats z kartami statystyk runu, lista ostatnich zdarzen i lokalnym eksportem profilu do CSV/ZIP. Dodano testy uslug statystyk/eksportu oraz regresje XAML menu; wersje podniesiono do 1.12.16.
+
 - Ograniczono OCR death/boss-victory do potwierdzania podejrzanych sygnalow obrazowych lub aktywnego pendingu, zeby tekst z innych aplikacji na `PrimaryScreen` nie zliczal smierci ani zwyciestw bossa. Dodano regresje bramki OCR; wersje podniesiono do 1.12.15.
 
 - Rozszerzono 10-minutowa diagnostyke full frames: zapisuje teraz okresowe screenshoty probek oraz loguje `frameDeltaMs` i `timingMode`, zeby zweryfikowac realne interwaly 350 ms i burst 200 ms. Dodano regresje dla samplera screenshotow i pol timingowych eventow; wersje podniesiono do 1.12.14.

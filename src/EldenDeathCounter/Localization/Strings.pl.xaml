@@ -14,6 +14,7 @@
     <sys:String x:Key="Section_Dashboard">Pulpit</sys:String>
     <sys:String x:Key="Section_Detection">Wykrywanie</sys:String>
     <sys:String x:Key="Section_Bosses">Bossowie</sys:String>
+    <sys:String x:Key="Section_Stats">Statystyki</sys:String>
     <sys:String x:Key="Section_Settings">Ustawienia</sys:String>
 
     <!-- Dashboard -->
@@ -77,6 +78,21 @@
     <sys:String x:Key="Attempts_Singular">{0} próba</sys:String>
     <sys:String x:Key="Attempts_Plural">{0} prób</sys:String>
 
+    <!-- Stats tab -->
+    <sys:String x:Key="Stats_Title">Statystyki rozgrywki</sys:String>
+    <sys:String x:Key="Stats_Subtitle">Tempo sesji, wyniki bossów i lokalny eksport danych.</sys:String>
+    <sys:String x:Key="Stats_ExportProfile">EKSPORTUJ PROFIL</sys:String>
+    <sys:String x:Key="Stats_TotalDeaths">ŚMIERCI ŁĄCZNIE</sys:String>
+    <sys:String x:Key="Stats_DeathsToday">ŚMIERCI DZISIAJ</sys:String>
+    <sys:String x:Key="Stats_SessionDeaths">ŚMIERCI W SESJI</sys:String>
+    <sys:String x:Key="Stats_DeathsPerHour">ŚMIERCI / GODZ.</sys:String>
+    <sys:String x:Key="Stats_ActiveBoss">AKTYWNY BOSS</sys:String>
+    <sys:String x:Key="Stats_BestBoss">NAJLEPSZY BOSS</sys:String>
+    <sys:String x:Key="Stats_HardestBoss">NAJTRUDNIEJSZY BOSS</sys:String>
+    <sys:String x:Key="Stats_RecentEvents">OSTATNIE ZDARZENIA</sys:String>
+    <sys:String x:Key="Stats_ExportedFormat">Wyeksportowano do {0}</sys:String>
+    <sys:String x:Key="Stats_ExportFailed">Eksport nie powiódł się</sys:String>
+
     <!-- Boss sort options -->
     <sys:String x:Key="Sort_Default">Domyślnie</sys:String>
     <sys:String x:Key="Sort_Time">Czas</sys:String>
@@ -107,10 +123,14 @@
     <sys:String x:Key="Settings_ShowOverlayDesc">Włącz nakładkę licznika śmierci zawsze na wierzchu.</sys:String>
     <sys:String x:Key="Settings_OverlayX">Pozycja X nakładki</sys:String>
     <sys:String x:Key="Settings_OverlayY">Pozycja Y nakładki</sys:String>
+    <sys:String x:Key="Settings_OverlayOpacity">Przezroczystość tła (0.0-1.0)</sys:String>
     <sys:String x:Key="Settings_DetectionSection">| WYKRYWANIE</sys:String>
     <sys:String x:Key="Settings_DetectionInterval">Interwał wykrywania (ms)</sys:String>
+    <sys:String x:Key="Settings_DetectionIntervalHint">Minimum/domyślnie: 350 ms. Niżej oznacza częstsze sprawdzanie.</sys:String>
     <sys:String x:Key="Settings_Cooldown">Czas odnowienia (sekundy)</sys:String>
+    <sys:String x:Key="Settings_CooldownHint">Domyślnie: 25 s. Blokuje podwójne zliczenie jednego ekranu śmierci.</sys:String>
     <sys:String x:Key="Settings_Sensitivity">Czułość wykrywania</sys:String>
+    <sys:String x:Key="Settings_SensitivityHint">Zakres: 0.10-1.00. Wyżej oznacza bardziej rygorystyczne dopasowanie.</sys:String>
     <sys:String x:Key="Settings_CaptureRegion">Obszar przechwytywania</sys:String>
     <sys:String x:Key="Settings_StartDetectionOnLaunch">Uruchom wykrywanie przy starcie aplikacji</sys:String>
     <sys:String x:Key="Settings_AutoReadBossName">Automatycznie odczytuj nazwę bossa</sys:String>

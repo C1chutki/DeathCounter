@@ -188,6 +188,21 @@ public sealed class AppSettingsTests
     }
 
     [Fact]
+    public async Task LoadingOldDetectionDefaultsMigratesIntervalAndCooldownTogether()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var settingsPath = Path.Combine(folder, "appsettings.json");
+        await File.WriteAllTextAsync(settingsPath, """{"dataFolderPath":"C:\\Temp\\Counter","detectionIntervalMs":500,"detectionCooldownSeconds":5}""");
+        var store = new AppSettingsStore(new FileLogService(Path.Combine(folder, "log.txt")));
+
+        var settings = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop");
+
+        Assert.Equal(350, settings.DetectionIntervalMs);
+        Assert.Equal(25, settings.DetectionCooldownSeconds);
+    }
+
+    [Fact]
     public async Task LoadingSettingsWithoutCharacterProfileNameAppliesEmptyDefault()
     {
         var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));

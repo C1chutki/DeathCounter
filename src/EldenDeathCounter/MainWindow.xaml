@@ -816,14 +816,18 @@
                                  Style="{StaticResource RailNavButton}"
                                  ToolTip="{DynamicResource Section_Bosses}"
                                  Checked="NavigationRadio_Checked" />
-                    <RadioButton GroupName="Navigation" Tag="3" Content="&#x2630;"
+                    <RadioButton GroupName="Navigation" Tag="3" Content="&#x25A9;"
+                                 Style="{StaticResource RailNavButton}"
+                                 ToolTip="{DynamicResource Section_Stats}"
+                                 Checked="NavigationRadio_Checked" />
+                    <RadioButton GroupName="Navigation" Tag="4" Content="&#x2630;"
                                  Style="{StaticResource RailNavButton}"
                                  ToolTip="{DynamicResource Section_Settings}"
                                  Checked="NavigationRadio_Checked" />
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,8">
-                    <TextBlock Text="v1.12.15"
+                    <TextBlock Text="v1.12.18"
                                FontFamily="{DynamicResource MonoFontFamily}"
                                FontSize="8.5"
                                Foreground="{DynamicResource Faint}"
@@ -2336,6 +2340,122 @@
                 </ScrollViewer>
             </TabItem>
 
+            <TabItem Header="Stats">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="48,38">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid Margin="0,0,0,28">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource Stats_Title}"
+                                           FontFamily="{DynamicResource HeaderFontFamily}"
+                                           FontSize="30"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource Gold}" />
+                                <TextBlock Text="{DynamicResource Stats_Subtitle}"
+                                           Style="{StaticResource MutedText}"
+                                           Margin="0,8,0,0" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding ExportStatusText}"
+                                           Style="{StaticResource MutedText}"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,14,0" />
+                                <Button Content="{DynamicResource Stats_ExportProfile}"
+                                        Command="{Binding ExportProfileCommand}"
+                                        Style="{StaticResource GoldButton}"
+                                        MinWidth="170" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="28" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <UniformGrid Columns="2" Rows="4">
+                                <Border Style="{StaticResource PanelBorder}" Margin="0,0,18,18">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource Stats_TotalDeaths}" Style="{StaticResource LabelText}" />
+                                        <TextBlock Text="{Binding StatsTotalDeathsText}" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="42" FontWeight="Bold" Foreground="{DynamicResource Gold}" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource PanelBorder}" Margin="0,0,0,18">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource Stats_DeathsToday}" Style="{StaticResource LabelText}" />
+                                        <TextBlock Text="{Binding StatsDeathsTodayText}" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="42" FontWeight="Bold" Foreground="{DynamicResource Gold}" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource PanelBorder}" Margin="0,0,18,18">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource Stats_SessionDeaths}" Style="{StaticResource LabelText}" />
+                                        <TextBlock Text="{Binding StatsSessionDeathsText}" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="42" FontWeight="Bold" Foreground="{DynamicResource Gold}" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource PanelBorder}" Margin="0,0,0,18">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource Stats_DeathsPerHour}" Style="{StaticResource LabelText}" />
+                                        <TextBlock Text="{Binding StatsDeathsPerHourText}" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="42" FontWeight="Bold" Foreground="{DynamicResource Gold}" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource PanelBorder}" Margin="0,0,18,18">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource Stats_ActiveBoss}" Style="{StaticResource LabelText}" />
+                                        <TextBlock Text="{Binding StatsActiveBossText}" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="24" FontWeight="Bold" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource PanelBorder}" Margin="0,0,0,18">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource Stats_BestBoss}" Style="{StaticResource LabelText}" />
+                                        <TextBlock Text="{Binding StatsBestBossText}" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="24" FontWeight="Bold" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource PanelBorder}" Margin="0,0,18,0">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource Stats_HardestBoss}" Style="{StaticResource LabelText}" />
+                                        <TextBlock Text="{Binding StatsHardestBossText}" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="24" FontWeight="Bold" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
+                            </UniformGrid>
+
+                            <Border Grid.Column="2" Style="{StaticResource PanelBorder}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="{DynamicResource Stats_RecentEvents}" Style="{StaticResource LabelText}" Margin="0,0,0,18" />
+                                    <ItemsControl Grid.Row="1" ItemsSource="{Binding StatsRecentEvents}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border BorderBrush="{DynamicResource BorderGold}"
+                                                        BorderThickness="0,0,0,1"
+                                                        Padding="0,0,0,12"
+                                                        Margin="0,0,0,14">
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding TimestampText}" Style="{StaticResource MutedText}" />
+                                                        <TextBlock Text="{Binding DetectionMethod}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" Margin="0,3,0,0" />
+                                                        <TextBlock Text="{Binding Note}" Style="{StaticResource MutedText}" TextWrapping="Wrap" Margin="0,3,0,0" />
+                                                        <TextBlock Text="{Binding CountAfterText}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="22" FontWeight="Bold" />
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
             <TabItem Header="Settings">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <Grid Margin="48,38">
@@ -2394,6 +2514,8 @@
                                             <TextBox Text="{Binding OverlayYText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,0" />
                                         </StackPanel>
                                     </Grid>
+                                    <TextBlock Text="{DynamicResource Settings_OverlayOpacity}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" Margin="0,24,0,0" />
+                                    <TextBox Text="{Binding OverlayBackgroundOpacityInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,0" />
                                 </StackPanel>
                             </Border>
 
@@ -2409,15 +2531,18 @@
                                         </Grid.ColumnDefinitions>
                                         <StackPanel>
                                             <TextBlock Text="{DynamicResource Settings_DetectionInterval}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
-                                            <TextBox Text="{Binding DetectionIntervalMsText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,18" />
+                                            <TextBox Text="{Binding DetectionIntervalMsText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,4" />
+                                            <TextBlock Text="{DynamicResource Settings_DetectionIntervalHint}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontStyle="Italic" FontSize="12" Margin="0,0,0,18" />
                                         </StackPanel>
                                         <StackPanel Grid.Column="2">
                                             <TextBlock Text="{DynamicResource Settings_Cooldown}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
-                                            <TextBox Text="{Binding DetectionCooldownSecondsText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,18" />
+                                            <TextBox Text="{Binding DetectionCooldownSecondsText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,4" />
+                                            <TextBlock Text="{DynamicResource Settings_CooldownHint}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontStyle="Italic" FontSize="12" Margin="0,0,0,18" />
                                         </StackPanel>
                                     </Grid>
                                     <TextBlock Text="{DynamicResource Settings_Sensitivity}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
-                                    <TextBox Text="{Binding DetectionSensitivityText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,18" />
+                                    <TextBox Text="{Binding DetectionSensitivityText, UpdateSourceTrigger=PropertyChanged}" Margin="0,6,0,4" />
+                                    <TextBlock Text="{DynamicResource Settings_SensitivityHint}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontStyle="Italic" FontSize="12" Margin="0,0,0,18" />
                                     <TextBlock Text="{DynamicResource Settings_CaptureRegion}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
                                     <ComboBox ItemsSource="{Binding CaptureTargetOptions}"
                                               SelectedValue="{Binding SelectedCaptureTargetValue, UpdateSourceTrigger=PropertyChanged}"

@@ -109,7 +109,8 @@ public partial class MainWindow : Window
         {
             1 => "Section_Detection",
             2 => "Section_Bosses",
-            3 => "Section_Settings",
+            3 => "Section_Stats",
+            4 => "Section_Settings",
             _ => "Section_Dashboard",
         };
 

@@ -87,7 +87,15 @@ public sealed class AppSettingsStore
 
         settings.GameLanguage = NormalizeGameLanguage(settings.GameLanguage, defaults.GameLanguage);
 
-        settings.DetectionIntervalMs = DetectionTimingOptions.NormalizeBaseIntervalMs(settings.DetectionIntervalMs);
+        if (settings.DetectionIntervalMs == 500 && settings.DetectionCooldownSeconds == 5)
+        {
+            settings.DetectionIntervalMs = defaults.DetectionIntervalMs;
+            settings.DetectionCooldownSeconds = defaults.DetectionCooldownSeconds;
+        }
+        else
+        {
+            settings.DetectionIntervalMs = DetectionTimingOptions.NormalizeBaseIntervalMs(settings.DetectionIntervalMs);
+        }
 
         if (settings.DetectionCooldownSeconds <= 0)
         {

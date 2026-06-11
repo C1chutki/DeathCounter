@@ -15,6 +15,7 @@ public sealed class SettingsMenuCoverageTests
         Assert.Contains("OverlayEnabled", settingsTab);
         Assert.Contains("OverlayXText", settingsTab);
         Assert.Contains("OverlayYText", settingsTab);
+        Assert.Contains("OverlayBackgroundOpacityInput", settingsTab);
         Assert.Contains("DetectionEnabledOnStartup", settingsTab);
         Assert.Contains("AutoDetectBossNames", settingsTab);
         Assert.Contains("DetectionIntervalMsText", settingsTab);
@@ -88,6 +89,20 @@ public sealed class SettingsMenuCoverageTests
     }
 
     [Fact]
+    public void DetectionConfigurationExplainsEditableValueRanges()
+    {
+        var xaml = File.ReadAllText(GetMainWindowXamlPath());
+        var settingsTab = Regex.Match(
+            xaml,
+            """<TabItem Header="Settings">(?<content>[\s\S]*?)</TabItem>""",
+            RegexOptions.CultureInvariant).Groups["content"].Value;
+
+        Assert.Contains("Settings_DetectionIntervalHint", settingsTab);
+        Assert.Contains("Settings_CooldownHint", settingsTab);
+        Assert.Contains("Settings_SensitivityHint", settingsTab);
+    }
+
+    [Fact]
     public void CaptureTargetSelectorsUseDarkDropdownStyle()
     {
         var xaml = File.ReadAllText(GetMainWindowXamlPath());
@@ -146,6 +161,28 @@ public sealed class SettingsMenuCoverageTests
         Assert.NotEmpty(editor);
         Assert.Contains("BossHistoryEditorTitle", editor);
         Assert.Contains("CanDeleteBossHistoryEntry", editor);
+    }
+
+    [Fact]
+    public void StatsTabShowsSummaryAndExportCommand()
+    {
+        var xaml = File.ReadAllText(GetMainWindowXamlPath());
+        var statsTab = Regex.Match(
+            xaml,
+            """<TabItem Header="Stats">(?<content>[\s\S]*?)</TabItem>""",
+            RegexOptions.CultureInvariant).Groups["content"].Value;
+
+        Assert.NotEmpty(statsTab);
+        Assert.Contains("Stats_TotalDeaths", statsTab);
+        Assert.Contains("Stats_DeathsToday", statsTab);
+        Assert.Contains("Stats_SessionDeaths", statsTab);
+        Assert.Contains("Stats_DeathsPerHour", statsTab);
+        Assert.Contains("Stats_ActiveBoss", statsTab);
+        Assert.Contains("Stats_BestBoss", statsTab);
+        Assert.Contains("Stats_HardestBoss", statsTab);
+        Assert.Contains("Stats_RecentEvents", statsTab);
+        Assert.Contains("ExportProfileCommand", statsTab);
+        Assert.Contains("StatsRecentEvents", statsTab);
     }
 
     private static string GetMainWindowXamlPath()

@@ -29,7 +29,7 @@
     <SatelliteResourceLanguages>en;pl</SatelliteResourceLanguages>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
-    <Version>1.12.15</Version>
+    <Version>1.12.18</Version>
   </PropertyGroup>
 
 </Project>

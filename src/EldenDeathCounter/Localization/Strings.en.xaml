@@ -14,6 +14,7 @@
     <sys:String x:Key="Section_Dashboard">Dashboard</sys:String>
     <sys:String x:Key="Section_Detection">Detection</sys:String>
     <sys:String x:Key="Section_Bosses">Bosses</sys:String>
+    <sys:String x:Key="Section_Stats">Stats</sys:String>
     <sys:String x:Key="Section_Settings">Settings</sys:String>
 
     <!-- Dashboard -->
@@ -77,6 +78,21 @@
     <sys:String x:Key="Attempts_Singular">{0} attempt</sys:String>
     <sys:String x:Key="Attempts_Plural">{0} attempts</sys:String>
 
+    <!-- Stats tab -->
+    <sys:String x:Key="Stats_Title">Run Statistics</sys:String>
+    <sys:String x:Key="Stats_Subtitle">Session pace, boss results and local export tools.</sys:String>
+    <sys:String x:Key="Stats_ExportProfile">EXPORT PROFILE</sys:String>
+    <sys:String x:Key="Stats_TotalDeaths">TOTAL DEATHS</sys:String>
+    <sys:String x:Key="Stats_DeathsToday">DEATHS TODAY</sys:String>
+    <sys:String x:Key="Stats_SessionDeaths">SESSION DEATHS</sys:String>
+    <sys:String x:Key="Stats_DeathsPerHour">DEATHS / HOUR</sys:String>
+    <sys:String x:Key="Stats_ActiveBoss">ACTIVE BOSS</sys:String>
+    <sys:String x:Key="Stats_BestBoss">BEST BOSS</sys:String>
+    <sys:String x:Key="Stats_HardestBoss">HARDEST BOSS</sys:String>
+    <sys:String x:Key="Stats_RecentEvents">RECENT EVENTS</sys:String>
+    <sys:String x:Key="Stats_ExportedFormat">Exported to {0}</sys:String>
+    <sys:String x:Key="Stats_ExportFailed">Export failed</sys:String>
+
     <!-- Boss sort options -->
     <sys:String x:Key="Sort_Default">Default</sys:String>
     <sys:String x:Key="Sort_Time">Time</sys:String>
@@ -107,10 +123,14 @@
     <sys:String x:Key="Settings_ShowOverlayDesc">Toggle the always-on-top death counter overlay.</sys:String>
     <sys:String x:Key="Settings_OverlayX">Overlay X Position</sys:String>
     <sys:String x:Key="Settings_OverlayY">Overlay Y Position</sys:String>
+    <sys:String x:Key="Settings_OverlayOpacity">Background opacity (0.0-1.0)</sys:String>
     <sys:String x:Key="Settings_DetectionSection">| DETECTION</sys:String>
     <sys:String x:Key="Settings_DetectionInterval">Detection Interval (ms)</sys:String>
+    <sys:String x:Key="Settings_DetectionIntervalHint">Minimum/default: 350 ms. Lower checks more often.</sys:String>
     <sys:String x:Key="Settings_Cooldown">Cooldown (seconds)</sys:String>
+    <sys:String x:Key="Settings_CooldownHint">Default: 25 s. Blocks duplicate counts from one death screen.</sys:String>
     <sys:String x:Key="Settings_Sensitivity">Detection Sensitivity</sys:String>
+    <sys:String x:Key="Settings_SensitivityHint">Range: 0.10-1.00. Higher means stricter matching.</sys:String>
     <sys:String x:Key="Settings_CaptureRegion">Capture Region</sys:String>
     <sys:String x:Key="Settings_StartDetectionOnLaunch">Start detection on app launch</sys:String>
     <sys:String x:Key="Settings_AutoReadBossName">Auto-read boss name</sys:String>

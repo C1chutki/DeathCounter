@@ -50,6 +50,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private bool _isShuttingDown;
     private DateTimeOffset? _lastDetectedDeath;
     private string _selectedAppLanguageValue = "en";
+    private readonly DateTimeOffset _sessionStartedAt = DateTimeOffset.Now;
+    private CounterStatsSummary _statsSummary = CounterStatsService.CreateSummary(new DeathCounterState(), DateTimeOffset.Now, DateTimeOffset.Now);
+    private string _exportStatusText = string.Empty;
 
     public MainWindowViewModel(
         AppSettings settings,
@@ -120,6 +123,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         RefreshSettingsTextFields();
         RefreshCounterTextFields();
         RefreshBosses();
+        RefreshStats();
 
         StartDetectionCommand = new RelayCommand(_ => _ = StartDetectionAsync());
         StopDetectionCommand = new RelayCommand(_ => _ = StopDetectionAsync());
@@ -139,6 +143,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         SkipBossCommand = new RelayCommand(_ => _ = SkipBossAsync("manual-button"));
         ClearDetectionLogCommand = new RelayCommand(_ => DetectionLogEntries.Clear());
         StartDiagnosticsCommand = new RelayCommand(_ => StartDiagnosticsSession());
+        ExportProfileCommand = new RelayCommand(_ => _ = ExportProfileAsync());
         OpenAddBossHistoryEditorCommand = new RelayCommand(_ => OpenAddBossHistoryEditor());
         OpenBossHistoryEditorCommand = new RelayCommand(OpenBossHistoryEditor);
         SaveBossHistoryEditorCommand = new RelayCommand(_ => _ = SaveBossHistoryEditorAsync());
@@ -154,8 +159,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         _counterService.StateChanged += (_, _) =>
         {
-            RefreshCounter();
-            ConfigureDetectionDiagnostics();
+            _dispatcher.Invoke(() =>
+            {
+                RefreshCounter();
+                RefreshStats();
+                ConfigureDetectionDiagnostics();
+            });
         };
         _detectionService.StatusChanged += (_, args) =>
         {
@@ -207,6 +216,32 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public string StatusOverlayStateText => Settings.OverlayEnabled ? L("Status_OverlayActive") : L("Status_OverlayOff");
 
     public string StatusDetectionStateText => IsDetectionRunning ? L("Status_DetectionRunning") : L("Status_DetectionStopped");
+
+    public string StatsTotalDeathsText => _statsSummary.TotalDeaths.ToString(CultureInfo.InvariantCulture);
+
+    public string StatsDeathsTodayText => _statsSummary.DeathsToday.ToString(CultureInfo.InvariantCulture);
+
+    public string StatsSessionDeathsText => _statsSummary.SessionDeaths.ToString(CultureInfo.InvariantCulture);
+
+    public string StatsDeathsPerHourText => _statsSummary.DeathsPerHour.ToString("0.00", CultureInfo.InvariantCulture);
+
+    public string StatsActiveBossText => string.IsNullOrWhiteSpace(_statsSummary.ActiveBossName)
+        ? L("Common_None")
+        : $"{_statsSummary.ActiveBossName} ({_statsSummary.ActiveBossDeaths})";
+
+    public string StatsBestBossText => string.IsNullOrWhiteSpace(_statsSummary.BestBossName)
+        ? L("Common_None")
+        : $"{_statsSummary.BestBossName} ({_statsSummary.BestBossDeaths})";
+
+    public string StatsHardestBossText => string.IsNullOrWhiteSpace(_statsSummary.HardestBossName)
+        ? L("Common_None")
+        : $"{_statsSummary.HardestBossName} ({_statsSummary.HardestBossDeaths})";
+
+    public string ExportStatusText
+    {
+        get => _exportStatusText;
+        private set => SetField(ref _exportStatusText, value);
+    }
 
     public string DetectionStatus
     {
@@ -488,6 +523,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public ICommand StartDiagnosticsCommand { get; }
 
+    public ICommand ExportProfileCommand { get; }
+
     public ICommand OpenAddBossHistoryEditorCommand { get; }
 
     public ICommand OpenBossHistoryEditorCommand { get; }
@@ -501,6 +538,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ObservableCollection<LogEntry> DetectionLogEntries { get; } = [];
 
     public ObservableCollection<BossDisplayItem> DefeatedBosses { get; } = [];
+
+    public ObservableCollection<StatsRecentEventDisplayItem> StatsRecentEvents { get; } = [];
 
     public ObservableCollection<CaptureTargetOption> CaptureTargetOptions { get; } = [];
 
@@ -548,6 +587,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         RefreshSettingsTextFields();
         RefreshCounter();
+        RefreshStats();
         _overlayWindow.ApplyPosition(Settings.OverlayX, Settings.OverlayY);
         ApplyOverlayState();
         RegisterHotkeys();
@@ -623,6 +663,29 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         var until = _detectionService.StartDiagnosticsSession(Settings, TimeSpan.FromMinutes(Settings.DiagnosticsSessionMinutes));
         DetectionStatus = string.Format(L("Vm_DiagnosticsActiveFormat"), until.LocalDateTime.ToString("HH:mm:ss", CultureInfo.InvariantCulture));
+    }
+
+    private async Task ExportProfileAsync()
+    {
+        try
+        {
+            if (!await ApplySettingsFromTextAsync(restartDetection: false, updateStatus: false))
+            {
+                return;
+            }
+
+            var dataFilePath = Path.Combine(Settings.DataFolderPath, "deaths.json");
+            var result = await CounterExportService.ExportAsync(_counterService.State, Settings.DataFolderPath, dataFilePath, _settingsPath);
+            ExportStatusText = string.Format(L("Stats_ExportedFormat"), Path.GetDirectoryName(result.DeathEventsCsvPath));
+            DetectionStatus = ExportStatusText;
+            _log.Info($"Profile exported to '{Path.GetDirectoryName(result.DeathEventsCsvPath)}'.");
+        }
+        catch (Exception exception)
+        {
+            ExportStatusText = L("Stats_ExportFailed");
+            DetectionStatus = ExportStatusText;
+            _log.Error("Profile export failed.", exception);
+        }
     }
 
     private void ConfigureDetectionDiagnostics()
@@ -870,6 +933,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             RefreshCounter();
             RefreshCounterTextFields();
             RefreshBosses();
+            RefreshStats();
         }
 
         await _settingsStore.SaveAsync(_settingsPath, Settings);
@@ -1191,6 +1255,28 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(DefeatedBossesEmptyText));
     }
 
+    private void RefreshStats()
+    {
+        _statsSummary = CounterStatsService.CreateSummary(_counterService.State, _sessionStartedAt, DateTimeOffset.Now);
+        StatsRecentEvents.Clear();
+        foreach (var item in _statsSummary.RecentEvents)
+        {
+            StatsRecentEvents.Add(new StatsRecentEventDisplayItem(
+                item.Timestamp.LocalDateTime.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture),
+                item.DetectionMethod,
+                item.Note,
+                item.CountAfter.ToString(CultureInfo.InvariantCulture)));
+        }
+
+        OnPropertyChanged(nameof(StatsTotalDeathsText));
+        OnPropertyChanged(nameof(StatsDeathsTodayText));
+        OnPropertyChanged(nameof(StatsSessionDeathsText));
+        OnPropertyChanged(nameof(StatsDeathsPerHourText));
+        OnPropertyChanged(nameof(StatsActiveBossText));
+        OnPropertyChanged(nameof(StatsBestBossText));
+        OnPropertyChanged(nameof(StatsHardestBossText));
+    }
+
     private static string FormatAttempts(int deathCount)
     {
         return string.Format(L(deathCount == 1 ? "Attempts_Singular" : "Attempts_Plural"), deathCount);
@@ -1327,6 +1413,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             // Re-pushes the overlay counter and raises CounterText so the Deaths/Śmierci label
             // follows the new UI language; also refreshes the boss cards.
             RefreshCounter();
+            RefreshStats();
             OnPropertyChanged(nameof(BossesActiveName));
             OnPropertyChanged(nameof(BossesActiveAttemptsText));
             OnPropertyChanged(nameof(BossesActiveStartedText));
@@ -1336,6 +1423,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(LastDetectedDeathText));
             OnPropertyChanged(nameof(BossHistoryEditorTitle));
             OnPropertyChanged(nameof(StatusSummary));
+            OnPropertyChanged(nameof(StatsActiveBossText));
+            OnPropertyChanged(nameof(StatsBestBossText));
+            OnPropertyChanged(nameof(StatsHardestBossText));
         });
     }
 
@@ -1408,3 +1498,9 @@ public sealed record AppLanguageOption(string Value, string DisplayName);
 public sealed record BossSortModeOption(BossHistorySortMode Value, string DisplayName);
 
 public sealed record BossSortDirectionOption(BossHistorySortDirection Value, string DisplayName);
+
+public sealed record StatsRecentEventDisplayItem(
+    string TimestampText,
+    string DetectionMethod,
+    string Note,
+    string CountAfterText);
