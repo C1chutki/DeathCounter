@@ -10,7 +10,7 @@ public interface IBossNameDetector
     /// <paramref name="gameId"/> selects per-game bar appearance/position tuning (e.g. Dark Souls III's
     /// dim, lower bar and left-shifted name region).
     /// </summary>
-    IReadOnlyList<BossHealthBarRegion> AnalyzeBars(Bitmap screenshot, string gameId);
+    IReadOnlyList<BossHealthBarRegion> AnalyzeBars(Bitmap screenshot, string gameId, string bossHealthBarStyle);
 
     /// <summary>
     /// Runs OCR only inside each detected bar's name region and validates every candidate against the

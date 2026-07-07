@@ -34,4 +34,39 @@ public sealed class GameBossListFilesTests
     {
         Assert.Equal("PL_DS3_BossList.txt", GameBossListFiles.Resolve("darksouls3", "PL"));
     }
+
+    [Fact]
+    public void ReforgedEldenRingMatcherLoadsSelectedLanguageAndEnglishBossLists()
+    {
+        var files = GameBossListFiles.ResolveForMatcher("EldenRing", "PL", BossHealthBarStyles.Reforged);
+
+        Assert.Equal(
+            [
+                Path.Combine("Elden Ring", "PL_ER_BossList.txt"),
+                Path.Combine("Elden Ring", "ENG_ER_BossList.txt")
+            ],
+            files);
+    }
+
+    [Fact]
+    public void ConvergenceEldenRingMatcherLoadsSelectedLanguageAndConvergenceBossLists()
+    {
+        var files = GameBossListFiles.ResolveForMatcher("EldenRing", "PL", BossHealthBarStyles.Convergence);
+
+        Assert.Equal(
+            [
+                Path.Combine("Elden Ring", "PL_ER_BossList.txt"),
+                Path.Combine("Elden Ring", "ENG_ER_BossList.txt"),
+                Path.Combine("Elden Ring", "Convergence", "ENG_ER_Convergence_BossList.txt")
+            ],
+            files);
+    }
+
+    [Fact]
+    public void VanillaMatcherLoadsOnlySelectedLanguageBossList()
+    {
+        var files = GameBossListFiles.ResolveForMatcher("EldenRing", "PL", BossHealthBarStyles.Vanilla);
+
+        Assert.Equal([Path.Combine("Elden Ring", "PL_ER_BossList.txt")], files);
+    }
 }

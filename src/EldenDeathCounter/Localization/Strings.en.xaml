@@ -139,6 +139,7 @@
     <sys:String x:Key="Settings_SensitivityHint">Range: 0.10-1.00. Higher means stricter matching.</sys:String>
     <sys:String x:Key="Settings_ResetDetectionDefaults">RESET DETECTION DEFAULTS</sys:String>
     <sys:String x:Key="Settings_CaptureRegion">Capture Region</sys:String>
+    <sys:String x:Key="Settings_BossHealthBarStyle">Detection variant</sys:String>
     <sys:String x:Key="Settings_StartDetectionOnLaunch">Start detection on app launch</sys:String>
     <sys:String x:Key="Settings_DetectDeaths">Detect deaths</sys:String>
     <sys:String x:Key="Settings_DetectBossVictories">Detect boss victories</sys:String>
@@ -146,6 +147,9 @@
     <sys:String x:Key="DetectionMode_Conservative">Conservative</sys:String>
     <sys:String x:Key="DetectionMode_Balanced">Balanced</sys:String>
     <sys:String x:Key="DetectionMode_Aggressive">Aggressive</sys:String>
+    <sys:String x:Key="BossHealthBarStyle_Vanilla">Vanilla Elden Ring</sys:String>
+    <sys:String x:Key="BossHealthBarStyle_Reforged">Reforged</sys:String>
+    <sys:String x:Key="BossHealthBarStyle_Convergence">Convergence</sys:String>
     <sys:String x:Key="Settings_CharacterSection">| CHARACTER &amp; SAVE GAME</sys:String>
     <sys:String x:Key="Settings_CharacterDesc">Deaths and boss history are tracked separately per character profile.</sys:String>
     <sys:String x:Key="Settings_CharacterName">Character name</sys:String>

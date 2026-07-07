@@ -19,6 +19,8 @@ public sealed class AppSettings
 
     public bool DetectBossVictories { get; set; } = true;
 
+    public string BossHealthBarStyle { get; set; } = BossHealthBarStyles.Vanilla;
+
     public string DetectionMode { get; set; } = DetectionModePresets.Balanced;
 
     public string GameLanguage { get; set; } = "PL";
@@ -100,6 +102,7 @@ public sealed class AppSettings
             AutoDetectBossNames = true,
             DetectDeaths = true,
             DetectBossVictories = true,
+            BossHealthBarStyle = BossHealthBarStyles.Vanilla,
             DetectionMode = DetectionModePresets.Balanced,
             GameId = profile.Id,
             GameLanguage = "PL",

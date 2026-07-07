@@ -139,6 +139,7 @@
     <sys:String x:Key="Settings_SensitivityHint">Zakres: 0.10-1.00. Wyżej oznacza bardziej rygorystyczne dopasowanie.</sys:String>
     <sys:String x:Key="Settings_ResetDetectionDefaults">RESETUJ DOMYŚLNE WYKRYWANIE</sys:String>
     <sys:String x:Key="Settings_CaptureRegion">Obszar przechwytywania</sys:String>
+    <sys:String x:Key="Settings_BossHealthBarStyle">Wariant detekcji</sys:String>
     <sys:String x:Key="Settings_StartDetectionOnLaunch">Uruchom wykrywanie przy starcie aplikacji</sys:String>
     <sys:String x:Key="Settings_DetectDeaths">Wykrywaj śmierci</sys:String>
     <sys:String x:Key="Settings_DetectBossVictories">Wykrywaj zwycięstwa bossów</sys:String>
@@ -146,6 +147,9 @@
     <sys:String x:Key="DetectionMode_Conservative">Ostrożny</sys:String>
     <sys:String x:Key="DetectionMode_Balanced">Zbalansowany</sys:String>
     <sys:String x:Key="DetectionMode_Aggressive">Agresywny</sys:String>
+    <sys:String x:Key="BossHealthBarStyle_Vanilla">Vanilla Elden Ring</sys:String>
+    <sys:String x:Key="BossHealthBarStyle_Reforged">Reforged</sys:String>
+    <sys:String x:Key="BossHealthBarStyle_Convergence">Convergence</sys:String>
     <sys:String x:Key="Settings_CharacterSection">| POSTAĆ &amp; ZAPIS GRY</sys:String>
     <sys:String x:Key="Settings_CharacterDesc">Śmierci i historia bossów są śledzone osobno dla każdego profilu postaci.</sys:String>
     <sys:String x:Key="Settings_CharacterName">Nazwa postaci</sys:String>

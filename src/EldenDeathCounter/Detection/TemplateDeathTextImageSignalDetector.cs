@@ -22,10 +22,10 @@ public sealed class TemplateDeathTextImageSignalDetector : IImageDeathSignalDete
         _templatePath = templatePath;
     }
 
-    public ImageDeathSignalMatch Analyze(Bitmap bitmap, double sensitivity, string gameId, string gameLanguage)
+    public ImageDeathSignalMatch Analyze(Bitmap bitmap, double sensitivity, string gameId, string gameLanguage, string bossHealthBarStyle)
     {
         var language = NormalizeLanguage(gameLanguage);
-        var templates = GetTemplates(gameId, language);
+        var templates = GetTemplates(gameId, language, bossHealthBarStyle);
         if (templates.Count == 0)
         {
             return ImageDeathSignalMatch.NoMatch;
@@ -42,9 +42,10 @@ public sealed class TemplateDeathTextImageSignalDetector : IImageDeathSignalDete
         }
     }
 
-    private IReadOnlyList<DeathTextTemplate> GetTemplates(string gameId, string language)
+    private IReadOnlyList<DeathTextTemplate> GetTemplates(string gameId, string language, string bossHealthBarStyle)
     {
-        var key = $"{gameId?.Trim() ?? string.Empty}|{language}";
+        var style = BossHealthBarStyles.Normalize(bossHealthBarStyle);
+        var key = $"{gameId?.Trim() ?? string.Empty}|{language}|{style}";
         lock (_cacheLock)
         {
             if (_templatesByGameLanguage.TryGetValue(key, out var cached))
@@ -52,7 +53,7 @@ public sealed class TemplateDeathTextImageSignalDetector : IImageDeathSignalDete
                 return cached;
             }
 
-            var fileNames = GameDeathScreenTemplates.DeathTemplateFiles(gameId ?? string.Empty, language);
+            var fileNames = GameDeathScreenTemplates.DeathTemplateFiles(gameId ?? string.Empty, language, style);
             var templates = LoadTemplates(FindTemplatePaths(_templatePath, fileNames), _log);
             _templatesByGameLanguage[key] = templates;
             return templates;

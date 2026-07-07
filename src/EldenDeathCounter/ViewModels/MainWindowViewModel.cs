@@ -104,6 +104,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             DetectionModeOptions.Add(option);
         }
 
+        foreach (var option in CreateBossHealthBarStyleOptions())
+        {
+            BossHealthBarStyleOptions.Add(option);
+        }
+
         foreach (var option in CreateBossSortModeOptions())
         {
             BossSortModeOptions.Add(option);
@@ -116,6 +121,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         SelectedCaptureTargetValue = string.Empty;
         SelectedGameLanguageValue = string.Empty;
+        SelectedBossHealthBarStyleValue = string.Empty;
         SelectedDetectionModeValue = string.Empty;
         OverlayXText = string.Empty;
         OverlayYText = string.Empty;
@@ -411,6 +417,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public string SelectedGameLanguageValue { get; set; }
 
+    public string SelectedBossHealthBarStyleValue { get; set; }
+
     public string SelectedDetectionModeValue
     {
         get => _selectedDetectionModeValue;
@@ -606,6 +614,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ObservableCollection<AppLanguageOption> AppLanguageOptions { get; } = [];
 
     public ObservableCollection<DetectionModeOption> DetectionModeOptions { get; } = [];
+
+    public ObservableCollection<BossHealthBarStyleOption> BossHealthBarStyleOptions { get; } = [];
 
     public ObservableCollection<BossSortModeOption> BossSortModeOptions { get; } = [];
 
@@ -957,6 +967,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         ApplyDetectionModePreset(DetectionModePresets.Get(DetectionModePresets.Balanced));
         SelectedDetectionModeValue = DetectionModePresets.Balanced;
+        SelectedBossHealthBarStyleValue = BossHealthBarStyles.Vanilla;
+        OnPropertyChanged(nameof(SelectedBossHealthBarStyleValue));
         await ApplySettingsFromTextAsync();
     }
 
@@ -1184,6 +1196,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             ? "PrimaryScreen"
             : SelectedCaptureTargetValue.Trim();
         Settings.GameLanguage = NormalizeGameLanguage(SelectedGameLanguageValue, Settings.GameLanguage);
+        Settings.BossHealthBarStyle = BossHealthBarStyles.Normalize(SelectedBossHealthBarStyleValue);
         Settings.OverlayX = overlayX;
         Settings.OverlayY = overlayY;
         Settings.OverlayFontScale = Math.Clamp(overlayScale, OverlayFontScaleMin, OverlayFontScaleMax);
@@ -1292,6 +1305,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             ? Settings.CaptureTarget
             : "PrimaryScreen";
         SelectedGameLanguageValue = NormalizeGameLanguage(Settings.GameLanguage, "PL");
+        SelectedBossHealthBarStyleValue = BossHealthBarStyles.Normalize(Settings.BossHealthBarStyle);
         // Set the backing field directly so re-reading settings (e.g. profile switch) does not
         // re-trigger a language swap and settings save through the property setter.
         _selectedAppLanguageValue = LocalizationService.NormalizeLanguage(Settings.AppLanguage);
@@ -1314,6 +1328,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(SelectedDetectionModeValue));
         OnPropertyChanged(nameof(SelectedCaptureTargetValue));
         OnPropertyChanged(nameof(SelectedGameLanguageValue));
+        OnPropertyChanged(nameof(SelectedBossHealthBarStyleValue));
         OnPropertyChanged(nameof(SelectedAppLanguageValue));
         OnPropertyChanged(nameof(OverlayXText));
         OnPropertyChanged(nameof(OverlayYText));
@@ -1465,6 +1480,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         return DetectionModePresets.All
             .Select(preset => new DetectionModeOption(preset.Mode, L($"DetectionMode_{preset.Mode}")))
             .ToList();
+    }
+
+    private static IReadOnlyList<BossHealthBarStyleOption> CreateBossHealthBarStyleOptions()
+    {
+        return
+        [
+            new(BossHealthBarStyles.Vanilla, L("BossHealthBarStyle_Vanilla")),
+            new(BossHealthBarStyles.Reforged, L("BossHealthBarStyle_Reforged")),
+            new(BossHealthBarStyles.Convergence, L("BossHealthBarStyle_Convergence"))
+        ];
     }
 
     private void ApplyDetectionModePreset(DetectionModePreset preset)
@@ -1646,6 +1671,8 @@ public sealed record GameLanguageOption(string Value, string DisplayName);
 public sealed record AppLanguageOption(string Value, string DisplayName);
 
 public sealed record DetectionModeOption(string Value, string DisplayName);
+
+public sealed record BossHealthBarStyleOption(string Value, string DisplayName);
 
 public sealed record BossSortModeOption(BossHistorySortMode Value, string DisplayName);
 

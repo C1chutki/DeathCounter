@@ -16,7 +16,10 @@ public static class GameDeathScreenTemplates
     private const string DarkSouls3FolderName = "Dark souls 3";
     private const string EldenRingFolderName = "Elden Ring";
 
-    public static IReadOnlyList<string> DeathTemplateFiles(string gameId, string language)
+    public static IReadOnlyList<string> DeathTemplateFiles(string gameId, string language) =>
+        DeathTemplateFiles(gameId, language, BossHealthBarStyles.Vanilla);
+
+    public static IReadOnlyList<string> DeathTemplateFiles(string gameId, string language, string? bossHealthBarStyle)
     {
         if (IsDarkSouls3(gameId))
         {
@@ -28,7 +31,7 @@ public static class GameDeathScreenTemplates
             ];
         }
 
-        return IsPolish(language)
+        IReadOnlyList<string> files = IsPolish(language)
             ? [Er("PL_Death_Screen.png"), Er("PL_Death_Screen_v2.jpg"), Er("PL_Death_Screen_v3.jpg")]
             : [
                 Er("ENG_Death_Screen_v9.png"),
@@ -38,6 +41,10 @@ public static class GameDeathScreenTemplates
                 Er("ENG_Death_Screen_v7.png"),
                 Er("ENG_Death_Screen_v11.png")
             ];
+
+        return BossHealthBarStyles.Normalize(bossHealthBarStyle) == BossHealthBarStyles.Reforged
+            ? [Er(Path.Combine("Reforge", "YouDied_Reforge.png")), .. files]
+            : files;
     }
 
     public static IReadOnlyList<string> VictoryTemplateFiles(string gameId, string language)

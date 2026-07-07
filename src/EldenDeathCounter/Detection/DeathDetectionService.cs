@@ -246,7 +246,12 @@ public sealed class DeathDetectionService
                 if (settings.DetectDeaths)
                 {
                     var imageStartMs = frameStopwatch.ElapsedMilliseconds;
-                    imageSignal = _imageDeathSignalDetector.Analyze(frame.Bitmap, settings.DetectionSensitivity, settings.GameId, settings.GameLanguage);
+                    imageSignal = _imageDeathSignalDetector.Analyze(
+                        frame.Bitmap,
+                        settings.DetectionSensitivity,
+                        settings.GameId,
+                        settings.GameLanguage,
+                        settings.BossHealthBarStyle);
                     imageAnalysisMs = frameStopwatch.ElapsedMilliseconds - imageStartMs;
                     if (imageSignal.IsMatch)
                     {
@@ -689,7 +694,7 @@ public sealed class DeathDetectionService
             using var screenshot = await _captureService.CaptureBossHealthBarAsync(settings.CaptureTarget, cancellationToken);
 
             // 1) Detect boss HP bars first (cheap). Boss-name OCR is gated entirely on this.
-            var bars = _bossNameDetector.AnalyzeBars(screenshot.Bitmap, settings.GameId);
+            var bars = _bossNameDetector.AnalyzeBars(screenshot.Bitmap, settings.GameId, settings.BossHealthBarStyle);
             LogBossBarDiagnostics(screenshot.Bitmap, bars, now);
             var decision = _bossEncounterTracker.BeginFrame(bars.Count);
             if (decision.Rearmed)
@@ -748,35 +753,38 @@ public sealed class DeathDetectionService
 
         // Cache key is game+language so switching games (e.g. Elden Ring -> Dark Souls III) reloads the
         // matcher with that game's boss list instead of reusing the previous game's names.
-        var cacheKey = $"{gameId}|{language}";
+        var bossHealthBarStyle = BossHealthBarStyles.Normalize(settings.BossHealthBarStyle);
+        var cacheKey = $"{gameId}|{language}|{bossHealthBarStyle}";
         if (_bossNameMatcher is not null &&
             string.Equals(_bossNameMatcherLanguage, cacheKey, StringComparison.OrdinalIgnoreCase))
         {
             return _bossNameMatcher;
         }
 
-        var fileName = GameBossListFiles.Resolve(gameId, language);
-        var path = Path.Combine(AppContext.BaseDirectory, "Assets", fileName);
-        IReadOnlyList<string> names;
-        try
+        var fileNames = GameBossListFiles.ResolveForMatcher(gameId, language, bossHealthBarStyle);
+        var names = new List<string>();
+        foreach (var fileName in fileNames)
         {
-            names = File.Exists(path)
-                ? BossNameMatcher.ParseList(File.ReadAllLines(path))
-                : Array.Empty<string>();
-            if (!File.Exists(path))
+            var path = Path.Combine(AppContext.BaseDirectory, "Assets", fileName);
+            try
             {
-                _log.Error($"Boss list file '{fileName}' was not found at '{path}'. Boss-name auto-detection is disabled until it exists.");
+                if (File.Exists(path))
+                {
+                    names.AddRange(BossNameMatcher.ParseList(File.ReadAllLines(path)));
+                    continue;
+                }
+
+                _log.Error($"Boss list file '{fileName}' was not found at '{path}'. Boss-name auto-detection will ignore that list.");
             }
-        }
-        catch (Exception exception)
-        {
-            _log.Error($"Failed to load boss list '{fileName}'.", exception);
-            names = Array.Empty<string>();
+            catch (Exception exception)
+            {
+                _log.Error($"Failed to load boss list '{fileName}'.", exception);
+            }
         }
 
         _bossNameMatcher = new BossNameMatcher(names);
         _bossNameMatcherLanguage = cacheKey;
-        _log.Info($"Boss-name matcher loaded {names.Count} boss names for game '{gameId}' language '{language}' from '{fileName}'.");
+        _log.Info($"Boss-name matcher loaded {names.Count} boss names for game '{gameId}' language '{language}' style '{bossHealthBarStyle}' from '{string.Join(", ", fileNames)}'.");
         return _bossNameMatcher;
     }
 

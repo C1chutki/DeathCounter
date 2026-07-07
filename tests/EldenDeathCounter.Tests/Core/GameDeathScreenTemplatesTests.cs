@@ -70,4 +70,21 @@ public sealed class GameDeathScreenTemplatesTests
             ],
             files);
     }
+
+    [Fact]
+    public void EldenRingReforgedDeathTemplatesIncludeReforgedYouDiedScreen()
+    {
+        var files = GameDeathScreenTemplates.DeathTemplateFiles("EldenRing", "ENG", BossHealthBarStyles.Reforged);
+
+        Assert.Contains(Path.Combine("Elden Ring", "Reforge", "YouDied_Reforge.png"), files);
+        Assert.Contains(Er("ENG_Death_Screen.png"), files);
+    }
+
+    [Fact]
+    public void EldenRingVanillaDeathTemplatesDoNotIncludeReforgedYouDiedScreen()
+    {
+        var files = GameDeathScreenTemplates.DeathTemplateFiles("EldenRing", "ENG", BossHealthBarStyles.Vanilla);
+
+        Assert.DoesNotContain(Path.Combine("Elden Ring", "Reforge", "YouDied_Reforge.png"), files);
+    }
 }

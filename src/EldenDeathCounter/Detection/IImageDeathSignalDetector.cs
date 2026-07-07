@@ -5,5 +5,5 @@ namespace EldenDeathCounter.Detection;
 
 public interface IImageDeathSignalDetector
 {
-    ImageDeathSignalMatch Analyze(Bitmap bitmap, double sensitivity, string gameId, string gameLanguage);
+    ImageDeathSignalMatch Analyze(Bitmap bitmap, double sensitivity, string gameId, string gameLanguage, string bossHealthBarStyle);
 }

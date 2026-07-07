@@ -6,19 +6,27 @@ public sealed class BossHealthBarAnalyzer
         => Analyze(width, height, "EldenRing", getPixel);
 
     public IReadOnlyList<BossHealthBarRegion> Analyze(int width, int height, string? gameId, Func<int, int, RgbPixel> getPixel)
+        => Analyze(width, height, gameId, BossHealthBarStyles.Vanilla, getPixel);
+
+    public IReadOnlyList<BossHealthBarRegion> Analyze(
+        int width,
+        int height,
+        string? gameId,
+        string? bossHealthBarStyle,
+        Func<int, int, RgbPixel> getPixel)
     {
         if (width <= 0 || height <= 0)
         {
             return [];
         }
 
-        var tuning = GameTuning.For(gameId);
+        var tuning = GameTuning.For(gameId, bossHealthBarStyle);
         var left = (int)(width * 0.16);
         var right = (int)(width * 0.86);
         var isLowerScreenCrop = height <= width * 0.35;
         var top = isLowerScreenCrop ? 0 : (int)(height * 0.70);
-        var bottom = isLowerScreenCrop ? (int)(height * 0.92) : (int)(height * 0.91);
-        var minimumSpan = (int)(width * 0.32);
+        var bottom = isLowerScreenCrop ? (int)(height * tuning.BottomFractionForLowerCrop) : (int)(height * tuning.BottomFraction);
+        var minimumSpan = (int)(width * tuning.MinimumSpanFraction);
         var minimumVisibleHealthSpan = (int)(width * 0.10);
         var inferredBossBarSpan = (int)(width * 0.52);
         var candidates = new List<RowCandidate>();
@@ -54,7 +62,9 @@ public sealed class BossHealthBarAnalyzer
 
         var clusters = ClusterRows(candidates);
         return clusters
-            .Where(cluster => cluster.Bottom - cluster.Top >= 4)
+            .Where(cluster =>
+                cluster.Bottom - cluster.Top >= 4 &&
+                cluster.Bottom - cluster.Top <= tuning.MaxClusterHeight(height))
             .OrderBy(cluster => cluster.Top)
             .Take(3)
             .Select(cluster => ToRegion(cluster, width, height, tuning))
@@ -180,12 +190,48 @@ public sealed class BossHealthBarAnalyzer
     // crimson line whose red channel sits right at Elden Ring's 60 floor, so it needs a lower minimum
     // and a name region shifted left of the visible health (see ToRegion). All other games keep the
     // Elden-Ring-tuned values, so their detection is unchanged.
-    private readonly record struct GameTuning(int MinRed, double NameLeftInsetFraction)
+    private readonly record struct GameTuning(
+        int MinRed,
+        double NameLeftInsetFraction,
+        double BottomFraction,
+        double BottomFractionForLowerCrop,
+        double MinimumSpanFraction,
+        double MaxClusterHeightFraction)
     {
-        public static GameTuning For(string? gameId) =>
-            string.Equals(gameId?.Trim(), "DarkSouls3", StringComparison.OrdinalIgnoreCase)
-                ? new GameTuning(MinRed: 48, NameLeftInsetFraction: 0.075)
-                : new GameTuning(MinRed: 60, NameLeftInsetFraction: 0.0);
+        public int MaxClusterHeight(int height) => Math.Max(24, (int)(height * MaxClusterHeightFraction));
+
+        public static GameTuning For(string? gameId, string? bossHealthBarStyle)
+        {
+            if (string.Equals(gameId?.Trim(), "DarkSouls3", StringComparison.OrdinalIgnoreCase))
+            {
+                return new GameTuning(
+                    MinRed: 48,
+                    NameLeftInsetFraction: 0.075,
+                    BottomFraction: 0.91,
+                    BottomFractionForLowerCrop: 0.92,
+                    MinimumSpanFraction: 0.32,
+                    MaxClusterHeightFraction: 1.0);
+            }
+
+            if (BossHealthBarStyles.Normalize(bossHealthBarStyle) == BossHealthBarStyles.Reforged)
+            {
+                return new GameTuning(
+                    MinRed: 55,
+                    NameLeftInsetFraction: 0.0,
+                    BottomFraction: 0.93,
+                    BottomFractionForLowerCrop: 0.96,
+                    MinimumSpanFraction: 0.28,
+                    MaxClusterHeightFraction: 0.03);
+            }
+
+            return new GameTuning(
+                MinRed: 60,
+                NameLeftInsetFraction: 0.0,
+                BottomFraction: 0.91,
+                BottomFractionForLowerCrop: 0.92,
+                MinimumSpanFraction: 0.32,
+                MaxClusterHeightFraction: 1.0);
+        }
     }
 
     private readonly record struct RowCandidate(int Left, int Right, int Y);

@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-07-06
+
+- Dodano wariant detekcji `Convergence`, ktory laduje dodatkowa angielska liste bossow z moda obok bazowej listy Elden Ring, zeby OCR akceptowal nowych bossow Convergence przy ustawieniu PL/ENG. Dodano regresje resolvera i assetow listy bossow; wersje podniesiono do 1.13.13.
+
+## 2026-06-23
+
+- Dla wariantu `Reforged` matcher nazw bossow laduje teraz angielska liste nazw razem z wybrana lista jezykowa, zeby angielskie nazwy moda byly akceptowane przy ustawieniu OCR na PL. Dodano regresje resolvera list bossow; wersje podniesiono do 1.13.12.
+
+- Poprawiono wariant `Reforged`, aby ignorowal grube czerwone plamy sceny nad paskiem bossa i akceptowal `Crucible Knight Rhyacis` w listach bossow ENG/PL. Dodano regresje dla falszywego klastra oraz dopasowania nazwy; wersje podniesiono do 1.13.11.
+
+- Rozszerzono wariant `Reforged` o osobny template napisu `YOU DIED` z `Assets/Elden Ring/Reforge/YouDied_Reforge.png`, zeby detekcja smierci dzialala po zmianie czcionki w modzie. Dodano regresje resolvera templatek i realnego dopasowania screena Reforged; wersje podniesiono do 1.13.10.
+
+- Dodano ustawienie stylu paska zdrowia bossa `Vanilla Elden Ring` / `Reforged`, uzywane tylko do odczytu paska HP przy automatycznym OCR nazwy bossa. Dodano regresje dla zapisu ustawienia, widoku Settings i referencyjnego screena Reforged; wersje podniesiono do 1.13.9.
+
 ## 2026-06-11
 
 - Podpieto tlo panelu timera w overlay pod ustawienie opacity, tak jak glowne tlo overlaya, bez zmiany przezroczystosci tekstu i ikon. Dodano regresje blokujaca powrot stalego tla timera; wersje podniesiono do 1.13.8.

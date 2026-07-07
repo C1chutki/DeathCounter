@@ -857,7 +857,7 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,8">
-                    <TextBlock Text="v1.13.8"
+                    <TextBlock Text="v1.13.13"
                                FontFamily="{DynamicResource MonoFontFamily}"
                                FontSize="8.5"
                                Foreground="{DynamicResource Faint}"
@@ -2627,6 +2627,13 @@
                                     <TextBlock Text="{DynamicResource Settings_CaptureRegion}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
                                     <ComboBox ItemsSource="{Binding CaptureTargetOptions}"
                                               SelectedValue="{Binding SelectedCaptureTargetValue, UpdateSourceTrigger=PropertyChanged}"
+                                              SelectedValuePath="Value"
+                                              DisplayMemberPath="DisplayName"
+                                              Style="{StaticResource DarkComboBox}"
+                                              Margin="0,6,0,14" />
+                                    <TextBlock Text="{DynamicResource Settings_BossHealthBarStyle}" Style="{StaticResource MutedText}" FontFamily="{DynamicResource AppFontFamily}" FontWeight="Bold" />
+                                    <ComboBox ItemsSource="{Binding BossHealthBarStyleOptions}"
+                                              SelectedValue="{Binding SelectedBossHealthBarStyleValue, UpdateSourceTrigger=PropertyChanged}"
                                               SelectedValuePath="Value"
                                               DisplayMemberPath="DisplayName"
                                               Style="{StaticResource DarkComboBox}"

@@ -25,6 +25,8 @@ public sealed class SettingsMenuCoverageTests
         Assert.Contains("ResetDetectionSettingsCommand", settingsTab);
         Assert.Contains("DetectDeaths", settingsTab);
         Assert.Contains("DetectBossVictories", settingsTab);
+        Assert.Contains("BossHealthBarStyleOptions", settingsTab);
+        Assert.Contains("SelectedBossHealthBarStyleValue", settingsTab);
         Assert.Contains("DetectionIntervalMsText", settingsTab);
         Assert.Contains("DetectionCooldownSecondsText", settingsTab);
         Assert.Contains("DetectionSensitivityText", settingsTab);

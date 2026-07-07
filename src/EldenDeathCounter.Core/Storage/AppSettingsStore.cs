@@ -86,6 +86,7 @@ public sealed class AppSettingsStore
         }
 
         settings.GameLanguage = NormalizeGameLanguage(settings.GameLanguage, defaults.GameLanguage);
+        settings.BossHealthBarStyle = BossHealthBarStyles.Normalize(settings.BossHealthBarStyle);
         settings.DetectionMode = DetectionModePresets.Get(settings.DetectionMode).Mode;
 
         if (settings.DetectionIntervalMs == 500 && settings.DetectionCooldownSeconds == 5)

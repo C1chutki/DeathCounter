@@ -1,4 +1,5 @@
 using EldenDeathCounter.Core.Configuration;
+using EldenDeathCounter.Core.Detection;
 using EldenDeathCounter.Core.Logging;
 using EldenDeathCounter.Core.Storage;
 
@@ -22,6 +23,7 @@ public sealed class AppSettingsTests
         Assert.True(settings.DetectBossVictories);
         Assert.True(settings.ShowBossTimer);
         Assert.True(settings.ShowDetectionStatus);
+        Assert.Equal(BossHealthBarStyles.Vanilla, settings.BossHealthBarStyle);
         Assert.Equal("EldenRingWindow", settings.CaptureTarget);
         Assert.Equal(DiagnosticsMode.Events, settings.DiagnosticsMode);
         Assert.Equal(10, settings.DiagnosticsSessionMinutes);
@@ -133,6 +135,22 @@ public sealed class AppSettingsTests
         var reloaded = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop");
 
         Assert.Equal(0.4, reloaded.OverlayBackgroundOpacity);
+    }
+
+    [Fact]
+    public async Task SavedBossHealthBarStyleSurvivesRoundTrip()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var settingsPath = Path.Combine(folder, "appsettings.json");
+        var store = new AppSettingsStore(new FileLogService(Path.Combine(folder, "log.txt")));
+        var settings = AppSettings.CreateDefault(@"C:\Users\TestUser\Desktop");
+        settings.BossHealthBarStyle = BossHealthBarStyles.Reforged;
+
+        await store.SaveAsync(settingsPath, settings);
+        var reloaded = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop");
+
+        Assert.Equal(BossHealthBarStyles.Reforged, reloaded.BossHealthBarStyle);
     }
 
     [Fact]

@@ -139,6 +139,43 @@ public sealed class BossHealthBarAnalyzerTests
         Assert.True(ds3.Single().NameRegion.Left < elden.Single().NameRegion.Left);
     }
 
+    [Fact]
+    public void FindsReforgedBossHealthBarFromReferenceCapture()
+    {
+        var analyzer = new BossHealthBarAnalyzer();
+        using var bitmap = new Bitmap(GetAssetPath(Path.Combine("Elden Ring", "Reforge", "BossBar_Reforge.png")));
+
+        var bars = analyzer.Analyze(bitmap.Width, bitmap.Height, "EldenRing", BossHealthBarStyles.Reforged, (x, y) =>
+        {
+            var pixel = bitmap.GetPixel(x, y);
+            return new RgbPixel(pixel.R, pixel.G, pixel.B);
+        });
+
+        var bar = Assert.Single(bars);
+        Assert.InRange(bar.Bar.Left, 600, 680);
+        Assert.InRange(bar.Bar.Top, 1250, 1305);
+        Assert.True(bar.Bar.Right - bar.Bar.Left >= bitmap.Width * 0.32);
+        Assert.True(bar.NameRegion.Top < bar.Bar.Top);
+    }
+
+    [Fact]
+    public void ReforgedTuningIgnoresTallRedSceneryBlobsAboveTheBossBar()
+    {
+        var analyzer = new BossHealthBarAnalyzer();
+
+        var bars = analyzer.Analyze(2559, 1439, "EldenRing", BossHealthBarStyles.Reforged, (x, y) =>
+        {
+            var bloodPool = x is > 1600 and < 2200 && y is > 1133 and < 1199;
+            var bossBar = x is > 620 and < 1940 && y is > 1263 and < 1277;
+            return bloodPool || bossBar ? new RgbPixel(120, 8, 8) : new RgbPixel(54, 48, 38);
+        });
+
+        var bar = Assert.Single(bars);
+        Assert.InRange(bar.Bar.Left, 600, 640);
+        Assert.InRange(bar.Bar.Top, 1255, 1270);
+        Assert.InRange(bar.Bar.Right, 1930, 1955);
+    }
+
     private static string GetAssetPath(string assetName)
     {
         return Path.GetFullPath(Path.Combine(

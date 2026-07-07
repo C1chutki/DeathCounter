@@ -17,6 +17,7 @@ namespace EldenDeathCounter.Core.Detection;
 public static class GameBossListFiles
 {
     private const string EldenRingFolderName = "Elden Ring";
+    private const string ConvergenceFolderName = "Convergence";
 
     public static string Resolve(string? gameId, string? language)
     {
@@ -29,6 +30,26 @@ public static class GameBossListFiles
             _ => Path.Combine(EldenRingFolderName, $"{prefix}_ER_BossList.txt")
         };
     }
+
+    public static IReadOnlyList<string> ResolveForMatcher(string? gameId, string? language, string? bossHealthBarStyle)
+    {
+        var primary = Resolve(gameId, language);
+        if (Normalize(gameId) is not ("" or "ELDENRING"))
+        {
+            return [primary];
+        }
+
+        return BossHealthBarStyles.Normalize(bossHealthBarStyle) switch
+        {
+            BossHealthBarStyles.Reforged when IsPolish(language) => [primary, Resolve(gameId, "ENG")],
+            BossHealthBarStyles.Convergence when IsPolish(language) => [primary, Resolve(gameId, "ENG"), ConvergenceBossList()],
+            BossHealthBarStyles.Convergence => [primary, ConvergenceBossList()],
+            _ => [primary]
+        };
+    }
+
+    private static string ConvergenceBossList() =>
+        Path.Combine(EldenRingFolderName, ConvergenceFolderName, "ENG_ER_Convergence_BossList.txt");
 
     private static string Normalize(string? gameId) =>
         (gameId?.Trim() ?? string.Empty).ToUpperInvariant();

@@ -24,6 +24,8 @@ public sealed class AppProjectAssetTests
         Assert.Contains(@"..\..\Assets\*.*", includes);
         Assert.Contains(@"..\..\Assets\Icons\*.*", includes);
         Assert.Contains(@"..\..\Assets\Elden Ring\*.*", includes);
+        Assert.Contains(@"..\..\Assets\Elden Ring\Reforge\*.*", includes);
+        Assert.Contains(@"..\..\Assets\Elden Ring\Convergence\*.*", includes);
 
         var eldenRingRoot = Path.GetFullPath(Path.Combine(
             Path.GetDirectoryName(projectPath)!, "..", "..", "Assets", "Elden Ring"));
@@ -32,6 +34,9 @@ public sealed class AppProjectAssetTests
                      "ENG_ER_BossList.txt", "PL_ER_BossList.txt",
                      "ENG_DoubleBoss.jpg", "ENG_DoubleBoss_02.jpg",
                      "ENG_TrippleBoss.jpg", "ENG_TrippleBoss_02.jpg",
+                     Path.Combine("Reforge", "BossBar_Reforge.png"),
+                     Path.Combine("Reforge", "YouDied_Reforge.png"),
+                     Path.Combine("Convergence", "ENG_ER_Convergence_BossList.txt"),
                  })
         {
             Assert.True(File.Exists(Path.Combine(eldenRingRoot, file)), $"Missing asset: {file}");
@@ -40,6 +45,12 @@ public sealed class AppProjectAssetTests
         // Both boss lists must provide a source of truth for the matcher.
         Assert.True(BossNameMatcher.ParseList(File.ReadAllLines(Path.Combine(eldenRingRoot, "ENG_ER_BossList.txt"))).Count > 100);
         Assert.True(BossNameMatcher.ParseList(File.ReadAllLines(Path.Combine(eldenRingRoot, "PL_ER_BossList.txt"))).Count > 100);
+        var convergenceNames = BossNameMatcher.ParseList(File.ReadAllLines(Path.Combine(
+            eldenRingRoot,
+            "Convergence",
+            "ENG_ER_Convergence_BossList.txt")));
+        Assert.Contains("Bloodflame Dragon Sanguivaros", convergenceNames);
+        Assert.Contains("Daergarf, Underworld Archmage", convergenceNames);
     }
 
     [Fact]
