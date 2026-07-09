@@ -67,3 +67,6 @@ diagnostics/
 PROMPT_change_template.md
 PROMPT_*.md
 build.log
+
+# Build / publish output
+publish/
