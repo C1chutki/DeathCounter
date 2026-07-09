@@ -11,11 +11,19 @@ public sealed class DetectionEventLogService : IDetectionEventLogService
     {
         WriteIndented = false
     };
+    // The latest-snapshot file is rewritten on every Log() call, and Log() runs a few times per detection
+    // frame (~3-4×/s) even when diagnostics is Off. A synchronous full-file write that often is pure CPU/IO
+    // waste, so the per-frame paths are throttled to this interval; meaningful moments (Configure, a real
+    // written event) force an immediate write so the file stays fresh when it matters.
+    private static readonly TimeSpan SnapshotThrottle = TimeSpan.FromSeconds(1);
     private readonly object _syncRoot = new();
     private readonly Queue<DetectionEventRecord> _recentEvents = new();
     private AppSettings? _settings;
     private DetectionDiagnosticsState _state = new(0, null, false);
     private RollingFileWriter? _writer;
+    private DateTimeOffset _lastSnapshotWriteAt = DateTimeOffset.MinValue;
+
+    public bool FrameDiagnosticsEnabled => _settings?.DiagnosticsMode == DiagnosticsMode.FullFrames;
 
     public void Configure(AppSettings settings, DetectionDiagnosticsState state)
     {
@@ -29,7 +37,7 @@ public sealed class DetectionEventLogService : IDetectionEventLogService
                     Path.Combine(settings.DataFolderPath, "detection-events.jsonl"),
                     settings.DiagnosticsMaxEventLogMb * 1024L * 1024L,
                     retainedFiles: 5);
-            WriteLatestSnapshot();
+            WriteLatestSnapshot(force: true);
         }
     }
 
@@ -44,13 +52,13 @@ public sealed class DetectionEventLogService : IDetectionEventLogService
 
             if (_settings.DiagnosticsMode == DiagnosticsMode.Off)
             {
-                WriteLatestSnapshot();
+                WriteLatestSnapshot(force: false);
                 return;
             }
 
             if (record.IsFrameDiagnostic && _settings.DiagnosticsMode != DiagnosticsMode.FullFrames)
             {
-                WriteLatestSnapshot();
+                WriteLatestSnapshot(force: false);
                 return;
             }
 
@@ -68,16 +76,25 @@ public sealed class DetectionEventLogService : IDetectionEventLogService
                 _recentEvents.Dequeue();
             }
 
-            WriteLatestSnapshot();
+            WriteLatestSnapshot(force: true);
         }
     }
 
-    private void WriteLatestSnapshot()
+    // Always called under _syncRoot, so _lastSnapshotWriteAt needs no extra synchronization.
+    private void WriteLatestSnapshot(bool force)
     {
         if (_settings is null)
         {
             return;
         }
+
+        var now = DateTimeOffset.Now;
+        if (!force && now - _lastSnapshotWriteAt < SnapshotThrottle)
+        {
+            return;
+        }
+
+        _lastSnapshotWriteAt = now;
 
         var snapshot = new
         {

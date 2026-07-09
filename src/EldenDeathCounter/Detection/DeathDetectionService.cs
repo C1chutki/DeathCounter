@@ -318,27 +318,32 @@ public sealed class DeathDetectionService
                                     ? "pending-waiting"
                                     : "no-signal";
                 frameStopwatch.Stop();
-                LogDetectionFrameDiagnostics(
-                    frameIndex,
-                    frameStartedAt,
-                    frame.Bitmap,
-                    ocrText,
-                    match,
-                    imageSignal,
-                    signal,
-                    confirmedSignal,
-                    imageAnalysisStatus,
-                    wasPending,
-                    stabilizerBefore,
-                    stabilizerAfter,
-                    frameOutcome,
-                    captureMs,
-                    ocrMs,
-                    imageAnalysisMs,
-                    frameStopwatch.ElapsedMilliseconds,
-                    settings.DetectionSensitivity,
-                    frameDeltaMs,
-                    timingMode);
+                // Building the per-frame diagnostic record allocates ~1 KB of interpolated strings that the
+                // event log discards unless full-frame diagnostics is on. Skip the work entirely otherwise.
+                if (_detectionEventLog.FrameDiagnosticsEnabled)
+                {
+                    LogDetectionFrameDiagnostics(
+                        frameIndex,
+                        frameStartedAt,
+                        frame.Bitmap,
+                        ocrText,
+                        match,
+                        imageSignal,
+                        signal,
+                        confirmedSignal,
+                        imageAnalysisStatus,
+                        wasPending,
+                        stabilizerBefore,
+                        stabilizerAfter,
+                        frameOutcome,
+                        captureMs,
+                        ocrMs,
+                        imageAnalysisMs,
+                        frameStopwatch.ElapsedMilliseconds,
+                        settings.DetectionSensitivity,
+                        frameDeltaMs,
+                        timingMode);
+                }
                 if (_fullDiagnosticsUntil is not null &&
                     DateTimeOffset.Now < _fullDiagnosticsUntil.Value &&
                     DetectionTimingOptions.ShouldSaveFullDiagnosticsFrame(frameStartedAt, lastFullDiagnosticsScreenshotAt, frameIndex))

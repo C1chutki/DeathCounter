@@ -141,6 +141,8 @@ public sealed class DeathDetectionServiceShutdownTests
 
     private sealed class InMemoryDetectionEventLogService : IDetectionEventLogService
     {
+        public bool FrameDiagnosticsEnabled => false;
+
         public void Configure(AppSettings settings, DetectionDiagnosticsState state)
         {
         }
