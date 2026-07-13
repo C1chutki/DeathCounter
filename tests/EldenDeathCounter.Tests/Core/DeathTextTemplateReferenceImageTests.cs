@@ -96,6 +96,38 @@ public sealed class DeathTextTemplateReferenceImageTests
             $"score={result.Score:0.000}, scale={result.Scale:0.00}, method={result.Method}, template={template.Width}x{template.Height}, strokePoints={template.StrokePoints.Count}, edgePoints={template.EdgePoints.Count}, details={result.Details}");
     }
 
+    [Fact]
+    public void BuildsDarkSouls2TemplateFromProvidedDeathScreenAndMatchesItInDarkSouls2CaptureRoi()
+    {
+        // Dark Souls II draws "YOU DIED" much lower than Elden Ring/DS3, so it needs its own reference
+        // crop and its own (lower, taller) live capture ROI. Building the template from the DS2 crop and
+        // matching it inside the DS2 capture ROI cut from the same full screenshot must confirm a match.
+        var imagePath = GetAssetPath(Path.Combine("Dark souls 2", "ENG_YouDied.jpg"));
+        Assert.True(File.Exists(imagePath), imagePath);
+
+        using var bitmap = new Bitmap(imagePath);
+        var crop = DeathTextTemplateReferenceRegion.DeathScreen(bitmap.Width, bitmap.Height, "DarkSouls2");
+
+        var template = WithLockedPixels(bitmap, getPixel => DeathTextTemplate.FromReference(
+            "YOU DIED",
+            crop.Width,
+            crop.Height,
+            (x, y) => getPixel(crop.Left + x, crop.Top + y)));
+        var analyzer = new DeathTextTemplateAnalyzer();
+        var capture = DeathTextCaptureRegionCalculator.Calculate(bitmap.Width, bitmap.Height, "DarkSouls2");
+        var result = WithLockedPixels(bitmap, getPixel => analyzer.Analyze(
+            capture.Width,
+            capture.Height,
+            (x, y) => getPixel(capture.Left + x, capture.Top + y),
+            [template],
+            0.8));
+
+        Assert.True(template.StrokePoints.Count > 50, $"strokePoints={template.StrokePoints.Count}, edgePoints={template.EdgePoints.Count}");
+        Assert.True(
+            result.IsMatch,
+            $"score={result.Score:0.000}, scale={result.Scale:0.00}, method={result.Method}, template={template.Width}x{template.Height}, strokePoints={template.StrokePoints.Count}, edgePoints={template.EdgePoints.Count}, details={result.Details}");
+    }
+
     private static T WithLockedPixels<T>(Bitmap bitmap, Func<Func<int, int, RgbPixel>, T> read)
     {
         var rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);

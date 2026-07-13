@@ -33,7 +33,7 @@ public sealed class BossHealthBarAnalyzer
 
         for (var y = top; y < bottom; y += 2)
         {
-            var row = FindRedRunOnRow(left, right, y, tuning.MinRed, getPixel);
+            var row = FindRedRunOnRow(left, right, y, tuning, getPixel);
             if (row is null)
             {
                 continue;
@@ -76,7 +76,7 @@ public sealed class BossHealthBarAnalyzer
     // thresholds. currentRight only advances on real red pixels, so a trailing gap never inflates a run.
     private const int MaxRedRunGap = 12;
 
-    private static (int Left, int Right)? FindRedRunOnRow(int left, int right, int y, int minRed, Func<int, int, RgbPixel> getPixel)
+    private static (int Left, int Right)? FindRedRunOnRow(int left, int right, int y, GameTuning tuning, Func<int, int, RgbPixel> getPixel)
     {
         var bestLeft = 0;
         var bestRight = 0;
@@ -86,7 +86,7 @@ public sealed class BossHealthBarAnalyzer
 
         for (var x = left; x < right; x += 2)
         {
-            if (IsBossBarRed(getPixel(x, y), minRed))
+            if (IsBossBarRed(getPixel(x, y), tuning))
             {
                 if (currentLeft < 0)
                 {
@@ -179,11 +179,11 @@ public sealed class BossHealthBarAnalyzer
     // while orange fire (220,150,60) and grey (120,120,120) are rejected because green sits too close
     // to red. The downstream boss-list OCR match (0.82 threshold) is the final guard against any
     // non-bar red that still slips through.
-    private static bool IsBossBarRed(RgbPixel pixel, int minRed)
+    private static bool IsBossBarRed(RgbPixel pixel, GameTuning tuning)
     {
-        return pixel.R >= minRed &&
-               pixel.G <= pixel.R * 0.55 &&
-               pixel.B <= pixel.R * 0.60;
+        return pixel.R >= tuning.MinRed &&
+               pixel.G <= pixel.R * tuning.MaxGreenFraction &&
+               pixel.B <= pixel.R * tuning.MaxBlueFraction;
     }
 
     // Per-game heuristics for the otherwise identical bar scan. Dark Souls III's bar is a dim, thin
@@ -196,7 +196,9 @@ public sealed class BossHealthBarAnalyzer
         double BottomFraction,
         double BottomFractionForLowerCrop,
         double MinimumSpanFraction,
-        double MaxClusterHeightFraction)
+        double MaxClusterHeightFraction,
+        double MaxGreenFraction = 0.55,
+        double MaxBlueFraction = 0.60)
     {
         public int MaxClusterHeight(int height) => Math.Max(24, (int)(height * MaxClusterHeightFraction));
 
@@ -211,6 +213,24 @@ public sealed class BossHealthBarAnalyzer
                     BottomFractionForLowerCrop: 0.92,
                     MinimumSpanFraction: 0.32,
                     MaxClusterHeightFraction: 1.0);
+            }
+
+            // Dark Souls II's boss bar is a dark, desaturated crimson: its red channel sits well below
+            // Elden Ring's 60 floor and its green/blue sit closer to red than the vanilla ceilings allow
+            // (~G 0.55R, B 0.5R), so it needs a lower red minimum and slightly looser colour ceilings.
+            // Grey UI (G≈R) and orange fire (G>0.62R) are still rejected. Its name also starts slightly
+            // left of the visible red fill, so the name region is inset left by a small screen fraction.
+            if (string.Equals(gameId?.Trim(), "DarkSouls2", StringComparison.OrdinalIgnoreCase))
+            {
+                return new GameTuning(
+                    MinRed: 35,
+                    NameLeftInsetFraction: 0.03,
+                    BottomFraction: 0.91,
+                    BottomFractionForLowerCrop: 0.92,
+                    MinimumSpanFraction: 0.32,
+                    MaxClusterHeightFraction: 1.0,
+                    MaxGreenFraction: 0.62,
+                    MaxBlueFraction: 0.62);
             }
 
             if (BossHealthBarStyles.Normalize(bossHealthBarStyle) == BossHealthBarStyles.Reforged)

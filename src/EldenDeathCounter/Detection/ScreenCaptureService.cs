@@ -32,7 +32,10 @@ public sealed class ScreenCaptureService : IScreenCaptureService
 
     public string? CaptureStatus { get; private set; }
 
-    public Task<CapturedFrame> CaptureAsync(string captureTarget, CancellationToken cancellationToken)
+    public Task<CapturedFrame> CaptureAsync(string captureTarget, CancellationToken cancellationToken) =>
+        CaptureAsync(captureTarget, gameId: null, cancellationToken);
+
+    public Task<CapturedFrame> CaptureAsync(string captureTarget, string? gameId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -41,7 +44,7 @@ public sealed class ScreenCaptureService : IScreenCaptureService
             var screen = SelectScreen(captureTarget);
             var bounds = screen.Bounds;
 
-            var region = DeathTextCaptureRegionCalculator.Calculate(bounds.Width, bounds.Height);
+            var region = DeathTextCaptureRegionCalculator.Calculate(bounds.Width, bounds.Height, gameId);
             var captureLeft = bounds.Left + region.Left;
             var captureTop = bounds.Top + region.Top;
             if (!string.Equals(_loggedDeathTextCaptureTarget, captureTarget, StringComparison.OrdinalIgnoreCase))

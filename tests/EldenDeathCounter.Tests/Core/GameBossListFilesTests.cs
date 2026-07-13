@@ -6,12 +6,37 @@ public sealed class GameBossListFilesTests
 {
     [Theory]
     [InlineData("DarkSouls1", "PL", "PL_DS1_BossList.txt")]
-    [InlineData("DarkSouls2", "ENG", "ENG_DS2_BossList.txt")]
     [InlineData("DarkSouls3", "PL", "PL_DS3_BossList.txt")]
     [InlineData("DarkSouls3", "ENG", "ENG_DS3_BossList.txt")]
     public void ResolvesDarkSoulsListsFromAssetsRoot(string gameId, string language, string expected)
     {
         Assert.Equal(expected, GameBossListFiles.Resolve(gameId, language));
+    }
+
+    [Theory]
+    [InlineData("ENG", "ENG_DS2_BossList.txt")]
+    [InlineData("PL", "PL_DS2_BossList.txt")]
+    public void ResolvesDarkSouls2ListsFromDarkSouls2Subfolder(string language, string fileName)
+    {
+        // The DS2 lists were relocated to the "Dark souls 2" subfolder (no duplicate at Assets root).
+        Assert.Equal(Path.Combine("Dark souls 2", fileName), GameBossListFiles.Resolve("DarkSouls2", language));
+    }
+
+    [Fact]
+    public void DarkSouls2MatcherLoadsSelectedLanguageAndEnglishBossListsWhenPolish()
+    {
+        // DS2 shows English boss names in-game even when the app is Polish, so the PL matcher also
+        // includes the English list (mirroring the Elden Ring multi-list mechanism).
+        var pl = GameBossListFiles.ResolveForMatcher("DarkSouls2", "PL", BossHealthBarStyles.Vanilla);
+        var eng = GameBossListFiles.ResolveForMatcher("DarkSouls2", "ENG", BossHealthBarStyles.Vanilla);
+
+        Assert.Equal(
+            [
+                Path.Combine("Dark souls 2", "PL_DS2_BossList.txt"),
+                Path.Combine("Dark souls 2", "ENG_DS2_BossList.txt")
+            ],
+            pl);
+        Assert.Equal([Path.Combine("Dark souls 2", "ENG_DS2_BossList.txt")], eng);
     }
 
     [Theory]

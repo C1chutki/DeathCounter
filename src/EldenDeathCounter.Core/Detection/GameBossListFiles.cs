@@ -17,6 +17,7 @@ namespace EldenDeathCounter.Core.Detection;
 public static class GameBossListFiles
 {
     private const string EldenRingFolderName = "Elden Ring";
+    private const string DarkSouls2FolderName = "Dark souls 2";
     private const string ConvergenceFolderName = "Convergence";
 
     public static string Resolve(string? gameId, string? language)
@@ -25,7 +26,7 @@ public static class GameBossListFiles
         return Normalize(gameId) switch
         {
             "DARKSOULS1" => $"{prefix}_DS1_BossList.txt",
-            "DARKSOULS2" => $"{prefix}_DS2_BossList.txt",
+            "DARKSOULS2" => Path.Combine(DarkSouls2FolderName, $"{prefix}_DS2_BossList.txt"),
             "DARKSOULS3" => $"{prefix}_DS3_BossList.txt",
             _ => Path.Combine(EldenRingFolderName, $"{prefix}_ER_BossList.txt")
         };
@@ -34,6 +35,15 @@ public static class GameBossListFiles
     public static IReadOnlyList<string> ResolveForMatcher(string? gameId, string? language, string? bossHealthBarStyle)
     {
         var primary = Resolve(gameId, language);
+
+        // Dark Souls II shows English boss names in-game even when the app language is Polish, so the
+        // DS2 matcher always includes the English list (the Polish list is unverified in-game). This
+        // mirrors the Elden Ring multi-list mechanism below.
+        if (Normalize(gameId) == "DARKSOULS2")
+        {
+            return IsPolish(language) ? [primary, Resolve(gameId, "ENG")] : [primary];
+        }
+
         if (Normalize(gameId) is not ("" or "ELDENRING"))
         {
             return [primary];

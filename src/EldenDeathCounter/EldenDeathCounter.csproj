@@ -15,6 +15,7 @@
     <Content Include="..\..\Assets\Elden Ring\Reforge\*.*" Link="Assets\Elden Ring\Reforge\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\Assets\Elden Ring\Convergence\*.*" Link="Assets\Elden Ring\Convergence\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\Assets\Dark souls 3\*.*" Link="Assets\Dark souls 3\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\Assets\Dark souls 2\*.*" Link="Assets\Dark souls 2\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,7 +33,7 @@
     <SatelliteResourceLanguages>en;pl</SatelliteResourceLanguages>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
-    <Version>1.13.22</Version>
+    <Version>1.14.0</Version>
   </PropertyGroup>
 
 </Project>

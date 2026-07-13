@@ -232,7 +232,7 @@ public sealed class DeathDetectionService
                 previousFrameStartedAt = frameStartedAt;
                 var timingMode = frameStartedAt < burstUntil ? "burst" : "base";
                 var frameStopwatch = Stopwatch.StartNew();
-                using var frame = await _captureService.CaptureAsync(settings.CaptureTarget, cancellationToken);
+                using var frame = await _captureService.CaptureAsync(settings.CaptureTarget, settings.GameId, cancellationToken);
                 var captureMs = frameStopwatch.ElapsedMilliseconds;
                 RaiseCaptureStatusIfChanged();
 
@@ -472,9 +472,11 @@ public sealed class DeathDetectionService
 
     private static IReadOnlyList<string> BuildOcrLanguageHints(AppSettings settings)
     {
-        // Dark Souls III renders its death/victory banners in English even when the UI/OCR language is
-        // Polish, so it needs both engines; every other game only needs the configured language.
-        if (string.Equals(settings.GameId?.Trim(), "DarkSouls3", StringComparison.OrdinalIgnoreCase))
+        // Dark Souls II and III render their death/victory banners in English even when the UI/OCR
+        // language is Polish, so they need both engines; every other game only needs the configured one.
+        var gameId = settings.GameId?.Trim();
+        if (string.Equals(gameId, "DarkSouls3", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(gameId, "DarkSouls2", StringComparison.OrdinalIgnoreCase))
         {
             return ["en", "pl"];
         }

@@ -32,8 +32,25 @@ public static class DeathTextTemplateReferenceRegion
     private const double StripTop = 0.22;
     private const double StripBottom = 0.77;
 
-    public static PixelRect DeathScreen(int width, int height)
+    // Dark Souls II's "YOU DIED" reference crop sits lower (y ~0.64..0.80) and narrower to the centered
+    // text than Elden Ring's mid-screen band; other games keep the shared band.
+    private const double DarkSouls2Top = 0.64;
+    private const double DarkSouls2Bottom = 0.80;
+
+    public static PixelRect DeathScreen(int width, int height) => DeathScreen(width, height, gameId: null);
+
+    public static PixelRect DeathScreen(int width, int height, string? gameId)
     {
+        if (string.Equals(gameId?.Trim(), "DarkSouls2", StringComparison.OrdinalIgnoreCase) &&
+            !IsPreCroppedStrip(width, height))
+        {
+            return new PixelRect(
+                (int)(width * 0.30),
+                (int)(height * DarkSouls2Top),
+                (int)(width * 0.70),
+                (int)(height * DarkSouls2Bottom));
+        }
+
         return IsPreCroppedStrip(width, height)
             ? Strip(width, height, 0.24, 0.76)
             : Calculate(width, height, 0.33, 0.67);

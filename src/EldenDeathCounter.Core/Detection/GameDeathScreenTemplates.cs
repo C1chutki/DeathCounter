@@ -14,6 +14,7 @@ namespace EldenDeathCounter.Core.Detection;
 public static class GameDeathScreenTemplates
 {
     private const string DarkSouls3FolderName = "Dark souls 3";
+    private const string DarkSouls2FolderName = "Dark souls 2";
     private const string EldenRingFolderName = "Elden Ring";
 
     public static IReadOnlyList<string> DeathTemplateFiles(string gameId, string language) =>
@@ -29,6 +30,13 @@ public static class GameDeathScreenTemplates
                 Ds3("PL_YouDied_v2.jpg"),
                 Ds3("ENG_YouDied.jpg")
             ];
+        }
+
+        if (IsDarkSouls2(gameId))
+        {
+            // Dark Souls II renders "YOU DIED" in English regardless of language, and we only have the
+            // English reference, so DS2 always uses it and never falls back to the Elden Ring screens.
+            return [Ds2("ENG_YouDied.jpg")];
         }
 
         IReadOnlyList<string> files = IsPolish(language)
@@ -49,6 +57,12 @@ public static class GameDeathScreenTemplates
 
     public static IReadOnlyList<string> VictoryTemplateFiles(string gameId, string language)
     {
+        if (IsDarkSouls2(gameId))
+        {
+            // No DS2 victory reference asset exists, so DS2 has no victory template (never Elden Ring's).
+            return [];
+        }
+
         if (IsDarkSouls3(gameId))
         {
             return
@@ -65,10 +79,15 @@ public static class GameDeathScreenTemplates
 
     private static string Ds3(string file) => Path.Combine(DarkSouls3FolderName, file);
 
+    private static string Ds2(string file) => Path.Combine(DarkSouls2FolderName, file);
+
     private static string Er(string file) => Path.Combine(EldenRingFolderName, file);
 
     private static bool IsDarkSouls3(string? gameId) =>
         string.Equals(gameId?.Trim(), "DarkSouls3", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsDarkSouls2(string? gameId) =>
+        string.Equals(gameId?.Trim(), "DarkSouls2", StringComparison.OrdinalIgnoreCase);
 
     private static bool IsPolish(string? language) =>
         (language?.Trim().ToUpperInvariant() ?? "PL") is not ("ENG" or "EN");

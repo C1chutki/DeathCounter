@@ -39,6 +39,32 @@ public sealed class DeathTextCaptureRegionCalculatorTests
     }
 
     [Fact]
+    public void DarkSouls2CoversLowerDeathTextBandThatEldenRingBandMisses()
+    {
+        // DS2 draws "YOU DIED" much lower (~y 0.66..0.74 -> ~947..1069 at 1440p). The DS2 band must
+        // cover it, and the default (Elden Ring) band must NOT — proving the game-aware ROI is needed.
+        const int ds2TextTop = 947;
+        const int ds2TextBottom = 1069;
+
+        var ds2 = DeathTextCaptureRegionCalculator.Calculate(2560, 1440, "DarkSouls2");
+        var elden = DeathTextCaptureRegionCalculator.Calculate(2560, 1440, "EldenRing");
+
+        Assert.True(ds2.Top <= ds2TextTop, $"ds2.Top={ds2.Top}");
+        Assert.True(ds2.Bottom >= ds2TextBottom, $"ds2.Bottom={ds2.Bottom}");
+        Assert.True(elden.Bottom < ds2TextTop, $"elden.Bottom={elden.Bottom} should not reach the DS2 band");
+        Assert.True(ds2.Top > elden.Bottom, "DS2 band should sit below the Elden Ring band");
+    }
+
+    [Fact]
+    public void DefaultOverloadMatchesEldenRingGameAwareOverload()
+    {
+        var legacy = DeathTextCaptureRegionCalculator.Calculate(2560, 1440);
+        var elden = DeathTextCaptureRegionCalculator.Calculate(2560, 1440, "EldenRing");
+
+        Assert.Equal(legacy, elden);
+    }
+
+    [Fact]
     public void KeepsRegionInsideSmallScreens()
     {
         var region = DeathTextCaptureRegionCalculator.Calculate(1280, 720);

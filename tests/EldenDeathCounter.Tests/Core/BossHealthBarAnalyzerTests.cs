@@ -176,6 +176,58 @@ public sealed class BossHealthBarAnalyzerTests
         Assert.InRange(bar.Bar.Right, 1930, 1955);
     }
 
+    [Fact]
+    public void FindsDarkSouls2DimBossHealthBarWithNameRegionCoveringTheLastGiant()
+    {
+        // Dark Souls II's boss bar is a dark, desaturated crimson (avg ~R50,G28,B24) sitting near the
+        // bottom of the screen (y ~1225..1243 at 1440p). With the DS2 tuning it is found as a single bar
+        // and the name region reaches the "The Last Giant" text (starts at x ~718) so the name OCR can
+        // read it. The two summon bars and the top-left bar sit above the y0.70 scan floor and are
+        // excluded.
+        var analyzer = new BossHealthBarAnalyzer();
+        using var bitmap = new Bitmap(GetAssetPath(Path.Combine("Dark souls 2", "ENG_BossBar.jpg")));
+
+        var bars = analyzer.Analyze(bitmap.Width, bitmap.Height, "DarkSouls2", (x, y) =>
+        {
+            var pixel = bitmap.GetPixel(x, y);
+            return new RgbPixel(pixel.R, pixel.G, pixel.B);
+        });
+
+        var bar = Assert.Single(bars);
+        Assert.InRange(bar.Bar.Top, 1210, 1240);
+        Assert.InRange(bar.Bar.Bottom, 1235, 1260);
+        Assert.True(bar.Bar.Right - bar.Bar.Left >= bitmap.Width * 0.32);
+        Assert.True(bar.NameRegion.Top < bar.Bar.Top);
+        Assert.True(
+            bar.NameRegion.Left <= 720,
+            $"Name region left {bar.NameRegion.Left} should reach the boss name start (~718).");
+        Assert.True(
+            bar.NameRegion.Right >= 1040,
+            $"Name region right {bar.NameRegion.Right} should cover the boss name end (~1037).");
+    }
+
+    [Fact]
+    public void DarkSouls2TuningIsRequiredBecauseEldenRingTuningMissesTheDimBar()
+    {
+        // Guard that the DS2 tuning is genuinely needed: Elden Ring's brighter red floor and tighter
+        // colour ceilings reject the dark DS2 bar entirely, so the same frame yields no bar as Elden
+        // Ring but exactly one under DS2.
+        var analyzer = new BossHealthBarAnalyzer();
+        using var bitmap = new Bitmap(GetAssetPath(Path.Combine("Dark souls 2", "ENG_BossBar.jpg")));
+
+        RgbPixel Sample(int x, int y)
+        {
+            var pixel = bitmap.GetPixel(x, y);
+            return new RgbPixel(pixel.R, pixel.G, pixel.B);
+        }
+
+        var elden = analyzer.Analyze(bitmap.Width, bitmap.Height, "EldenRing", Sample);
+        var ds2 = analyzer.Analyze(bitmap.Width, bitmap.Height, "DarkSouls2", Sample);
+
+        Assert.Empty(elden);
+        Assert.Single(ds2);
+    }
+
     private static string GetAssetPath(string assetName)
     {
         return Path.GetFullPath(Path.Combine(

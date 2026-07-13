@@ -130,6 +130,56 @@ public sealed class AppProjectAssetTests
     }
 
     [Fact]
+    public void AppProjectCopiesDarkSouls2DetectionAssets()
+    {
+        var projectPath = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory, "..", "..", "..", "..", "..",
+            "src", "EldenDeathCounter", "EldenDeathCounter.csproj"));
+        var project = XDocument.Load(projectPath);
+        var includes = project
+            .Descendants("Content")
+            .Select(element => element.Attribute("Include")?.Value)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        // The DS2 subfolder must be copied to output or the per-game death template, boss bar reference,
+        // and boss list can't be loaded at runtime.
+        Assert.Contains(@"..\..\Assets\Dark souls 2\*.*", includes);
+
+        var ds2Root = Path.GetFullPath(Path.Combine(
+            Path.GetDirectoryName(projectPath)!, "..", "..", "Assets", "Dark souls 2"));
+        foreach (var file in new[] { "ENG_YouDied.jpg", "ENG_BossBar.jpg", "ENG_DS2_BossList.txt" })
+        {
+            Assert.True(File.Exists(Path.Combine(ds2Root, file)), $"Missing DS2 asset: {file}");
+        }
+
+        // The English DS2 boss list must parse and contain the reference bosses.
+        var bossNames = BossNameMatcher.ParseList(File.ReadAllLines(Path.Combine(ds2Root, "ENG_DS2_BossList.txt")));
+        Assert.Contains("The Last Giant", bossNames);
+        Assert.Contains("Throne Defender", bossNames);
+        Assert.Contains("Throne Watcher", bossNames);
+    }
+
+    [Fact]
+    public void BuildOutputContainsDarkSouls2DetectionAssets()
+    {
+        // After compiling the WPF app, the DS2 assets must physically exist in the app build output.
+        var appProjectDir = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory, "..", "..", "..", "..", "..",
+            "src", "EldenDeathCounter"));
+        var binDir = Path.Combine(appProjectDir, "bin");
+        Assert.True(Directory.Exists(binDir), $"App build output not found at {binDir}; build the app first.");
+
+        foreach (var file in new[] { "ENG_YouDied.jpg", "ENG_BossBar.jpg", "ENG_DS2_BossList.txt" })
+        {
+            var matches = Directory.EnumerateFiles(binDir, file, SearchOption.AllDirectories)
+                .Where(path => path.Contains(Path.Combine("Assets", "Dark souls 2"), StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            Assert.True(matches.Count > 0, $"DS2 asset '{file}' missing from app build output under {binDir}.");
+        }
+    }
+
+    [Fact]
     public void CoreProjectReferencesOpenCvTemplateMatchingRuntime()
     {
         var projectRoot = Path.GetFullPath(Path.Combine(

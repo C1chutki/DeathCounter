@@ -54,7 +54,7 @@ public sealed class TemplateDeathTextImageSignalDetector : IImageDeathSignalDete
             }
 
             var fileNames = GameDeathScreenTemplates.DeathTemplateFiles(gameId ?? string.Empty, language, style);
-            var templates = LoadTemplates(FindTemplatePaths(_templatePath, fileNames), _log);
+            var templates = LoadTemplates(FindTemplatePaths(_templatePath, fileNames), gameId, _log);
             _templatesByGameLanguage[key] = templates;
             return templates;
         }
@@ -87,7 +87,7 @@ public sealed class TemplateDeathTextImageSignalDetector : IImageDeathSignalDete
         };
     }
 
-    private static IReadOnlyList<DeathTextTemplate> LoadTemplates(IEnumerable<string> paths, ILogService log)
+    private static IReadOnlyList<DeathTextTemplate> LoadTemplates(IEnumerable<string> paths, string? gameId, ILogService log)
     {
         var templates = new List<DeathTextTemplate>();
         foreach (var path in paths)
@@ -100,7 +100,7 @@ public sealed class TemplateDeathTextImageSignalDetector : IImageDeathSignalDete
             try
             {
                 using var bitmap = new Bitmap(path);
-                var crop = GetReferenceTextSearchRegion(bitmap.Width, bitmap.Height);
+                var crop = GetReferenceTextSearchRegion(bitmap.Width, bitmap.Height, gameId);
                 var template = WithLockedPixels(bitmap, getPixel => DeathTextTemplate.FromReference(
                     Path.GetFileName(path),
                     crop.Width,
@@ -123,9 +123,9 @@ public sealed class TemplateDeathTextImageSignalDetector : IImageDeathSignalDete
         return templates;
     }
 
-    private static PixelRect GetReferenceTextSearchRegion(int width, int height)
+    private static PixelRect GetReferenceTextSearchRegion(int width, int height, string? gameId)
     {
-        return DeathTextTemplateReferenceRegion.DeathScreen(width, height);
+        return DeathTextTemplateReferenceRegion.DeathScreen(width, height, gameId);
     }
 
     private static T WithLockedPixels<T>(Bitmap bitmap, Func<Func<int, int, RgbPixel>, T> read)

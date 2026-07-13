@@ -2,6 +2,8 @@
 
 ## 2026-07-13
 
+- Dodano wykrywanie Dark Souls II: ekran śmierci (własny niższy ROI i angielski szablon `YOU DIED`), ciemniejszy pasek bossa oraz angielskie dopasowanie nazw z listy DS2. Wersję podniesiono do 1.14.0.
+
 - Dodano zasady UTF-8 dla edytowanych plików tekstowych i kontrolę polskich znaków przed commitem; wersję podniesiono do 1.13.22.
 
 - Historia zdarzeń przechowuje teraz najwyżej 1000 najnowszych wpisów w profilu; starsze są archiwizowane partiami po 250 do CSV w folderze `archives`. Dodano test retencji i podniesiono wersję do 1.13.21.
