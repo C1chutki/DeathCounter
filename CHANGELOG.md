@@ -2,6 +2,16 @@
 
 ## 2026-07-13
 
+- Dodano zasady UTF-8 dla edytowanych plików tekstowych i kontrolę polskich znaków przed commitem; wersję podniesiono do 1.13.22.
+
+- Historia zdarzeń przechowuje teraz najwyżej 1000 najnowszych wpisów w profilu; starsze są archiwizowane partiami po 250 do CSV w folderze `archives`. Dodano test retencji i podniesiono wersję do 1.13.21.
+
+- Komendy asynchroniczne oczekują teraz swoich `Task`, blokują ponowne uruchomienie i logują obsłużone błędy ze statusem w UI; Start/Stop/Toggle detekcji są dodatkowo serializowane. Dodano regresję `RelayCommand`, wersję podniesiono do 1.13.20.
+
+- Ustawienia maja wersje schematu; migracje dawnych wartosci interval/cooldown i hotkeysa uruchamiaja sie tylko raz, a legalne kombinacje `500 ms / 5 s` oraz `F8 / F9` przetrwaja kolejne uruchomienia. Dodano regresje i podniesiono wersje do 1.13.19.
+
+- Capture ekranu zwalnia teraz bitmapę po błędzie kopiowania, a resolver okna zwalnia uchwyt procesu po odczycie nazwy. Wersję podniesiono do 1.13.18.
+
 - Testy referencyjne angielskiego ekranu smierci korzystaja teraz z utrzymywanego `ENG_Death_Screen_v9.png` jako pre-cropped capture stripu, zamiast wskazywac nieistniejacy asset `v2`. Pelna walidacja testowa jest odblokowana; wersje podniesiono do 1.13.17.
 
 - Profile Dark Souls wybieraja teraz wlasne procesy okna gry zamiast procesu Elden Ring; stare odziedziczone ustawienie jest migrowane, a status ostrzega o fallbacku na ekran glowny. Dodano testy resolvera czterech profili i podniesiono wersje do 1.13.16.
