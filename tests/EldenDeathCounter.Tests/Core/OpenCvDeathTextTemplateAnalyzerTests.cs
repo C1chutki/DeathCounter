@@ -9,17 +9,14 @@ namespace EldenDeathCounter.Tests.Core;
 public sealed class OpenCvDeathTextTemplateAnalyzerTests
 {
     [Fact]
-    public void MatchesEnglishDeathScreenQuickly()
+    public void MatchesMaintainedEnglishDeathScreenQuickly()
     {
-        var screenshotPath = GetAssetPath(Path.Combine("Elden Ring", "ENG_Death_Screen_v2.png"));
+        var screenshotPath = GetAssetPath(Path.Combine("Elden Ring", "ENG_Death_Screen_v9.png"));
         Assert.True(File.Exists(screenshotPath), screenshotPath);
 
         using var bitmap = new Bitmap(screenshotPath);
-        var template = CreateTemplate(bitmap, "ENG_Death_Screen_v2.png");
+        var template = CreateTemplate(bitmap, "ENG_Death_Screen_v9.png");
         var analyzer = new OpenCvDeathTextTemplateAnalyzer();
-
-        // ENG_Death_Screen.png is a pre-cropped strip (the live capture ROI saved to disk), so it
-        // stands in for a frame directly; re-cropping the capture region would chop the text ends.
         var elapsed = WithLockedPixels(bitmap, getPixel =>
         {
             var stopwatch = Stopwatch.StartNew();

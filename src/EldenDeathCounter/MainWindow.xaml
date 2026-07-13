@@ -857,7 +857,7 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,8">
-                    <TextBlock Text="v1.13.16"
+                    <TextBlock Text="v1.13.17"
                                FontFamily="{DynamicResource MonoFontFamily}"
                                FontSize="8.5"
                                Foreground="{DynamicResource Faint}"

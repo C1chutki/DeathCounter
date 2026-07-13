@@ -69,9 +69,9 @@ public sealed class DeathTextTemplateReferenceImageTests
     }
 
     [Fact]
-    public void MatchesSecondEnglishDeathScreen()
+    public void MatchesMaintainedEnglishDeathScreen()
     {
-        var templatePath = GetAssetPath(Path.Combine("Elden Ring", "ENG_Death_Screen_v2.png"));
+        var templatePath = GetAssetPath(Path.Combine("Elden Ring", "ENG_Death_Screen_v9.png"));
         Assert.True(File.Exists(templatePath), templatePath);
 
         using var bitmap = new Bitmap(templatePath);
@@ -83,8 +83,7 @@ public sealed class DeathTextTemplateReferenceImageTests
             crop.Height,
             (x, y) => getPixel(crop.Left + x, crop.Top + y)));
         var analyzer = new DeathTextTemplateAnalyzer();
-        // ENG_Death_Screen_v2.png is a pre-cropped strip (the live capture ROI saved to disk), so it
-        // stands in for a frame directly; re-cropping the capture region would chop the text ends.
+        // Production templates are pre-cropped capture strips, so analyze the strip directly.
         var result = WithLockedPixels(bitmap, getPixel => analyzer.Analyze(
             bitmap.Width,
             bitmap.Height,

@@ -2,6 +2,8 @@
 
 ## 2026-07-13
 
+- Testy referencyjne angielskiego ekranu smierci korzystaja teraz z utrzymywanego `ENG_Death_Screen_v9.png` jako pre-cropped capture stripu, zamiast wskazywac nieistniejacy asset `v2`. Pelna walidacja testowa jest odblokowana; wersje podniesiono do 1.13.17.
+
 - Profile Dark Souls wybieraja teraz wlasne procesy okna gry zamiast procesu Elden Ring; stare odziedziczone ustawienie jest migrowane, a status ostrzega o fallbacku na ekran glowny. Dodano testy resolvera czterech profili i podniesiono wersje do 1.13.16.
 
 - Naprawiono fallback OCR dla zwyciestwa bossa: przy slabym sygnale obrazu wykorzystywany jest wspoldzielony, leniwy OCR klatki, nawet gdy death detector go nie potrzebuje. Dodano regresje i podniesiono wersje do 1.13.15.
