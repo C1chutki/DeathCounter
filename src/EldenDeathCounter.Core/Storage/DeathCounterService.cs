@@ -4,6 +4,8 @@ namespace EldenDeathCounter.Core.Storage;
 
 public sealed class DeathCounterService
 {
+    private const int MaximumStoredDeathEvents = 1_000;
+    private const int DeathEventArchiveBatchSize = 250;
     private readonly DeathCounterStore _store;
     private readonly ILogService _log;
     private string _dataFilePath;
@@ -331,6 +333,7 @@ public sealed class DeathCounterService
         try
         {
             mutate();
+            await ArchiveExcessDeathEventsAsync();
             await _store.SaveAsync(_dataFilePath, State);
             _log.Info(createLogMessage());
             StateChanged?.Invoke(this, EventArgs.Empty);
@@ -339,5 +342,22 @@ public sealed class DeathCounterService
         {
             _saveLock.Release();
         }
+    }
+
+    private async Task ArchiveExcessDeathEventsAsync()
+    {
+        var excessEventCount = State.DeathEvents.Count - MaximumStoredDeathEvents;
+        if (excessEventCount <= 0)
+        {
+            return;
+        }
+
+        var eventsToArchive = State.DeathEvents
+            .OrderBy(item => item.Timestamp)
+            .Take(Math.Max(excessEventCount, DeathEventArchiveBatchSize))
+            .ToList();
+
+        await _store.ArchiveDeathEventsAsync(_dataFilePath, eventsToArchive);
+        State.DeathEvents.RemoveAll(item => eventsToArchive.Contains(item));
     }
 }

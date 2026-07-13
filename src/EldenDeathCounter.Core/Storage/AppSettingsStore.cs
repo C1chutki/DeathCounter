@@ -32,9 +32,23 @@ public sealed class AppSettingsStore
                 return defaults;
             }
 
-            await using var stream = File.OpenRead(settingsFilePath);
-            var settings = await JsonSerializer.DeserializeAsync<AppSettings>(stream, JsonFileOptions.Value);
-            return Normalize(settings ?? AppSettings.CreateDefault(desktopPath, profile), desktopPath, profile);
+            AppSettings? settings;
+            await using (var stream = File.OpenRead(settingsFilePath))
+            {
+                settings = await JsonSerializer.DeserializeAsync<AppSettings>(stream, JsonFileOptions.Value);
+            }
+
+            var normalized = Normalize(
+                settings ?? AppSettings.CreateDefault(desktopPath, profile),
+                desktopPath,
+                profile,
+                out var migrated);
+            if (migrated)
+            {
+                await SaveAsync(settingsFilePath, normalized);
+            }
+
+            return normalized;
         }
         catch (JsonException exception)
         {
@@ -66,9 +80,10 @@ public sealed class AppSettingsStore
         }
     }
 
-    private static AppSettings Normalize(AppSettings settings, string desktopPath, AppGameProfile profile)
+    private static AppSettings Normalize(AppSettings settings, string desktopPath, AppGameProfile profile, out bool migrated)
     {
         var defaults = AppSettings.CreateDefault(desktopPath, profile);
+        migrated = settings.SettingsVersion < AppSettings.CurrentSettingsVersion;
 
         if (string.IsNullOrWhiteSpace(settings.DataFolderPath))
         {
@@ -89,15 +104,13 @@ public sealed class AppSettingsStore
         settings.BossHealthBarStyle = BossHealthBarStyles.Normalize(settings.BossHealthBarStyle);
         settings.DetectionMode = DetectionModePresets.Get(settings.DetectionMode).Mode;
 
-        if (settings.DetectionIntervalMs == 500 && settings.DetectionCooldownSeconds == 5)
+        if (migrated && settings.DetectionIntervalMs == 500 && settings.DetectionCooldownSeconds == 5)
         {
             settings.DetectionIntervalMs = defaults.DetectionIntervalMs;
             settings.DetectionCooldownSeconds = defaults.DetectionCooldownSeconds;
         }
-        else
-        {
-            settings.DetectionIntervalMs = DetectionTimingOptions.NormalizeBaseIntervalMs(settings.DetectionIntervalMs);
-        }
+
+        settings.DetectionIntervalMs = DetectionTimingOptions.NormalizeBaseIntervalMs(settings.DetectionIntervalMs);
 
         if (settings.DetectionCooldownSeconds <= 0)
         {
@@ -135,11 +148,17 @@ public sealed class AppSettingsStore
         settings.ManualSubtractHotkey = string.IsNullOrWhiteSpace(settings.ManualSubtractHotkey)
             ? defaults.ManualSubtractHotkey
             : settings.ManualSubtractHotkey;
-        if (settings.ManualAddHotkey.Equals("F8", StringComparison.OrdinalIgnoreCase) &&
+        if (migrated &&
+            settings.ManualAddHotkey.Equals("F8", StringComparison.OrdinalIgnoreCase) &&
             settings.ManualSubtractHotkey.Equals("F9", StringComparison.OrdinalIgnoreCase))
         {
             settings.ManualAddHotkey = defaults.ManualAddHotkey;
             settings.ManualSubtractHotkey = defaults.ManualSubtractHotkey;
+        }
+
+        if (migrated)
+        {
+            settings.SettingsVersion = AppSettings.CurrentSettingsVersion;
         }
 
         settings.BossDefeatedHotkey = string.IsNullOrWhiteSpace(settings.BossDefeatedHotkey)

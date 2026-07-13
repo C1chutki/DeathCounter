@@ -21,18 +21,18 @@ public static class CounterExportService
         var bossHistoryCsv = Path.Combine(exportFolder, $"boss-history-{stamp}.csv");
         var backupZip = Path.Combine(exportFolder, $"profile-backup-{stamp}.zip");
 
-        await File.WriteAllTextAsync(deathEventsCsv, CreateDeathEventsCsv(state), Encoding.UTF8);
+        await File.WriteAllTextAsync(deathEventsCsv, CreateDeathEventsCsv(state.DeathEvents), Encoding.UTF8);
         await File.WriteAllTextAsync(bossHistoryCsv, CreateBossHistoryCsv(state), Encoding.UTF8);
         CreateBackupZip(backupZip, deathsFilePath, settingsFilePath);
 
         return new CounterExportResult(deathEventsCsv, bossHistoryCsv, backupZip);
     }
 
-    private static string CreateDeathEventsCsv(DeathCounterState state)
+    internal static string CreateDeathEventsCsv(IEnumerable<DeathEvent> events)
     {
         var builder = new StringBuilder();
         builder.AppendLine("timestamp,detectionMethod,note,countAfter,bossName,bossDeathCountAfter");
-        foreach (var item in state.DeathEvents.OrderBy(item => item.Timestamp))
+        foreach (var item in events.OrderBy(item => item.Timestamp))
         {
             AppendCsvRow(
                 builder,

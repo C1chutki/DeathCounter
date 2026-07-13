@@ -32,6 +32,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private readonly IDetectionEventLogService _detectionEventLog;
     private readonly string _desktopPath;
     private readonly Dispatcher _dispatcher;
+    private readonly SemaphoreSlim _detectionStateLock = new(1, 1);
     private AppGameProfile _activeGameProfile = AppGameProfile.EldenRing;
     private Window? _window;
     private string _detectionStatus = LocalizationService.Instance.GetString("Vm_DetectionStopped");
@@ -140,31 +141,31 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         RefreshBosses();
         RefreshStats();
 
-        StartDetectionCommand = new RelayCommand(_ => _ = StartDetectionAsync());
-        StopDetectionCommand = new RelayCommand(_ => _ = StopDetectionAsync());
-        ToggleDetectionCommand = new RelayCommand(_ => _ = ToggleDetectionAsync());
-        ResetCounterCommand = new RelayCommand(_ => _ = ResetCounterAsync());
-        AddDeathCommand = new RelayCommand(_ => _ = AddDeathAsync("manual-button", "Added from control window."));
-        SubtractDeathCommand = new RelayCommand(_ => _ = SubtractDeathAsync("manual-button", "Subtracted from control window."));
-        SetCounterCommand = new RelayCommand(_ => _ = SetCounterAsync());
-        ToggleOverlayCommand = new RelayCommand(_ => _ = ToggleOverlayAsync());
+        StartDetectionCommand = AsyncCommand(StartDetectionAsync);
+        StopDetectionCommand = AsyncCommand(StopDetectionAsync);
+        ToggleDetectionCommand = AsyncCommand(ToggleDetectionAsync);
+        ResetCounterCommand = AsyncCommand(ResetCounterAsync);
+        AddDeathCommand = AsyncCommand(() => AddDeathAsync("manual-button", "Added from control window."));
+        SubtractDeathCommand = AsyncCommand(() => SubtractDeathAsync("manual-button", "Subtracted from control window."));
+        SetCounterCommand = AsyncCommand(SetCounterAsync);
+        ToggleOverlayCommand = AsyncCommand(ToggleOverlayAsync);
         OpenDataFileCommand = new RelayCommand(_ => OpenPath(Path.Combine(Settings.DataFolderPath, "deaths.json")));
         OpenDataFolderCommand = new RelayCommand(_ => OpenPath(Settings.DataFolderPath));
-        SaveSettingsCommand = new RelayCommand(_ => _ = SaveSettingsAsync());
-        ResetDetectionSettingsCommand = new RelayCommand(_ => _ = ResetDetectionSettingsAsync());
-        ResetProfileSettingsCommand = new RelayCommand(_ => _ = ResetProfileSettingsAsync());
-        ApplyCharacterProfileCommand = new RelayCommand(_ => _ = ApplyCharacterProfileAsync());
-        SetActiveBossCommand = new RelayCommand(_ => _ = SetActiveBossAsync());
-        ClearActiveBossCommand = new RelayCommand(_ => _ = ClearActiveBossAsync("manual-button"));
-        BossDefeatedCommand = new RelayCommand(_ => _ = MarkBossDefeatedAsync("manual-button"));
-        SkipBossCommand = new RelayCommand(_ => _ = SkipBossAsync("manual-button"));
+        SaveSettingsCommand = AsyncCommand(SaveSettingsAsync);
+        ResetDetectionSettingsCommand = AsyncCommand(ResetDetectionSettingsAsync);
+        ResetProfileSettingsCommand = AsyncCommand(ResetProfileSettingsAsync);
+        ApplyCharacterProfileCommand = AsyncCommand(ApplyCharacterProfileAsync);
+        SetActiveBossCommand = AsyncCommand(SetActiveBossAsync);
+        ClearActiveBossCommand = AsyncCommand(() => ClearActiveBossAsync("manual-button"));
+        BossDefeatedCommand = AsyncCommand(() => MarkBossDefeatedAsync("manual-button"));
+        SkipBossCommand = AsyncCommand(() => SkipBossAsync("manual-button"));
         ClearDetectionLogCommand = new RelayCommand(_ => DetectionLogEntries.Clear());
         StartDiagnosticsCommand = new RelayCommand(_ => StartDiagnosticsSession());
-        ExportProfileCommand = new RelayCommand(_ => _ = ExportProfileAsync());
+        ExportProfileCommand = AsyncCommand(ExportProfileAsync);
         OpenAddBossHistoryEditorCommand = new RelayCommand(_ => OpenAddBossHistoryEditor());
         OpenBossHistoryEditorCommand = new RelayCommand(OpenBossHistoryEditor);
-        SaveBossHistoryEditorCommand = new RelayCommand(_ => _ = SaveBossHistoryEditorAsync());
-        DeleteBossHistoryEditorCommand = new RelayCommand(_ => _ = DeleteBossHistoryEditorAsync());
+        SaveBossHistoryEditorCommand = AsyncCommand(SaveBossHistoryEditorAsync);
+        DeleteBossHistoryEditorCommand = AsyncCommand(DeleteBossHistoryEditorAsync);
         CancelBossHistoryEditorCommand = new RelayCommand(_ => CloseBossHistoryEditor());
 
         if (_log is ILogEntrySource logEntrySource)
@@ -677,8 +678,17 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         return true;
     }
 
-    public async Task StartDetectionAsync()
+    public Task StartDetectionAsync() => RunDetectionStateChangeAsync(StartDetectionCoreAsync);
+
+    public Task StopDetectionAsync() => RunDetectionStateChangeAsync(StopDetectionCoreAsync);
+
+    private async Task StartDetectionCoreAsync()
     {
+        if (_isShuttingDown)
+        {
+            return;
+        }
+
         if (!await ApplySettingsFromTextAsync())
         {
             return;
@@ -690,7 +700,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ConfigureDetectionDiagnostics();
     }
 
-    public async Task StopDetectionAsync()
+    private async Task StopDetectionCoreAsync()
     {
         IsDetectionRunning = false;
         await _counterService.PauseActiveBossTimerAsync();
@@ -708,9 +718,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         _isShuttingDown = true;
         try
         {
-            IsDetectionRunning = false;
-            await _detectionService.StopAsync();
-            await _counterService.PauseActiveBossTimerAsync();
+            await StopDetectionAsync();
         }
         catch (Exception exception)
         {
@@ -769,15 +777,22 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
                 IsDetectionRunning));
     }
 
-    private async Task ToggleDetectionAsync()
+    private Task ToggleDetectionAsync()
     {
-        if (IsDetectionRunning)
-        {
-            await StopDetectionAsync();
-            return;
-        }
+        return RunDetectionStateChangeAsync(IsDetectionRunning ? StopDetectionCoreAsync : StartDetectionCoreAsync);
+    }
 
-        await StartDetectionAsync();
+    private async Task RunDetectionStateChangeAsync(Func<Task> operation)
+    {
+        await _detectionStateLock.WaitAsync();
+        try
+        {
+            await operation();
+        }
+        finally
+        {
+            _detectionStateLock.Release();
+        }
     }
 
     private async Task ResetCounterAsync()
@@ -1250,7 +1265,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private void HandleHotkey(string name)
     {
-        _ = _dispatcher.InvokeAsync(async () =>
+        _ = _dispatcher.InvokeAsync(() => ExecuteHotkeyAsync(name));
+    }
+
+    private async void ExecuteHotkeyAsync(string name)
+    {
+        try
         {
             if (name == "manual-add")
             {
@@ -1276,7 +1296,19 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             {
                 await SkipBossAsync("manual-hotkey");
             }
-        });
+        }
+        catch (Exception exception)
+        {
+            HandleCommandException(exception);
+        }
+    }
+
+    private RelayCommand AsyncCommand(Func<Task> execute) => new(execute, HandleCommandException);
+
+    private void HandleCommandException(Exception exception)
+    {
+        _log.Error("Command execution failed.", exception);
+        DetectionStatus = "Operation failed. Check the detection log.";
     }
 
     private void RefreshCounter()

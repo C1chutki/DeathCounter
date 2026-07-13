@@ -24,4 +24,8 @@
     <ProjectReference Include="..\..\src\EldenDeathCounter.Core\EldenDeathCounter.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\..\src\EldenDeathCounter\UI\RelayCommand.cs" Link="UI\RelayCommand.cs" />
+  </ItemGroup>
+
 </Project>

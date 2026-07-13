@@ -316,6 +316,34 @@ public sealed class DeathCounterServiceBossTests
         Assert.Equal(4, (await store.LoadAsync(darkSouls3DataFile)).CurrentDeathCount);
     }
 
+    [Fact]
+    public async Task AddDeathArchivesOldEventsWhenRetentionLimitIsExceeded()
+    {
+        var (service, dataFile) = CreateService();
+        var startedAt = DateTimeOffset.UtcNow.AddHours(-1);
+        service.State.DeathEvents = Enumerable.Range(0, 1_000)
+            .Select(index => new DeathEvent
+            {
+                Timestamp = startedAt.AddSeconds(index),
+                DetectionMethod = "manual-button",
+                Note = $"Event {index}",
+                CountAfter = index
+            })
+            .ToList();
+
+        await service.AddDeathAsync("manual-button", "Newest event.");
+
+        Assert.Equal(751, service.State.DeathEvents.Count);
+        Assert.DoesNotContain(service.State.DeathEvents, item => item.Note == "Event 0");
+        Assert.Contains(service.State.DeathEvents, item => item.Note == "Event 250");
+
+        var archivePath = Assert.Single(Directory.GetFiles(Path.Combine(Path.GetDirectoryName(dataFile)!, "archives"), "death-events-*.csv"));
+        var archiveCsv = await File.ReadAllTextAsync(archivePath);
+        Assert.Contains("Event 0", archiveCsv);
+        Assert.DoesNotContain("Event 250", archiveCsv);
+        Assert.Equal(751, (await new DeathCounterStore(new InMemoryLogService()).LoadAsync(dataFile)).DeathEvents.Count);
+    }
+
     private static (DeathCounterService Service, string DataFile) CreateService()
     {
         var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));

@@ -105,9 +105,17 @@ public sealed class ScreenCaptureService : IScreenCaptureService
     private static CapturedFrame CaptureRegion(int left, int top, int width, int height)
     {
         var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-        using var graphics = Graphics.FromImage(bitmap);
-        graphics.CopyFromScreen(left, top, 0, 0, new Size(width, height), CopyPixelOperation.SourceCopy);
-        return new CapturedFrame(bitmap);
+        try
+        {
+            using var graphics = Graphics.FromImage(bitmap);
+            graphics.CopyFromScreen(left, top, 0, 0, new Size(width, height), CopyPixelOperation.SourceCopy);
+            return new CapturedFrame(bitmap);
+        }
+        catch
+        {
+            bitmap.Dispose();
+            throw;
+        }
     }
 
     private Screen SelectScreen(string captureTarget)
@@ -225,7 +233,8 @@ public sealed class ScreenCaptureService : IScreenCaptureService
 
         try
         {
-            processName = Process.GetProcessById((int)processId).ProcessName;
+            using var process = Process.GetProcessById((int)processId);
+            processName = process.ProcessName;
             return true;
         }
         catch

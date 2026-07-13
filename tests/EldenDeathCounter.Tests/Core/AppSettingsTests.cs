@@ -2,6 +2,7 @@ using EldenDeathCounter.Core.Configuration;
 using EldenDeathCounter.Core.Detection;
 using EldenDeathCounter.Core.Logging;
 using EldenDeathCounter.Core.Storage;
+using System.Text.Json;
 
 namespace EldenDeathCounter.Tests.Core;
 
@@ -41,6 +42,7 @@ public sealed class AppSettingsTests
         Assert.Contains("GOD SLAIN", settings.BossVictoryPhrases);
         Assert.Equal("F9", settings.ManualAddHotkey);
         Assert.Equal("F8", settings.ManualSubtractHotkey);
+        Assert.Equal(AppSettings.CurrentSettingsVersion, settings.SettingsVersion);
         Assert.Equal("F7", settings.BossDefeatedHotkey);
         Assert.Equal("Ctrl+Shift+O", settings.OverlayToggleHotkey);
         Assert.Equal("F6", settings.DetectionToggleHotkey);
@@ -239,6 +241,31 @@ public sealed class AppSettingsTests
 
         Assert.Equal(350, settings.DetectionIntervalMs);
         Assert.Equal(25, settings.DetectionCooldownSeconds);
+        using var persisted = JsonDocument.Parse(await File.ReadAllTextAsync(settingsPath));
+        Assert.Equal(AppSettings.CurrentSettingsVersion, persisted.RootElement.GetProperty("settingsVersion").GetInt32());
+    }
+
+    [Fact]
+    public async Task CurrentSettingsVersionPreservesLegalLegacyValues()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var settingsPath = Path.Combine(folder, "appsettings.json");
+        var store = new AppSettingsStore(new FileLogService(Path.Combine(folder, "log.txt")));
+        var settings = AppSettings.CreateDefault(@"C:\Users\TestUser\Desktop");
+        settings.DetectionIntervalMs = 500;
+        settings.DetectionCooldownSeconds = 5;
+        settings.ManualAddHotkey = "F8";
+        settings.ManualSubtractHotkey = "F9";
+
+        await store.SaveAsync(settingsPath, settings);
+        var reloaded = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop");
+
+        Assert.Equal(AppSettings.CurrentSettingsVersion, reloaded.SettingsVersion);
+        Assert.Equal(500, reloaded.DetectionIntervalMs);
+        Assert.Equal(5, reloaded.DetectionCooldownSeconds);
+        Assert.Equal("F8", reloaded.ManualAddHotkey);
+        Assert.Equal("F9", reloaded.ManualSubtractHotkey);
     }
 
     [Fact]

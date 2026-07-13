@@ -5,6 +5,10 @@ namespace EldenDeathCounter.Core.Configuration;
 
 public sealed class AppSettings
 {
+    public const int CurrentSettingsVersion = 1;
+
+    public int SettingsVersion { get; set; }
+
     public bool OverlayEnabled { get; set; } = true;
 
     public double OverlayX { get; set; } = 40;
@@ -95,6 +99,7 @@ public sealed class AppSettings
     {
         return new AppSettings
         {
+            SettingsVersion = CurrentSettingsVersion,
             OverlayEnabled = true,
             OverlayX = 40,
             OverlayY = 40,
