@@ -84,7 +84,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         DetectionIntervalMsText = string.Empty;
         DetectionCooldownSecondsText = string.Empty;
         DetectionSensitivityText = string.Empty;
-        foreach (var option in CreateCaptureTargetOptions())
+        foreach (var option in CreateCaptureTargetOptions(_activeGameProfile))
         {
             CaptureTargetOptions.Add(option);
         }
@@ -655,6 +655,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         await _counterService.SwitchDataFileAsync(Path.Combine(Settings.DataFolderPath, "deaths.json"));
         ConfigureDetectionDiagnostics();
 
+        RebuildLocalizedOptions();
         RefreshSettingsTextFields();
         RefreshCounter();
         RefreshStats();
@@ -1437,11 +1438,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         return $"{(int)safeDuration.TotalHours:00}:{safeDuration.Minutes:00}:{safeDuration.Seconds:00}";
     }
 
-    private static IReadOnlyList<CaptureTargetOption> CreateCaptureTargetOptions()
+    private static IReadOnlyList<CaptureTargetOption> CreateCaptureTargetOptions(AppGameProfile profile)
     {
         var options = new List<CaptureTargetOption>
         {
-            new("EldenRingWindow", L("Capture_EldenRingWindow")),
+            new(GameWindowTargetResolver.GetCaptureTarget(profile), L("Capture_EldenRingWindow")),
             new("PrimaryScreen", L("Capture_PrimaryScreen"))
         };
 
@@ -1598,7 +1599,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         var captureTarget = SelectedCaptureTargetValue;
         CaptureTargetOptions.Clear();
-        foreach (var option in CreateCaptureTargetOptions())
+        foreach (var option in CreateCaptureTargetOptions(_activeGameProfile))
         {
             CaptureTargetOptions.Add(option);
         }

@@ -2,6 +2,8 @@
 
 ## 2026-07-13
 
+- Profile Dark Souls wybieraja teraz wlasne procesy okna gry zamiast procesu Elden Ring; stare odziedziczone ustawienie jest migrowane, a status ostrzega o fallbacku na ekran glowny. Dodano testy resolvera czterech profili i podniesiono wersje do 1.13.16.
+
 - Naprawiono fallback OCR dla zwyciestwa bossa: przy slabym sygnale obrazu wykorzystywany jest wspoldzielony, leniwy OCR klatki, nawet gdy death detector go nie potrzebuje. Dodano regresje i podniesiono wersje do 1.13.15.
 
 ## 2026-07-12

@@ -3,6 +3,7 @@ using System.Drawing.Imaging;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using EldenDeathCounter.Core.Configuration;
 using EldenDeathCounter.Core.Detection;
 using EldenDeathCounter.Core.Logging;
 
@@ -13,8 +14,9 @@ public sealed class ScreenCaptureService : IScreenCaptureService
     private readonly ILogService _log;
     private string? _loggedDeathTextCaptureTarget;
     private string? _loggedBossHealthBarCaptureTarget;
+    private string? _loggedGameWindowFallbackCaptureTarget;
 
-    // Resolving "EldenRingWindow" enumerates every top-level window and opens a process handle per
+    // Resolving a game window enumerates every top-level window and opens a process handle per
     // visible window. That answer only changes when the game starts or moves monitors, so we cache it
     // briefly instead of paying the EnumWindows cost on every capture (death + boss bar, ~3×/s each).
     private static readonly TimeSpan ScreenResolutionCacheDuration = TimeSpan.FromSeconds(2);
@@ -27,6 +29,8 @@ public sealed class ScreenCaptureService : IScreenCaptureService
     {
         _log = log;
     }
+
+    public string? CaptureStatus { get; private set; }
 
     public Task<CapturedFrame> CaptureAsync(string captureTarget, CancellationToken cancellationToken)
     {
@@ -109,9 +113,10 @@ public sealed class ScreenCaptureService : IScreenCaptureService
     private Screen SelectScreen(string captureTarget)
     {
         // Only the dynamic game-window lookup is expensive; explicit "Screen:N"/primary targets are
-        // cheap, so we cache exclusively the EldenRingWindow path and resolve the rest every time.
-        if (!captureTarget.Equals("EldenRingWindow", StringComparison.OrdinalIgnoreCase))
+        // cheap, so we cache exclusively game-window paths and resolve the rest every time.
+        if (!GameWindowTargetResolver.IsGameWindowTarget(captureTarget))
         {
+            CaptureStatus = null;
             return SelectScreenUncached(captureTarget);
         }
 
@@ -132,7 +137,7 @@ public sealed class ScreenCaptureService : IScreenCaptureService
         }
     }
 
-    private static Screen SelectScreenUncached(string captureTarget)
+    private Screen SelectScreenUncached(string captureTarget)
     {
         var screens = Screen.AllScreens;
         if (screens.Length == 0)
@@ -140,10 +145,21 @@ public sealed class ScreenCaptureService : IScreenCaptureService
             throw new InvalidOperationException("No screens are available for capture.");
         }
 
-        if (captureTarget.Equals("EldenRingWindow", StringComparison.OrdinalIgnoreCase) &&
-            TryFindGameWindowScreen(screens, out var gameScreen))
+        if (GameWindowTargetResolver.IsGameWindowTarget(captureTarget))
         {
-            return gameScreen;
+            if (TryFindGameWindowScreen(captureTarget, screens, out var gameScreen))
+            {
+                CaptureStatus = null;
+                _loggedGameWindowFallbackCaptureTarget = null;
+                return gameScreen;
+            }
+
+            CaptureStatus = "Detection running; game window not found, using primary screen.";
+            if (!string.Equals(_loggedGameWindowFallbackCaptureTarget, captureTarget, StringComparison.OrdinalIgnoreCase))
+            {
+                _loggedGameWindowFallbackCaptureTarget = captureTarget;
+                _log.Info($"Game window for target='{captureTarget}' was not found; falling back to the primary screen.");
+            }
         }
 
         if (captureTarget.StartsWith("Screen:", StringComparison.OrdinalIgnoreCase) &&
@@ -157,14 +173,14 @@ public sealed class ScreenCaptureService : IScreenCaptureService
         return Screen.PrimaryScreen ?? screens[0];
     }
 
-    private static bool TryFindGameWindowScreen(IReadOnlyList<Screen> screens, out Screen screen)
+    private static bool TryFindGameWindowScreen(string captureTarget, IReadOnlyList<Screen> screens, out Screen screen)
     {
         Screen? bestScreen = null;
         var bestArea = 0;
 
         EnumWindows((handle, _) =>
         {
-            if (!IsWindowVisible(handle) || !TryGetProcessName(handle, out var processName) || !IsEldenRingProcess(processName))
+            if (!IsWindowVisible(handle) || !TryGetProcessName(handle, out var processName) || !GameWindowTargetResolver.IsMatchingProcess(captureTarget, processName))
             {
                 return true;
             }
@@ -216,12 +232,6 @@ public sealed class ScreenCaptureService : IScreenCaptureService
         {
             return false;
         }
-    }
-
-    private static bool IsEldenRingProcess(string processName)
-    {
-        return processName.Equals("eldenring", StringComparison.OrdinalIgnoreCase) ||
-               processName.Equals("start_protected_game", StringComparison.OrdinalIgnoreCase);
     }
 
     private delegate bool EnumWindowsProc(IntPtr handle, IntPtr parameter);

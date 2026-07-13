@@ -125,7 +125,8 @@ public sealed class AppSettingsStore
             settings.DiagnosticsRetentionDays = defaults.DiagnosticsRetentionDays;
         }
 
-        settings.CaptureTarget = string.IsNullOrWhiteSpace(settings.CaptureTarget)
+        settings.CaptureTarget = string.IsNullOrWhiteSpace(settings.CaptureTarget) ||
+                                 (profile != AppGameProfile.EldenRing && settings.CaptureTarget.Equals("EldenRingWindow", StringComparison.OrdinalIgnoreCase))
             ? defaults.CaptureTarget
             : settings.CaptureTarget;
         settings.ManualAddHotkey = string.IsNullOrWhiteSpace(settings.ManualAddHotkey)

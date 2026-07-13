@@ -103,7 +103,7 @@
     <sys:String x:Key="Sort_Ascending">Ascending</sys:String>
 
     <!-- Capture target options -->
-    <sys:String x:Key="Capture_EldenRingWindow">Elden Ring window</sys:String>
+    <sys:String x:Key="Capture_EldenRingWindow">Game window</sys:String>
     <sys:String x:Key="Capture_PrimaryScreen">Primary screen</sys:String>
     <sys:String x:Key="Capture_ScreenFormat">Screen {0} ({1}x{2} at {3},{4}{5})</sys:String>
     <sys:String x:Key="Capture_PrimarySuffix">, primary</sys:String>

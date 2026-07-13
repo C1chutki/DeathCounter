@@ -46,6 +46,7 @@ public sealed class DeathDetectionService
     private int _lastLoggedBossBarCount = -1;
     private DateTimeOffset? _fullDiagnosticsUntil;
     private AppSettings? _lastSettings;
+    private string? _lastCaptureStatus;
     private long _detectionFrameIndex;
 
     // OCR is the fallback for death/victory text the template misses. It is the single most expensive
@@ -88,6 +89,7 @@ public sealed class DeathDetectionService
         _lastSettings = settings;
         _bossEncounterTracker.Reset();
         _lastAutoPublishedBossName = null;
+        _lastCaptureStatus = "Detection running";
         _loopTask = Task.Run(() => RunAsync(settings, _cancellationTokenSource.Token));
         ConfigureDiagnostics(settings, detectionRunning: true);
         _log.Info("Detection started.");
@@ -232,6 +234,7 @@ public sealed class DeathDetectionService
                 var frameStopwatch = Stopwatch.StartNew();
                 using var frame = await _captureService.CaptureAsync(settings.CaptureTarget, cancellationToken);
                 var captureMs = frameStopwatch.ElapsedMilliseconds;
+                RaiseCaptureStatusIfChanged();
 
                 var signal = ImageDeathSignalMatch.NoMatch;
                 var imageSignal = ImageDeathSignalMatch.NoMatch;
@@ -687,6 +690,18 @@ public sealed class DeathDetectionService
     private void RaiseStatus(string status, DateTimeOffset? lastDetectedDeath)
     {
         StatusChanged?.Invoke(this, new DetectionStatusChangedEventArgs(status, lastDetectedDeath));
+    }
+
+    private void RaiseCaptureStatusIfChanged()
+    {
+        var status = _captureService.CaptureStatus ?? "Detection running";
+        if (string.Equals(_lastCaptureStatus, status, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        _lastCaptureStatus = status;
+        RaiseStatus(status, _lastDetectedDeath);
     }
 
     private async Task UpdateBossNameFromScreenAsync(AppSettings settings, bool hasDeathOrVictorySignal, CancellationToken cancellationToken)

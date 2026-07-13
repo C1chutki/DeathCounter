@@ -110,7 +110,7 @@ public sealed class AppSettings
             DetectionIntervalMs = DetectionTimingOptions.DefaultBaseIntervalMs,
             DetectionCooldownSeconds = 25,
             DetectionSensitivity = 0.8,
-            CaptureTarget = "EldenRingWindow",
+            CaptureTarget = GameWindowTargetResolver.GetCaptureTarget(profile),
             DataFolderPath = profile.GetDataFolderPath(desktopPath),
             CharacterProfileName = string.Empty,
             DiagnosticsMode = DiagnosticsMode.Events,

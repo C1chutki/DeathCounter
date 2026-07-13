@@ -57,6 +57,21 @@ public sealed class AppSettingsTests
         var settings = AppSettings.CreateDefault(@"C:\Users\TestUser\Desktop", AppGameProfile.DarkSouls3);
 
         Assert.Equal("DarkSouls3", settings.GameId);
+        Assert.Equal("DarkSouls3Window", settings.CaptureTarget);
+    }
+
+    [Fact]
+    public async Task LoadingLegacyDarkSoulsSettingsReplacesTheOldEldenRingWindowTarget()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "EldenDeathCounterTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var settingsPath = Path.Combine(folder, "appsettings.json");
+        await File.WriteAllTextAsync(settingsPath, """{"captureTarget":"EldenRingWindow"}""");
+        var store = new AppSettingsStore(new FileLogService(Path.Combine(folder, "log.txt")));
+
+        var settings = await store.LoadAsync(settingsPath, @"C:\Users\TestUser\Desktop", AppGameProfile.DarkSouls3);
+
+        Assert.Equal("DarkSouls3Window", settings.CaptureTarget);
     }
 
     [Fact]

@@ -103,7 +103,7 @@
     <sys:String x:Key="Sort_Ascending">Rosnąco</sys:String>
 
     <!-- Capture target options -->
-    <sys:String x:Key="Capture_EldenRingWindow">Okno Elden Ring</sys:String>
+    <sys:String x:Key="Capture_EldenRingWindow">Okno gry</sys:String>
     <sys:String x:Key="Capture_PrimaryScreen">Ekran główny</sys:String>
     <sys:String x:Key="Capture_ScreenFormat">Ekran {0} ({1}x{2} w {3},{4}{5})</sys:String>
     <sys:String x:Key="Capture_PrimarySuffix">, główny</sys:String>
