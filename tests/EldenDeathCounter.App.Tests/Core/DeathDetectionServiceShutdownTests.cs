@@ -50,6 +50,54 @@ public sealed class DeathDetectionServiceShutdownTests
         Assert.False(service.IsRunning);
     }
 
+    [Fact]
+    public async Task BossVictoryRunsOcrWhenDeathImageDoesNotRequireIt()
+    {
+        var log = new InMemoryLogService();
+        var counterService = new DeathCounterService(
+            new DeathCounterStore(log),
+            log,
+            Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
+            new DeathCounterState());
+        await counterService.SetActiveBossAsync("Margit");
+
+        var ocrService = new CountingTextRecognitionService("GREAT ENEMY FELLED");
+        var service = new DeathDetectionService(
+            new RepeatingCaptureService(),
+            ocrService,
+            new NoMatchDeathSignalDetector(),
+            new WeakBossVictorySignalDetector(),
+            new EmptyBossNameDetector(),
+            counterService,
+            log,
+            new InMemoryDetectionEventLogService());
+        var bossDefeated = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        counterService.StateChanged += (_, _) =>
+        {
+            if (counterService.State.BossHistory.Count == 1)
+            {
+                bossDefeated.TrySetResult();
+            }
+        };
+        var settings = AppSettings.CreateDefault(Environment.CurrentDirectory, AppGameProfile.EldenRing);
+        settings.AutoDetectBossNames = false;
+        settings.BossVictoryPhrases = ["GREAT ENEMY FELLED"];
+
+        service.Start(settings);
+        try
+        {
+            await bossDefeated.Task.WaitAsync(TimeSpan.FromSeconds(3));
+
+            Assert.Null(counterService.State.ActiveBoss);
+            Assert.Single(counterService.State.BossHistory);
+            Assert.Equal(2, ocrService.CallCount);
+        }
+        finally
+        {
+            await service.StopAsync();
+        }
+    }
+
     private static DeathDetectionService CreateService(IScreenCaptureService captureService)
     {
         var log = new InMemoryLogService();
@@ -99,6 +147,17 @@ public sealed class DeathDetectionServiceShutdownTests
         public Task<string> RecognizeTextAsync(Bitmap bitmap, CancellationToken cancellationToken) => Task.FromResult(string.Empty);
     }
 
+    private sealed class CountingTextRecognitionService(string text) : ITextRecognitionService
+    {
+        public int CallCount { get; private set; }
+
+        public Task<string> RecognizeTextAsync(Bitmap bitmap, CancellationToken cancellationToken)
+        {
+            CallCount++;
+            return Task.FromResult(text);
+        }
+    }
+
     private sealed class NoMatchDeathSignalDetector : IImageDeathSignalDetector
     {
         public ImageDeathSignalMatch Analyze(
@@ -113,6 +172,22 @@ public sealed class DeathDetectionServiceShutdownTests
     private sealed class NoMatchBossVictorySignalDetector : IImageBossVictorySignalDetector
     {
         public ImageDeathSignalMatch Analyze(Bitmap bitmap, double sensitivity, string gameId, string gameLanguage) => ImageDeathSignalMatch.NoMatch;
+    }
+
+    private sealed class WeakBossVictorySignalDetector : IImageBossVictorySignalDetector
+    {
+        public ImageDeathSignalMatch Analyze(Bitmap bitmap, double sensitivity, string gameId, string gameLanguage) =>
+            new(false, DetectionOcrGate.WeakImageSignalFloor, "template:boss-victory", 1);
+    }
+
+    private sealed class RepeatingCaptureService : IScreenCaptureService
+    {
+        public Task<CapturedFrame> CaptureAsync(string captureTarget, CancellationToken cancellationToken) =>
+            Task.FromResult(new CapturedFrame(new Bitmap(1, 1)));
+
+        public Task<CapturedFrame> CaptureFullScreenAsync(string captureTarget, CancellationToken cancellationToken) => CaptureAsync(captureTarget, cancellationToken);
+
+        public Task<CapturedFrame> CaptureBossHealthBarAsync(string captureTarget, CancellationToken cancellationToken) => CaptureAsync(captureTarget, cancellationToken);
     }
 
     private sealed class EmptyBossNameDetector : IBossNameDetector

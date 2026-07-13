@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-07-13
+
+- Naprawiono fallback OCR dla zwyciestwa bossa: przy slabym sygnale obrazu wykorzystywany jest wspoldzielony, leniwy OCR klatki, nawet gdy death detector go nie potrzebuje. Dodano regresje i podniesiono wersje do 1.13.15.
+
+## 2026-07-12
+
+- Dodano do instrukcji projektu wymóg uruchomienia właściwej weryfikacji przed oznaczeniem zadania jako ukończonego oraz raportowania komendy, wyniku i ścieżki artefaktu; wersję podniesiono do 1.13.14.
+
 ## 2026-07-06
 
 - Dodano wariant detekcji `Convergence`, ktory laduje dodatkowa angielska liste bossow z moda obok bazowej listy Elden Ring, zeby OCR akceptowal nowych bossow Convergence przy ustawieniu PL/ENG. Dodano regresje resolvera i assetow listy bossow; wersje podniesiono do 1.13.13.

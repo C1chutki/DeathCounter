@@ -236,10 +236,25 @@ public sealed class DeathDetectionService
                 var signal = ImageDeathSignalMatch.NoMatch;
                 var imageSignal = ImageDeathSignalMatch.NoMatch;
                 var ocrText = string.Empty;
+                var ocrWasRecognized = false;
                 var match = _phraseMatcher.Match(ocrText, settings.DetectionPhrases, settings.DetectionSensitivity);
                 long ocrMs = 0;
                 long imageAnalysisMs = 0;
                 var imageAnalysisStatus = "template-no-match";
+
+                async Task<string> RecognizeFrameTextAsync()
+                {
+                    if (ocrWasRecognized)
+                    {
+                        return ocrText;
+                    }
+
+                    var ocrStartMs = frameStopwatch.ElapsedMilliseconds;
+                    ocrText = await _textRecognitionService.RecognizeTextAsync(frame.Bitmap, ocrLanguageHints, cancellationToken);
+                    ocrMs = frameStopwatch.ElapsedMilliseconds - ocrStartMs;
+                    ocrWasRecognized = true;
+                    return ocrText;
+                }
 
                 var wasPending = _deathSignalStabilizer.IsPending;
                 var confirmedSignal = (ImageDeathSignalMatch?)null;
@@ -266,9 +281,7 @@ public sealed class DeathDetectionService
 
                     if (!signal.IsMatch && DetectionOcrGate.ShouldRunOcr(imageSignal, _deathSignalStabilizer.IsPending))
                     {
-                        var ocrStartMs = frameStopwatch.ElapsedMilliseconds;
-                        ocrText = await _textRecognitionService.RecognizeTextAsync(frame.Bitmap, ocrLanguageHints, cancellationToken);
-                        ocrMs = frameStopwatch.ElapsedMilliseconds - ocrStartMs;
+                        ocrText = await RecognizeFrameTextAsync();
                         match = _phraseMatcher.Match(ocrText, settings.DetectionPhrases, settings.DetectionSensitivity);
                         if (DetectionOcrGate.ShouldAcceptOcrPhrase(match.IsMatch, imageSignal, _deathSignalStabilizer.IsPending))
                         {
@@ -409,7 +422,7 @@ public sealed class DeathDetectionService
                         frameIndex,
                         settings,
                         frame.Bitmap,
-                        ocrText,
+                        RecognizeFrameTextAsync,
                         signal.IsMatch,
                         cooldown);
                 }
@@ -521,7 +534,7 @@ public sealed class DeathDetectionService
         long frameIndex,
         AppSettings settings,
         Bitmap frame,
-        string ocrText,
+        Func<Task<string>> recognizeFrameTextAsync,
         bool hasDeathSignal,
         TimeSpan cooldown)
     {
@@ -534,6 +547,7 @@ public sealed class DeathDetectionService
         var signal = ImageDeathSignalMatch.NoMatch;
         var imageSignal = _bossVictorySignalDetector.Analyze(frame, settings.DetectionSensitivity, settings.GameId, settings.GameLanguage);
         var wasPending = _bossVictorySignalStabilizer.IsPending;
+        var ocrText = string.Empty;
         var phraseMatch = new DeathPhraseMatch(false, null, 0, string.Empty);
 
         if (imageSignal.IsMatch)
@@ -547,6 +561,7 @@ public sealed class DeathDetectionService
 
         if (!signal.IsMatch && DetectionOcrGate.ShouldRunOcr(imageSignal, wasPending))
         {
+            ocrText = await recognizeFrameTextAsync();
             phraseMatch = _phraseMatcher.Match(
                 ocrText,
                 settings.BossVictoryPhrases,
