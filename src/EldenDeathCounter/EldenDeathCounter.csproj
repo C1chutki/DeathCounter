@@ -33,7 +33,8 @@
     <SatelliteResourceLanguages>en;pl</SatelliteResourceLanguages>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
-    <Version>1.14.0</Version>
+    <ApplicationIcon>..\..\Assets\Icons\AppIcon.ico</ApplicationIcon>
+    <Version>1.14.2</Version>
   </PropertyGroup>
 
 </Project>

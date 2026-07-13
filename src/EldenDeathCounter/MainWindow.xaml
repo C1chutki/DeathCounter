@@ -2,6 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Elden Ring Death Counter"
+        Icon="pack://siteoforigin:,,,/Assets/Icons/AppIcon.png"
         Width="1280"
         Height="840"
         MinWidth="900"
@@ -857,7 +858,7 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,8">
-                    <TextBlock Text="v1.14.0"
+                    <TextBlock Text="v1.14.2"
                                FontFamily="{DynamicResource MonoFontFamily}"
                                FontSize="8.5"
                                Foreground="{DynamicResource Faint}"

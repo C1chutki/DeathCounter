@@ -2,6 +2,8 @@
 
 ## 2026-07-13
 
+- Ustawiono `Assets/Icons/AppIcon.png` jako ikonę głównego okna i paska zadań oraz dodano jej wariant `.ico` jako domyślną ikonę pliku wykonywalnego. Wersję podniesiono do 1.14.2.
+
 - Dodano wykrywanie Dark Souls II: ekran śmierci (własny niższy ROI i angielski szablon `YOU DIED`), ciemniejszy pasek bossa oraz angielskie dopasowanie nazw z listy DS2. Wersję podniesiono do 1.14.0.
 
 - Dodano zasady UTF-8 dla edytowanych plików tekstowych i kontrolę polskich znaków przed commitem; wersję podniesiono do 1.13.22.
