@@ -498,7 +498,7 @@
         <Style x:Key="RailNavButton" TargetType="RadioButton">
             <Setter Property="Width" Value="50" />
             <Setter Property="Height" Value="50" />
-            <Setter Property="Margin" Value="0,0,0,20" />
+            <Setter Property="Margin" Value="0,0,0,8" />
             <Setter Property="Foreground" Value="{DynamicResource MutedInk}" />
             <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
             <Setter Property="FontSize" Value="24" />
@@ -760,7 +760,7 @@
                        Stretch="Uniform" />
 
                 <!-- Navigation -->
-                <StackPanel Grid.Row="1" HorizontalAlignment="Center">
+                <StackPanel Grid.Row="1" HorizontalAlignment="Center" Margin="0,12,0,0">
                     <RadioButton GroupName="Navigation" IsChecked="True" Tag="0"
                                  Style="{StaticResource RailNavButton}"
                                  ToolTip="{DynamicResource Section_Dashboard}"
@@ -794,7 +794,7 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,8">
-                    <TextBlock Text="v1.14.7"
+                    <TextBlock Text="v1.14.8"
                                FontFamily="{DynamicResource MonoFontFamily}"
                                FontSize="8.5"
                                Foreground="{DynamicResource Faint}"

@@ -2,6 +2,8 @@
 
 ## 2026-07-14
 
+- Zwiększono odstęp między ikoną aplikacji a przyciskiem Dashboard oraz zmniejszono odstępy między przyciskami nawigacji. Wersję podniesiono do 1.14.8.
+
 - Zastąpiono rozmyte rastrowe ikony nawigacji natywnymi glifami wektorowymi Windows, w tym ponownie dodaną ikonę statystyk. Lokalne katalogi `.codex-build` są ignorowane; wersję podniesiono do 1.14.7.
 
 ## 2026-07-13
