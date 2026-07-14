@@ -41,7 +41,6 @@ public sealed record AppGameTheme(
     {
         Title = "Dark Souls 2 Death Counter",
         Primary = "#5F7355",
-        Secondary = "#2D3436",
         Tertiary = "#A68A4B",
         Neutral = "#10150F",
         OverlayBorder = "#5F7355",

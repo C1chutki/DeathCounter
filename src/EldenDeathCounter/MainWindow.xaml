@@ -5,8 +5,8 @@
         Icon="pack://siteoforigin:,,,/Assets/Icons/AppIcon.png"
         Width="1280"
         Height="840"
-        MinWidth="900"
-        MinHeight="720"
+        MinWidth="720"
+        MinHeight="560"
         WindowStartupLocation="CenterScreen"
         Background="#0B0B0B"
         FontFamily="{DynamicResource AppFontFamily}">
@@ -36,6 +36,7 @@
         <SolidColorBrush x:Key="Line2" Color="#34332E" />
         <SolidColorBrush x:Key="Ink2" Color="#B0A99B" />
         <SolidColorBrush x:Key="RailActiveFill" Color="#241A10" />
+        <SolidColorBrush x:Key="CircleRestBorder" Color="#6C5A2D" />
         <LinearGradientBrush x:Key="GoldPill" StartPoint="0,0" EndPoint="0,1">
             <GradientStop Color="#E08A3C" Offset="0" />
             <GradientStop Color="#A85A22" Offset="1" />
@@ -350,38 +351,26 @@
             </Setter>
         </Style>
 
+        <!-- Slim capsule thumb: rest = dimmed game accent, hover/drag = full accent.
+             All colors come from theme resources so every game recolors the scrollbar. -->
         <Style TargetType="{x:Type Thumb}">
-            <Setter Property="Background" Value="{DynamicResource ThumbSurface}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Gold}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="MinHeight" Value="44" />
-            <Setter Property="MinWidth" Value="44" />
+            <Setter Property="Focusable" Value="False" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Thumb}">
                         <Border x:Name="ThumbBorder"
                                 Margin="3"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="6"
-                                SnapsToDevicePixels="True">
-                            <Border.Effect>
-                                <DropShadowEffect BlurRadius="8"
-                                                  Direction="270"
-                                                  Opacity="0.22"
-                                                  ShadowDepth="0"
-                                                  Color="#E08A3C" />
-                            </Border.Effect>
-                        </Border>
+                                Background="{DynamicResource CircleRestBorder}"
+                                CornerRadius="3"
+                                SnapsToDevicePixels="True" />
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ThumbBorder" Property="Background" Value="#C9742E" />
-                                <Setter TargetName="ThumbBorder" Property="BorderBrush" Value="#F2B074" />
+                                <Setter TargetName="ThumbBorder" Property="Background" Value="{DynamicResource Gold}" />
                             </Trigger>
                             <Trigger Property="IsDragging" Value="True">
                                 <Setter TargetName="ThumbBorder" Property="Background" Value="{DynamicResource Gold}" />
-                                <Setter TargetName="ThumbBorder" Property="BorderBrush" Value="#F8C794" />
+                                <Setter TargetName="ThumbBorder" Property="Margin" Value="2" />
+                                <Setter TargetName="ThumbBorder" Property="CornerRadius" Value="4" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -389,44 +378,36 @@
             </Setter>
         </Style>
 
+        <!-- Borderless overlay scrollbar: transparent track with a hairline rail,
+             tinted by the active game theme (DimBorder / accent brushes). -->
         <Style TargetType="{x:Type ScrollBar}">
-            <Setter Property="Background" Value="#101010" />
-            <Setter Property="BorderBrush" Value="#2A2824" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Width" Value="16" />
-            <Setter Property="MinWidth" Value="16" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Width" Value="12" />
+            <Setter Property="MinWidth" Value="12" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ScrollBar}">
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="8"
-                                Margin="3"
-                                SnapsToDevicePixels="True">
-                            <Grid>
-                                <Border Width="2"
-                                        Background="#34332E"
-                                        CornerRadius="1"
-                                        HorizontalAlignment="Center"
-                                        Margin="0,8" />
-                                <Track x:Name="PART_Track"
-                                       IsDirectionReversed="True"
-                                       Margin="0,4">
-                                    <Track.DecreaseRepeatButton>
-                                        <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}"
-                                                      Style="{StaticResource ModernScrollBarButton}" />
-                                    </Track.DecreaseRepeatButton>
-                                    <Track.Thumb>
-                                        <Thumb />
-                                    </Track.Thumb>
-                                    <Track.IncreaseRepeatButton>
-                                        <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}"
-                                                      Style="{StaticResource ModernScrollBarButton}" />
-                                    </Track.IncreaseRepeatButton>
-                                </Track>
-                            </Grid>
-                        </Border>
+                        <Grid Background="{TemplateBinding Background}">
+                            <Border Width="1"
+                                    Background="{DynamicResource DimBorder}"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,6" />
+                            <Track x:Name="PART_Track"
+                                   IsDirectionReversed="True"
+                                   Margin="0,2">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}"
+                                                  Style="{StaticResource ModernScrollBarButton}" />
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb MinHeight="30" />
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}"
+                                                  Style="{StaticResource ModernScrollBarButton}" />
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -434,46 +415,34 @@
                 <Trigger Property="Orientation" Value="Horizontal">
                     <Setter Property="Width" Value="Auto" />
                     <Setter Property="MinWidth" Value="0" />
-                    <Setter Property="Height" Value="16" />
-                    <Setter Property="MinHeight" Value="16" />
+                    <Setter Property="Height" Value="12" />
+                    <Setter Property="MinHeight" Value="12" />
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ScrollBar}">
-                                <Border Background="{TemplateBinding Background}"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="{TemplateBinding BorderThickness}"
-                                        CornerRadius="8"
-                                        Margin="3"
-                                        SnapsToDevicePixels="True">
-                                    <Grid>
-                                        <Border Height="2"
-                                                Background="#34332E"
-                                                CornerRadius="1"
-                                                VerticalAlignment="Center"
-                                                Margin="8,0" />
-                                        <Track x:Name="PART_Track"
-                                               Margin="4,0">
-                                            <Track.DecreaseRepeatButton>
-                                                <RepeatButton Command="{x:Static ScrollBar.PageLeftCommand}"
-                                                              Style="{StaticResource ModernScrollBarButton}" />
-                                            </Track.DecreaseRepeatButton>
-                                            <Track.Thumb>
-                                                <Thumb />
-                                            </Track.Thumb>
-                                            <Track.IncreaseRepeatButton>
-                                                <RepeatButton Command="{x:Static ScrollBar.PageRightCommand}"
-                                                              Style="{StaticResource ModernScrollBarButton}" />
-                                            </Track.IncreaseRepeatButton>
-                                        </Track>
-                                    </Grid>
-                                </Border>
+                                <Grid Background="{TemplateBinding Background}">
+                                    <Border Height="1"
+                                            Background="{DynamicResource DimBorder}"
+                                            VerticalAlignment="Center"
+                                            Margin="6,0" />
+                                    <Track x:Name="PART_Track"
+                                           Margin="2,0">
+                                        <Track.DecreaseRepeatButton>
+                                            <RepeatButton Command="{x:Static ScrollBar.PageLeftCommand}"
+                                                          Style="{StaticResource ModernScrollBarButton}" />
+                                        </Track.DecreaseRepeatButton>
+                                        <Track.Thumb>
+                                            <Thumb MinWidth="30" />
+                                        </Track.Thumb>
+                                        <Track.IncreaseRepeatButton>
+                                            <RepeatButton Command="{x:Static ScrollBar.PageRightCommand}"
+                                                          Style="{StaticResource ModernScrollBarButton}" />
+                                        </Track.IncreaseRepeatButton>
+                                    </Track>
+                                </Grid>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#161616" />
-                    <Setter Property="BorderBrush" Value="#5A3A20" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -784,24 +753,11 @@
                 </Grid.RowDefinitions>
 
                 <!-- Emblem -->
-                <Border Width="44" Height="44" Margin="0,8,0,27" CornerRadius="22"
-                        BorderBrush="{DynamicResource Gold}" BorderThickness="1"
-                        HorizontalAlignment="Center">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="18" ShadowDepth="0" Opacity="0.5" Color="#C9742E" />
-                    </Border.Effect>
-                    <TextBlock Text="D"
-                               FontFamily="{DynamicResource EmblemFontFamily}"
-                               FontSize="28"
-                               FontWeight="Bold"
-                               Foreground="{DynamicResource Gold2}"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center">
-                        <TextBlock.Effect>
-                            <DropShadowEffect BlurRadius="10" ShadowDepth="0" Opacity="0.85" Color="#3B0000" />
-                        </TextBlock.Effect>
-                    </TextBlock>
-                </Border>
+                <Image Width="52"
+                       Height="52"
+                       Margin="4"
+                       Source="pack://siteoforigin:,,,/Assets/Icons/AppIcon.png"
+                       Stretch="Uniform" />
 
                 <!-- Navigation -->
                 <StackPanel Grid.Row="1" HorizontalAlignment="Center">
@@ -811,7 +767,7 @@
                                  Checked="NavigationRadio_Checked">
                         <Rectangle Width="25" Height="25" Fill="{DynamicResource Gold2}">
                             <Rectangle.OpacityMask>
-                                <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/dashboard-monitor.png" Stretch="Uniform" />
+                                <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/dashboard-monitor.png" Stretch="Uniform" ViewboxUnits="Absolute" Viewbox="240,284,543,425" />
                             </Rectangle.OpacityMask>
                         </Rectangle>
                     </RadioButton>
@@ -821,7 +777,7 @@
                                  Checked="NavigationRadio_Checked">
                         <Rectangle Width="25" Height="25" Fill="{DynamicResource Gold2}">
                             <Rectangle.OpacityMask>
-                                <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/Detection.png" Stretch="Uniform" />
+                                <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/Detection.png" Stretch="Uniform" ViewboxUnits="Absolute" Viewbox="306,294,412,391" />
                             </Rectangle.OpacityMask>
                         </Rectangle>
                     </RadioButton>
@@ -831,7 +787,7 @@
                                  Checked="NavigationRadio_Checked">
                         <Rectangle Width="25" Height="25" Fill="{DynamicResource Gold2}">
                             <Rectangle.OpacityMask>
-                                <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/listpng.png" Stretch="Uniform" />
+                                <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/listpng.png" Stretch="Uniform" ViewboxUnits="Absolute" Viewbox="293,266,442,482" />
                             </Rectangle.OpacityMask>
                         </Rectangle>
                     </RadioButton>
@@ -851,14 +807,14 @@
                                  Checked="NavigationRadio_Checked">
                         <Rectangle Width="25" Height="25" Fill="{DynamicResource Gold2}">
                             <Rectangle.OpacityMask>
-                                <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/Settings.png" Stretch="Uniform" />
+                                <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/Settings.png" Stretch="Uniform" ViewboxUnits="Absolute" Viewbox="269,255,487,480" />
                             </Rectangle.OpacityMask>
                         </Rectangle>
                     </RadioButton>
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,8">
-                    <TextBlock Text="v1.14.2"
+                    <TextBlock Text="v1.14.6"
                                FontFamily="{DynamicResource MonoFontFamily}"
                                FontSize="8.5"
                                Foreground="{DynamicResource Faint}"
@@ -871,9 +827,9 @@
         <Border x:Name="HeaderBorder" Grid.ColumnSpan="2" Grid.Row="0" Background="Transparent" BorderBrush="{DynamicResource Gold2}" BorderThickness="0,0,0,1" Padding="110,0,32,0" Height="60">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="300" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="300" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" MinWidth="80" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <!-- Game pills -->
@@ -1679,8 +1635,10 @@
                         </Ellipse>
                     </Canvas>
 
-                    <Grid Margin="38,0,34,16"
-                          Panel.ZIndex="1">
+                    <ScrollViewer Panel.ZIndex="1"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                    <Grid Margin="38,0,34,16">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />
                             <RowDefinition Height="Auto" />
@@ -1707,9 +1665,11 @@
                                    FontWeight="Bold"
                                    Foreground="#A7512E"
                                    HorizontalAlignment="Center" />
-                        <Grid Grid.Row="2"
-                              HorizontalAlignment="Center"
-                              IsHitTestVisible="False">
+                        <Viewbox Grid.Row="2"
+                                 HorizontalAlignment="Center"
+                                 MaxHeight="172"
+                                 StretchDirection="DownOnly">
+                        <Grid IsHitTestVisible="False">
                             <TextBlock x:Name="DashboardCountGlow"
                                        Text="{Binding StatusDeathCountText}"
                                        FontFamily="{DynamicResource HeaderFontFamily}"
@@ -1757,6 +1717,7 @@
                                 </TextBlock.Effect>
                             </TextBlock>
                         </Grid>
+                        </Viewbox>
                         <TextBlock Grid.Row="4"
                                    Text="TIMES"
                                    FontFamily="{DynamicResource MonoFontFamily}"
@@ -1984,6 +1945,7 @@
                         </Border>
 
                     </Grid>
+                    </ScrollViewer>
                 </Grid>
             </TabItem>
 
@@ -2005,13 +1967,13 @@
                                 </Border>
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                     <TextBlock Text="{DynamicResource Detect_SystemEngine}" Style="{StaticResource LabelText}" />
-                                    <TextBlock Text="{Binding DetectionStatus}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="38" FontWeight="Bold" Margin="0,4,0,4" />
-                                    <TextBlock Text="{DynamicResource Detect_Monitoring}" Style="{StaticResource MutedText}" FontSize="18" />
+                                    <TextBlock Text="{Binding DetectionStatus}" Foreground="{DynamicResource Gold}" FontFamily="{DynamicResource HeaderFontFamily}" FontSize="38" FontWeight="Bold" Margin="0,4,0,4" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{DynamicResource Detect_Monitoring}" Style="{StaticResource MutedText}" FontSize="18" TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
                                 <Button Grid.Column="2"
                                         Command="{Binding ToggleDetectionCommand}"
                                         Style="{StaticResource MonitorToggleButton}"
-                                        Width="236"
+                                        MinWidth="180"
                                         Height="64"
                                         VerticalAlignment="Center" />
                             </Grid>
@@ -2093,8 +2055,8 @@
                                     Padding="34">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="250" />
+                                        <ColumnDefinition Width="*" MinWidth="150" />
+                                        <ColumnDefinition Width="Auto" MinWidth="150" />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock Text="{DynamicResource Common_ActiveEncounter}"
@@ -2109,6 +2071,7 @@
                                                    Style="{StaticResource MutedText}"
                                                    FontStyle="Italic"
                                                    FontSize="16"
+                                                   TextWrapping="Wrap"
                                                    Margin="0,18,0,0" />
                                     </StackPanel>
                                     <Border Grid.Column="1"

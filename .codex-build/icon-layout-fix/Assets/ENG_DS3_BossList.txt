@@ -1,0 +1,37 @@
+# English boss list for Dark Souls III (ENG_DS3_BossList.txt)
+# One boss name per line. Lines starting with '#' are ignored.
+# Includes base game + Ashes of Ariandel + The Ringed City, plus the alternate
+# health-bar names used during multi-phase fights (e.g. Demon in Pain / Demon Prince)
+# so on-screen OCR can match every stage.
+# Kept alphabetical and aligned line-for-line with PL_DS3_BossList.txt for easy correction.
+Abyss Watchers
+Aldrich, Devourer of Gods
+Ancient Wyvern
+Blackflame Friede
+Champion Gundyr
+Champion's Gravetender
+Crystal Sage
+Curse-rotted Greatwood
+Dancer of the Boreal Valley
+Darkeater Midir
+Deacons of the Deep
+Demon from Below
+Demon in Pain
+Demon Prince
+Dragonslayer Armour
+Father Ariandel and Sister Friede
+Gravetender Greatwolf
+Halflight, Spear of the Church
+High Lord Wolnir
+Iudex Gundyr
+Lorian, Elder Prince
+Lothric, Younger Prince
+Nameless King
+Oceiros, the Consumed King
+Old Demon King
+Pontiff Sulyvahn
+Sister Friede
+Slave Knight Gael
+Soul of Cinder
+Vordt of the Boreal Valley
+Yhorm the Giant

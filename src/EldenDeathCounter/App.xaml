@@ -11,6 +11,7 @@
             <FontFamily x:Key="HeaderFontFamily">EB Garamond</FontFamily>
             <FontFamily x:Key="MonoFontFamily">EB Garamond</FontFamily>
             <FontFamily x:Key="EmblemFontFamily">pack://application:,,,/Assets/Fonts/#UnifrakturCook</FontFamily>
+            <FontFamily x:Key="OverlayHeaderFontFamily">pack://application:,,,/Assets/Fonts/#Cinzel</FontFamily>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

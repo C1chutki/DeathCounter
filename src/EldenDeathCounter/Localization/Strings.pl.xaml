@@ -148,6 +148,7 @@
     <sys:String x:Key="DetectionMode_Balanced">Zbalansowany</sys:String>
     <sys:String x:Key="DetectionMode_Aggressive">Agresywny</sys:String>
     <sys:String x:Key="BossHealthBarStyle_Vanilla">Vanilla Elden Ring</sys:String>
+    <sys:String x:Key="BossHealthBarStyle_VanillaOnly">Vanilla</sys:String>
     <sys:String x:Key="BossHealthBarStyle_Reforged">Reforged</sys:String>
     <sys:String x:Key="BossHealthBarStyle_Convergence">Convergence</sys:String>
     <sys:String x:Key="Settings_CharacterSection">| POSTAĆ &amp; ZAPIS GRY</sys:String>

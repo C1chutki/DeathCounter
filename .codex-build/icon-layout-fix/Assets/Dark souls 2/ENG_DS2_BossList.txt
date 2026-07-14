@@ -1,0 +1,48 @@
+# English boss list for Dark Souls II: Scholar of the First Sin (ENG_DS2_BossList.txt)
+# One boss name per line. Lines starting with '#' are ignored.
+# Includes base game + Crown of the Sunken King + Crown of the Old Iron King +
+# Crown of the Ivory King DLCs. Throne Watcher & Throne Defender show two separate
+# health bars, so both names are listed.
+# Kept alphabetical and aligned line-for-line with PL_DS2_BossList.txt for easy correction.
+Aava, the King's Pet
+Aldia, Scholar of the First Sin
+Ancient Dragon
+Belfry Gargoyles
+Blue Smelter Demon
+Burnt Ivory King
+Covetous Demon
+Darklurker
+Demon of Song
+Dragonrider
+Dragonriders
+Elana, the Squalid Queen
+Executioner's Chariot
+Flexile Sentry
+Fume Knight
+Giant Lord
+Graverobber, Varg and Cerah
+Guardian Dragon
+Looking Glass Knight
+Lud and Zallen, the King's Pets
+Mytha, the Baneful Queen
+Nashandra
+Old Dragonslayer
+Old Iron King
+Prowling Magus and Congregation
+Royal Rat Authority
+Royal Rat Vanguard
+Ruin Sentinels
+Scorpioness Najka
+Sinh, the Slumbering Dragon
+Sir Alonne
+Skeleton Lords
+Smelter Demon
+The Duke's Dear Freja
+The Last Giant
+The Lost Sinner
+The Pursuer
+The Rotten
+Throne Defender
+Throne Watcher
+Velstadt, the Royal Aegis
+Vendrick

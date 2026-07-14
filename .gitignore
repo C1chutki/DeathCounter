@@ -60,6 +60,7 @@ nunit-*.xml
 
 # Local project notes
 AGENTS.md
+CLAUDE.md
 TODO.md
 gcm-diagnose.log
 *.log

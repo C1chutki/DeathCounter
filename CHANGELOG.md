@@ -2,7 +2,19 @@
 
 ## 2026-07-13
 
+- Poprawiono skalowanie layoutu okna głównego: sztywne szerokości nagłówka i paneli zamieniono na proporcjonalne z `MinWidth`, duży licznik śmierci owinięto w `Viewbox`, a dashboard dostał własny `ScrollViewer`. Obniżono minimalny rozmiar okna do 720x560 i usunięto nakładanie się tekstu z przyciskami w zakładkach Detekcja i Bossowie w wąskim oknie. Wersję podniesiono do 1.14.6.
+
+- Dopasowano ikonę aplikacji w panelu bocznym do wysokości górnego paska, aby nie wychodziła poza jego obszar. Wersję podniesiono do 1.14.5.
+
+- Powiększono znak na ikonie aplikacji i odtworzono wielorozmiarowy plik ICO, aby poprawić czytelność w aplikacji oraz Windows. Wersję podniesiono do 1.14.4.
+
+- Poprawiono czytelność ikon nawigacji przez pominięcie dużych przezroczystych marginesów w plikach PNG. Wersję podniesiono do 1.14.3.
+
 - Ustawiono `Assets/Icons/AppIcon.png` jako ikonę głównego okna i paska zadań oraz dodano jej wariant `.ico` jako domyślną ikonę pliku wykonywalnego. Wersję podniesiono do 1.14.2.
+
+- Zastąpiono literę `D` w lewym górnym rogu aplikacji nową ikoną `Assets/Icons/AppIcon.png`. Wersję podniesiono do 1.14.1.
+
+- Dodano `CLAUDE.md` importujący `AGENTS.md` (`@AGENTS.md`), aby Claude Code automatycznie wczytywał instrukcje projektu przy starcie sesji.
 
 - Dodano wykrywanie Dark Souls II: ekran śmierci (własny niższy ROI i angielski szablon `YOU DIED`), ciemniejszy pasek bossa oraz angielskie dopasowanie nazw z listy DS2. Wersję podniesiono do 1.14.0.
 

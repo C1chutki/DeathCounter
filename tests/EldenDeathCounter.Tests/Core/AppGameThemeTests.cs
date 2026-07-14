@@ -18,7 +18,7 @@ public sealed class AppGameThemeTests
 
         Assert.Equal("Dark Souls 2 Death Counter", theme.Title);
         Assert.Equal("#5F7355", theme.Primary);
-        Assert.Equal("#2D3436", theme.Secondary);
+        Assert.Equal(AppGameTheme.EldenRing.Secondary, theme.Secondary);
         Assert.Equal("#A68A4B", theme.Tertiary);
         Assert.Equal("#10150F", theme.Neutral);
         Assert.Equal(theme.Primary, theme.OverlayBorder);

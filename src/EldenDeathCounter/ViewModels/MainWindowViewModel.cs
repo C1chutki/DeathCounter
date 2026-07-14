@@ -105,7 +105,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             DetectionModeOptions.Add(option);
         }
 
-        foreach (var option in CreateBossHealthBarStyleOptions())
+        foreach (var option in CreateBossHealthBarStyleOptions(_activeGameProfile))
         {
             BossHealthBarStyleOptions.Add(option);
         }
@@ -660,7 +660,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         RefreshSettingsTextFields();
         RefreshCounter();
         RefreshStats();
-        _overlayWindow.ApplyPosition(Settings.OverlayX, Settings.OverlayY);
+        ApplyOverlaySettings();
         ApplyOverlayState();
         RegisterHotkeys();
 
@@ -999,10 +999,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         defaults.AppLanguage = currentAppLanguage;
         Settings = defaults;
         RefreshSettingsTextFields();
-        _overlayWindow.ApplyScale(Settings.OverlayFontScale);
-        _overlayWindow.ApplyBackgroundOpacity(Settings.OverlayBackgroundOpacity);
-        _overlayWindow.ApplyBossTimerVisibility(Settings.ShowBossTimer);
-        _overlayWindow.ApplyDetectionStatusVisibility(Settings.ShowDetectionStatus);
+        ApplyOverlaySettings();
         await ApplySettingsFromTextAsync();
     }
 
@@ -1051,11 +1048,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         await _settingsStore.SaveAsync(_settingsPath, Settings);
         ConfigureDetectionDiagnostics();
-        _overlayWindow.ApplyPosition(Settings.OverlayX, Settings.OverlayY);
-        _overlayWindow.ApplyScale(Settings.OverlayFontScale);
-        _overlayWindow.ApplyBackgroundOpacity(Settings.OverlayBackgroundOpacity);
-        _overlayWindow.ApplyBossTimerVisibility(Settings.ShowBossTimer);
-        _overlayWindow.ApplyDetectionStatusVisibility(Settings.ShowDetectionStatus);
+        ApplyOverlaySettings();
         _overlayWindow.UpdateCount(_counterService.State.CurrentDeathCount, _counterService.State.ActiveBoss, Settings.AppLanguage);
         ApplyOverlayState();
         RegisterHotkeys();
@@ -1244,6 +1237,18 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             _overlayWindow.Hide();
         }
+    }
+
+    // Pushes the current Settings' overlay geometry/appearance onto the overlay window. Must be
+    // called on every path that swaps Settings (game switch, apply, reset) — otherwise the overlay
+    // keeps the previous profile's scale/position. UpdateCount is left to callers that have counts.
+    private void ApplyOverlaySettings()
+    {
+        _overlayWindow.ApplyPosition(Settings.OverlayX, Settings.OverlayY);
+        _overlayWindow.ApplyScale(Settings.OverlayFontScale);
+        _overlayWindow.ApplyBackgroundOpacity(Settings.OverlayBackgroundOpacity);
+        _overlayWindow.ApplyBossTimerVisibility(Settings.ShowBossTimer);
+        _overlayWindow.ApplyDetectionStatusVisibility(Settings.ShowDetectionStatus);
     }
 
     private void RegisterHotkeys()
@@ -1515,8 +1520,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             .ToList();
     }
 
-    private static IReadOnlyList<BossHealthBarStyleOption> CreateBossHealthBarStyleOptions()
+    private static IReadOnlyList<BossHealthBarStyleOption> CreateBossHealthBarStyleOptions(AppGameProfile profile)
     {
+        // Reforged/Convergence are Elden Ring mods; Dark Souls games only ever run vanilla health bars.
+        if (profile.Id != AppGameProfile.EldenRing.Id)
+        {
+            return [new(BossHealthBarStyles.Vanilla, L("BossHealthBarStyle_VanillaOnly"))];
+        }
+
         return
         [
             new(BossHealthBarStyles.Vanilla, L("BossHealthBarStyle_Vanilla")),
@@ -1638,6 +1649,19 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         SelectedCaptureTargetValue = captureTarget;
         OnPropertyChanged(nameof(SelectedCaptureTargetValue));
+
+        var healthBarStyle = SelectedBossHealthBarStyleValue;
+        BossHealthBarStyleOptions.Clear();
+        foreach (var option in CreateBossHealthBarStyleOptions(_activeGameProfile))
+        {
+            BossHealthBarStyleOptions.Add(option);
+        }
+
+        // Dark Souls only offers Vanilla, so snap any Elden Ring mod selection back onto it.
+        SelectedBossHealthBarStyleValue = BossHealthBarStyleOptions.Any(o => o.Value == healthBarStyle)
+            ? healthBarStyle
+            : BossHealthBarStyles.Vanilla;
+        OnPropertyChanged(nameof(SelectedBossHealthBarStyleValue));
 
         var detectionMode = SelectedDetectionModeValue;
         DetectionModeOptions.Clear();

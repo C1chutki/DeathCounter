@@ -1,0 +1,31 @@
+# Polish boss list for Dark Souls (Remastered) (PL_DS1_BossList.txt)
+# Best-effort translations, aligned line-for-line with ENG_DS1_BossList.txt for easy correction.
+# Lines starting with '#' are ignored. Wrong entries are harmless (they simply will not match
+# on-screen text) - verify against the in-game Polish names and edit as needed.
+Demon Azylu
+Łoże Chaosu
+Gargulec Dzwonnicy
+Czarny Smok Kalameet
+Demon Capra
+Nieustanny Wyciek
+Demon Stonoga
+Wiedźma Chaosu Quelaag
+Krzyżówka Priscilla
+Gwyndolin, Mroczne Słońce
+Demon Ognisty Mędrzec
+Pogromca Smoków Ornstein
+Kat Smough
+Czterej Królowie
+Rozwarty Smok
+Władca Grobów Nito
+Wielki Szary Wilk Sif
+Gwyn, Władca Popiołu
+Żelazny Golem
+Rycerz Artorias
+Manus, Ojciec Otchłani
+Księżycowy Motyl
+Wiatraczek
+Strażnik Sanktuarium
+Seath Bezłuski
+Zbłąkany Demon
+Demon Taurus
