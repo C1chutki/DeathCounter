@@ -794,7 +794,7 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,8">
-                    <TextBlock Text="v1.14.8"
+                    <TextBlock Text="v1.14.9"
                                FontFamily="{DynamicResource MonoFontFamily}"
                                FontSize="8.5"
                                Foreground="{DynamicResource Faint}"
@@ -1755,9 +1755,11 @@
                             <StackPanel Grid.Column="6">
                                 <Button Command="{Binding ResetCounterCommand}"
                                         Style="{StaticResource DashboardCircleButton}">
-                                    <Rectangle Width="28" Height="28" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}">
+                                    <Rectangle Width="50" Height="50" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}">
                                         <Rectangle.OpacityMask>
-                                            <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/Reset.png" Stretch="Uniform" />
+                                            <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/Reset.png"
+                                                        Stretch="Uniform"
+                                                        Viewbox="0.28,0.28,0.44,0.44" />
                                         </Rectangle.OpacityMask>
                                     </Rectangle>
                                 </Button>
