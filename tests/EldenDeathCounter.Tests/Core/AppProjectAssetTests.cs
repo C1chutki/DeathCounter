@@ -289,7 +289,7 @@ public sealed class AppProjectAssetTests
         Assert.True(dashboardEnd > dashboardStart);
         var dashboardTab = xaml[dashboardStart..dashboardEnd];
 
-        Assert.DoesNotContain("<ScrollViewer", dashboardTab, StringComparison.Ordinal);
+        Assert.Contains("<ScrollViewer Panel.ZIndex=\"1\"", dashboardTab, StringComparison.Ordinal);
         Assert.Contains("x:Key=\"DashboardBackdropBrush\"", xaml, StringComparison.Ordinal);
         Assert.Contains("Color=\"#000000\"", xaml, StringComparison.Ordinal);
         Assert.Contains("x:Key=\"DashboardParticleGold\"", xaml, StringComparison.Ordinal);
@@ -488,7 +488,7 @@ public sealed class AppProjectAssetTests
         Assert.Contains("x:Name=\"SectionTitleText\"", xaml, StringComparison.Ordinal);
         Assert.Contains("Text=\"Dashboard\"", xaml, StringComparison.Ordinal);
         Assert.DoesNotContain("<ColumnDefinition Width=\"260\" />", xaml, StringComparison.Ordinal);
-        Assert.Equal(2, Regex.Matches(xaml, "<ColumnDefinition Width=\"300\" />").Count);
+        Assert.Contains("<ColumnDefinition Width=\"*\" MinWidth=\"80\" />", xaml, StringComparison.Ordinal);
         Assert.Contains("Grid.Column=\"1\"", xaml, StringComparison.Ordinal);
         Assert.Contains("TextTrimming=\"CharacterEllipsis\"", xaml, StringComparison.Ordinal);
         Assert.Contains("FontSize=\"30\"", xaml, StringComparison.Ordinal);
@@ -509,17 +509,14 @@ public sealed class AppProjectAssetTests
         var er = xaml.IndexOf("x:Name=\"EldenRingButton\"", StringComparison.Ordinal);
         Assert.True(ds >= 0 && ds < ds2 && ds2 < ds3 && ds3 < er);
 
-        // The narrow icon rail provides the emblem and image navigation.
-        Assert.Contains("EmblemFontFamily", xaml, StringComparison.Ordinal);
+        // The narrow icon rail provides the emblem and vector navigation.
         Assert.Contains("Style=\"{StaticResource RailNavButton}\"", xaml, StringComparison.Ordinal);
-        Assert.Contains("ImageSource=\"pack://siteoforigin:,,,/Assets/Icons/dashboard-monitor.png\"", xaml, StringComparison.Ordinal);
-        Assert.Contains("ImageSource=\"pack://siteoforigin:,,,/Assets/Icons/Detection.png\"", xaml, StringComparison.Ordinal);
-        Assert.Contains("ImageSource=\"pack://siteoforigin:,,,/Assets/Icons/listpng.png\"", xaml, StringComparison.Ordinal);
-        Assert.Contains("ImageSource=\"pack://siteoforigin:,,,/Assets/Icons/Stats.png\"", xaml, StringComparison.Ordinal);
-        Assert.Contains("ImageSource=\"pack://siteoforigin:,,,/Assets/Icons/Settings.png\"", xaml, StringComparison.Ordinal);
-        Assert.DoesNotContain("ImageSource=\"Assets/Icons/", xaml, StringComparison.Ordinal);
-        Assert.Equal(5, Regex.Matches(xaml, "Fill=\"\\{DynamicResource Gold2\\}\"").Count);
-        Assert.Equal(5, Regex.Matches(xaml, "<Rectangle Width=\"25\" Height=\"25\" Fill=\"\\{DynamicResource Gold2\\}\"").Count);
+        Assert.Contains("Value=\"Segoe MDL2 Assets\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("Text=\"&#xE7F4;\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("Text=\"&#xE7B3;\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("Text=\"&#xE8FD;\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("Text=\"&#xE9D2;\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("Text=\"&#xE713;\"", xaml, StringComparison.Ordinal);
         Assert.DoesNotContain("Content=\"&#x25A6;\"", xaml, StringComparison.Ordinal);
         Assert.DoesNotContain("Content=\"&#x25CE;\"", xaml, StringComparison.Ordinal);
         Assert.DoesNotContain("Content=\"&#x25C7;\"", xaml, StringComparison.Ordinal);
@@ -532,7 +529,7 @@ public sealed class AppProjectAssetTests
     }
 
     [Fact]
-    public void SidebarEmblemUsesDarkFantasyDeathCounterInitial()
+    public void SidebarEmblemUsesApplicationIcon()
     {
         var projectRoot = Path.GetFullPath(Path.Combine(
             AppContext.BaseDirectory,
@@ -542,9 +539,7 @@ public sealed class AppProjectAssetTests
             "..",
             ".."));
         var xamlPath = Path.Combine(projectRoot, "src", "EldenDeathCounter", "MainWindow.xaml");
-        var appXamlPath = Path.Combine(projectRoot, "src", "EldenDeathCounter", "App.xaml");
         var xaml = File.ReadAllText(xamlPath);
-        var appXaml = File.ReadAllText(appXamlPath);
 
         var emblemStart = xaml.IndexOf("<!-- Emblem -->", StringComparison.Ordinal);
         Assert.True(emblemStart >= 0);
@@ -552,10 +547,8 @@ public sealed class AppProjectAssetTests
         Assert.True(emblemEnd > emblemStart);
         var emblem = xaml[emblemStart..emblemEnd];
 
-        Assert.Contains("Text=\"D\"", emblem, StringComparison.Ordinal);
-        Assert.DoesNotContain("Text=\"M\"", emblem, StringComparison.Ordinal);
-        Assert.Contains("EmblemFontFamily", emblem, StringComparison.Ordinal);
-        Assert.Contains("#UnifrakturCook", appXaml, StringComparison.Ordinal);
+        Assert.Contains("<Image Width=\"52\"", emblem, StringComparison.Ordinal);
+        Assert.Contains("Source=\"pack://siteoforigin:,,,/Assets/Icons/AppIcon.png\"", emblem, StringComparison.Ordinal);
     }
 
     [Fact]

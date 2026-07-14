@@ -500,8 +500,8 @@
             <Setter Property="Height" Value="50" />
             <Setter Property="Margin" Value="0,0,0,20" />
             <Setter Property="Foreground" Value="{DynamicResource MutedInk}" />
-            <Setter Property="FontFamily" Value="Segoe UI Symbol" />
-            <Setter Property="FontSize" Value="21" />
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+            <Setter Property="FontSize" Value="24" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="Template">
@@ -765,56 +765,36 @@
                                  Style="{StaticResource RailNavButton}"
                                  ToolTip="{DynamicResource Section_Dashboard}"
                                  Checked="NavigationRadio_Checked">
-                        <Rectangle Width="25" Height="25" Fill="{DynamicResource Gold2}">
-                            <Rectangle.OpacityMask>
-                                <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/dashboard-monitor.png" Stretch="Uniform" ViewboxUnits="Absolute" Viewbox="240,284,543,425" />
-                            </Rectangle.OpacityMask>
-                        </Rectangle>
+                        <TextBlock Text="&#xE7F4;" />
                     </RadioButton>
                     <RadioButton GroupName="Navigation" Tag="1"
                                  Style="{StaticResource RailNavButton}"
                                  ToolTip="{DynamicResource Section_Detection}"
                                  Checked="NavigationRadio_Checked">
-                        <Rectangle Width="25" Height="25" Fill="{DynamicResource Gold2}">
-                            <Rectangle.OpacityMask>
-                                <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/Detection.png" Stretch="Uniform" ViewboxUnits="Absolute" Viewbox="306,294,412,391" />
-                            </Rectangle.OpacityMask>
-                        </Rectangle>
+                        <TextBlock Text="&#xE7B3;" />
                     </RadioButton>
                     <RadioButton GroupName="Navigation" Tag="2"
                                  Style="{StaticResource RailNavButton}"
                                  ToolTip="{DynamicResource Section_Bosses}"
                                  Checked="NavigationRadio_Checked">
-                        <Rectangle Width="25" Height="25" Fill="{DynamicResource Gold2}">
-                            <Rectangle.OpacityMask>
-                                <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/listpng.png" Stretch="Uniform" ViewboxUnits="Absolute" Viewbox="293,266,442,482" />
-                            </Rectangle.OpacityMask>
-                        </Rectangle>
+                        <TextBlock Text="&#xE8FD;" />
                     </RadioButton>
                     <RadioButton GroupName="Navigation" Tag="3"
                                  Style="{StaticResource RailNavButton}"
                                  ToolTip="{DynamicResource Section_Stats}"
                                  Checked="NavigationRadio_Checked">
-                        <Rectangle Width="25" Height="25" Fill="{DynamicResource Gold2}">
-                            <Rectangle.OpacityMask>
-                                <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/Stats.png" Stretch="Uniform" />
-                            </Rectangle.OpacityMask>
-                        </Rectangle>
+                        <TextBlock Text="&#xE9D2;" />
                     </RadioButton>
                     <RadioButton GroupName="Navigation" Tag="4"
                                  Style="{StaticResource RailNavButton}"
                                  ToolTip="{DynamicResource Section_Settings}"
                                  Checked="NavigationRadio_Checked">
-                        <Rectangle Width="25" Height="25" Fill="{DynamicResource Gold2}">
-                            <Rectangle.OpacityMask>
-                                <ImageBrush ImageSource="pack://siteoforigin:,,,/Assets/Icons/Settings.png" Stretch="Uniform" ViewboxUnits="Absolute" Viewbox="269,255,487,480" />
-                            </Rectangle.OpacityMask>
-                        </Rectangle>
+                        <TextBlock Text="&#xE713;" />
                     </RadioButton>
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,8">
-                    <TextBlock Text="v1.14.6"
+                    <TextBlock Text="v1.14.7"
                                FontFamily="{DynamicResource MonoFontFamily}"
                                FontSize="8.5"
                                Foreground="{DynamicResource Faint}"

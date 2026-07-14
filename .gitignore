@@ -72,3 +72,4 @@ CODE_REVIEW.MD
 
 # Build / publish output
 publish/
+.codex-build/

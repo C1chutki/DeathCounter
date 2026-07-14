@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-07-14
+
+- Zastąpiono rozmyte rastrowe ikony nawigacji natywnymi glifami wektorowymi Windows, w tym ponownie dodaną ikonę statystyk. Lokalne katalogi `.codex-build` są ignorowane; wersję podniesiono do 1.14.7.
+
 ## 2026-07-13
 
 - Poprawiono skalowanie layoutu okna głównego: sztywne szerokości nagłówka i paneli zamieniono na proporcjonalne z `MinWidth`, duży licznik śmierci owinięto w `Viewbox`, a dashboard dostał własny `ScrollViewer`. Obniżono minimalny rozmiar okna do 720x560 i usunięto nakładanie się tekstu z przyciskami w zakładkach Detekcja i Bossowie w wąskim oknie. Wersję podniesiono do 1.14.6.
