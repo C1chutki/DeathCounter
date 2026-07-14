@@ -2,6 +2,8 @@
 
 ## 2026-07-14
 
+- Dodano angielską listę nazw bossów z Black Myth: Wukong w folderze assetów i dołączono ją do plików wyjściowych aplikacji. Wersję podniesiono do 1.14.10.
+
 - Powiększono ikonę resetowania licznika w dashboardzie i usunięto jej nadmierne przezroczyste marginesy, aby niemal wypełniała przycisk. Wersję podniesiono do 1.14.9.
 
 - Zwiększono odstęp między ikoną aplikacji a przyciskiem Dashboard oraz zmniejszono odstępy między przyciskami nawigacji. Wersję podniesiono do 1.14.8.
