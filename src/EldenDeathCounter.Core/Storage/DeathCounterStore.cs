@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text;
 using EldenDeathCounter.Core.Logging;
 
 namespace EldenDeathCounter.Core.Storage;
@@ -56,6 +57,38 @@ public sealed class DeathCounterStore
         catch (Exception exception)
         {
             _log.Error($"Failed to save death data to {dataFilePath}.", exception);
+            throw;
+        }
+    }
+
+    public async Task ArchiveDeathEventsAsync(string dataFilePath, IReadOnlyList<DeathEvent> events)
+    {
+        if (events.Count == 0)
+        {
+            return;
+        }
+
+        var orderedEvents = events.OrderBy(item => item.Timestamp).ToList();
+        var archiveFolder = Path.Combine(Path.GetDirectoryName(dataFilePath) ?? ".", "archives");
+        var archivePath = Path.Combine(
+            archiveFolder,
+            $"death-events-{orderedEvents[0].Timestamp.UtcDateTime.Ticks}-{orderedEvents[^1].Timestamp.UtcDateTime.Ticks}-{orderedEvents.Count}.csv");
+
+        try
+        {
+            await JsonFileWriter.WriteAtomicAsync(
+                archivePath,
+                async stream =>
+                {
+                    await using var writer = new StreamWriter(stream, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true), leaveOpen: true);
+                    await writer.WriteAsync(CounterExportService.CreateDeathEventsCsv(orderedEvents));
+                    await writer.FlushAsync();
+                });
+            _log.Info($"Archived {orderedEvents.Count} death events to {archivePath}.");
+        }
+        catch (Exception exception)
+        {
+            _log.Error($"Failed to archive death events to {archivePath}.", exception);
             throw;
         }
     }

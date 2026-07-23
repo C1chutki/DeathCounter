@@ -5,71 +5,113 @@ using System.Reflection;
 using EldenDeathCounter.Core.Configuration;
 using EldenDeathCounter.Core.Storage;
 using EldenDeathCounter.Interop;
+using EldenDeathCounter.Localization;
 
 namespace EldenDeathCounter;
 
 public partial class OverlayWindow : Window
 {
-    private const double CounterBaseFontSize = 26;
-    private const double BossBaseFontSize = 20;
-    private const double BossBaseLineHeight = 25;
-    private const double BossDeathBaseFontSize = 14;
-    private const double TimerBaseFontSize = 20;
+    // Default overlay background color (matches OverlayWindow.xaml OverlayChrome.Background).
+    private static readonly System.Windows.Media.Color DefaultOverlayBackgroundColor =
+        (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#0A1014");
+    private static readonly System.Windows.Media.Color TimerOverlayBackgroundColor =
+        (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#000000");
 
-    private readonly DispatcherTimer _bossTimer;
-    private string _gameLanguage;
+    private readonly System.Threading.Timer _bossTimer;
+    // Re-asserts the overlay into the topmost z-order band on a steady cadence. A borderless
+    // fullscreen game grabbing the foreground demotes our one-shot Topmost, so without this the
+    // overlay disappears behind the game. (Exclusive fullscreen cannot be overlaid either way.)
+    private readonly DispatcherTimer _topMostTimer;
+    // Language used for the overlay's own labels (Deaths/Śmierci, First Try). This follows the UI
+    // language (AppLanguage), not the OCR GameLanguage.
+    private string _appLanguage;
     private ActiveBossState? _activeBoss;
     private bool _isDetectionRunning;
+    private bool _showBossTimer = true;
+    private System.Windows.Media.Color _overlayBackgroundColor = DefaultOverlayBackgroundColor;
+    private double _backgroundOpacity = 0.9;
 
     public OverlayWindow(AppSettings settings)
     {
         InitializeComponent();
         Left = settings.OverlayX;
         Top = settings.OverlayY;
-        _gameLanguage = settings.GameLanguage;
-        _bossTimer = new DispatcherTimer
+        _appLanguage = settings.AppLanguage;
+        _bossTimer = new System.Threading.Timer(_ => QueueBossTimerRefresh());
+        _topMostTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1)
         };
-        _bossTimer.Tick += (_, _) => UpdateBossTimerText();
+        _topMostTimer.Tick += (_, _) => ReassertTopMost();
         VersionTextBlock.Text = GetApplicationVersionText();
         UpdateDetectionState(false);
-        ApplyFontScale(settings.OverlayFontScale);
+        ApplyScale(settings.OverlayFontScale);
+        ApplyBackgroundOpacity(settings.OverlayBackgroundOpacity);
+        ApplyBossTimerVisibility(settings.ShowBossTimer);
+        ApplyDetectionStatusVisibility(settings.ShowDetectionStatus);
+
+        // The detection status label is set in code, so {DynamicResource} cannot refresh it on a
+        // live language swap. Re-apply it whenever the UI language changes.
+        LocalizationService.Instance.LanguageChanged += OnLanguageChanged;
+        Closed += (_, _) =>
+        {
+            LocalizationService.Instance.LanguageChanged -= OnLanguageChanged;
+            _topMostTimer.Stop();
+            _bossTimer.Dispose();
+        };
     }
 
-    public void ApplyFontScale(double scale)
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        UpdateDetectionState(_isDetectionRunning);
+    }
+
+    public void ApplyScale(double scale)
     {
         Dispatcher.Invoke(() =>
         {
             var safeScale = Math.Clamp(scale <= 0 ? 1.0 : scale, 0.6, 1.6);
-            CounterTextBlock.FontSize = CounterBaseFontSize * safeScale;
-            BossTextBlock.FontSize = BossBaseFontSize * safeScale;
-            BossTextBlock.LineHeight = BossBaseLineHeight * safeScale;
-            BossTextBlock.MaxWidth = BossNameBaseMaxWidth * safeScale;
-            BossDeathTextBlock.FontSize = BossDeathBaseFontSize * safeScale;
-            TimerTextBlock.FontSize = TimerBaseFontSize * safeScale;
-            DetectionStatusTextBlock.FontSize = HeaderBaseFontSize * safeScale;
-            TotalDeathsLabelTextBlock.FontSize = HeaderBaseFontSize * safeScale;
-            VersionTextBlock.FontSize = HeaderBaseFontSize * safeScale;
-            OverlayChrome.MinWidth = ChromeBaseMinWidth * safeScale;
-            OverlayChrome.Padding = new Thickness(
-                ChromeBasePadding.Left * safeScale,
-                ChromeBasePadding.Top * safeScale,
-                ChromeBasePadding.Right * safeScale,
-                ChromeBasePadding.Bottom * safeScale);
+            OverlayScaleTransform.ScaleX = safeScale;
+            OverlayScaleTransform.ScaleY = safeScale;
         });
     }
 
-    public void UpdateCount(int count, ActiveBossState? activeBoss = null, string? gameLanguage = null)
+    public void ApplyBackgroundOpacity(double opacity)
     {
         Dispatcher.Invoke(() =>
         {
-            if (!string.IsNullOrWhiteSpace(gameLanguage))
+            _backgroundOpacity = Math.Clamp(opacity, 0.0, 1.0);
+            RefreshOverlayBackground();
+        });
+    }
+
+    public void ApplyBossTimerVisibility(bool isVisible)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            _showBossTimer = isVisible;
+            TimerChrome.Visibility = isVisible && _activeBoss is not null ? Visibility.Visible : Visibility.Collapsed;
+        });
+    }
+
+    public void ApplyDetectionStatusVisibility(bool isVisible)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            DetectionStatusPanel.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+        });
+    }
+
+    public void UpdateCount(int count, ActiveBossState? activeBoss = null, string? appLanguage = null)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            if (!string.IsNullOrWhiteSpace(appLanguage))
             {
-                _gameLanguage = gameLanguage;
+                _appLanguage = appLanguage;
             }
 
-            CounterTextBlock.Text = DeathCounterText.FormatGlobalCount(count, _gameLanguage);
+            CounterTextBlock.Text = DeathCounterText.FormatGlobalCount(count, _appLanguage);
             _activeBoss = activeBoss;
             if (activeBoss is null)
             {
@@ -77,21 +119,22 @@ public partial class OverlayWindow : Window
                 BossDeathTextBlock.Text = string.Empty;
                 TimerTextBlock.Text = string.Empty;
                 BossPanel.Visibility = Visibility.Collapsed;
-                _bossTimer.Stop();
+                _bossTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
                 return;
             }
 
             BossTextBlock.Text = DeathCounterText.FormatBossOverlayName(activeBoss.Name);
-            BossDeathTextBlock.Text = $"{DeathCounterText.FormatDeathLabel(_gameLanguage)}: {activeBoss.DeathCount}";
+            BossDeathTextBlock.Text = DeathCounterText.FormatBossDeath(activeBoss.DeathCount, _appLanguage);
             BossPanel.Visibility = Visibility.Visible;
+            TimerChrome.Visibility = _showBossTimer ? Visibility.Visible : Visibility.Collapsed;
             UpdateBossTimerText();
-            if (activeBoss.IsTimerRunning && !_bossTimer.IsEnabled)
+            if (activeBoss.IsTimerRunning)
             {
-                _bossTimer.Start();
+                _bossTimer.Change(TimeSpan.Zero, TimeSpan.FromSeconds(1));
             }
             else if (!activeBoss.IsTimerRunning)
             {
-                _bossTimer.Stop();
+                _bossTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             }
         });
     }
@@ -101,7 +144,8 @@ public partial class OverlayWindow : Window
         Dispatcher.Invoke(() =>
         {
             _isDetectionRunning = isRunning;
-            DetectionStatusTextBlock.Text = isRunning ? "DETECTION RUNNING" : "DETECTION STOPPED";
+            DetectionStatusTextBlock.Text = LocalizationService.Instance.GetString(
+                isRunning ? "Overlay_DetectionRunning" : "Overlay_DetectionStopped");
             DetectionDot.Fill = BrushFromHex(isRunning ? "#8DA46D" : "#6E6253");
         });
     }
@@ -116,7 +160,8 @@ public partial class OverlayWindow : Window
     {
         Dispatcher.Invoke(() =>
         {
-            OverlayChrome.Background = BuildOverlayGradient(theme.OverlayBackground);
+            _overlayBackgroundColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(theme.OverlayBackground);
+            RefreshOverlayBackground();
             OverlayChrome.BorderBrush = BrushFromHex(theme.OverlayBorder);
             CounterTextBlock.Foreground = BrushFromHex(theme.OverlayText);
             BossTextBlock.Foreground = BrushFromHex(theme.OverlayText);
@@ -135,6 +180,20 @@ public partial class OverlayWindow : Window
     {
         base.OnSourceInitialized(e);
         ClickThroughWindow.Enable(this);
+        ClickThroughWindow.ForceTopMost(this);
+        _topMostTimer.Start();
+    }
+
+    // Only poke the z-order while the overlay is actually shown. When it is hidden (overlay
+    // toggled off) we skip so we don't churn SetWindowPos on a hidden window.
+    private void ReassertTopMost()
+    {
+        if (!IsVisible)
+        {
+            return;
+        }
+
+        ClickThroughWindow.ForceTopMost(this);
     }
 
     private void UpdateBossTimerText()
@@ -145,6 +204,16 @@ public partial class OverlayWindow : Window
         }
 
         TimerTextBlock.Text = FormatDuration(_activeBoss.GetElapsedDuration(DateTimeOffset.Now));
+    }
+
+    private void QueueBossTimerRefresh()
+    {
+        if (Dispatcher.HasShutdownStarted)
+        {
+            return;
+        }
+
+        Dispatcher.BeginInvoke(UpdateBossTimerText, DispatcherPriority.Render);
     }
 
     private static string FormatDuration(TimeSpan duration)
@@ -158,9 +227,18 @@ public partial class OverlayWindow : Window
         return new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(color));
     }
 
-    private static LinearGradientBrush BuildOverlayGradient(string color)
+    // Rebuilds the overlay background brush from the current theme color and background
+    // opacity. The opacity is applied to the brush alpha only, so overlay text stays opaque.
+    private void RefreshOverlayBackground()
     {
-        var top = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(color);
+        OverlayChrome.Background = CreateOverlayBrush(_overlayBackgroundColor, _backgroundOpacity);
+        TimerChrome.Background = CreateOverlayBrush(TimerOverlayBackgroundColor, _backgroundOpacity);
+    }
+
+    private static LinearGradientBrush CreateOverlayBrush(System.Windows.Media.Color color, double opacity)
+    {
+        var alpha = (byte)Math.Round(Math.Clamp(opacity, 0.0, 1.0) * 255);
+        var top = System.Windows.Media.Color.FromArgb(alpha, color.R, color.G, color.B);
         var bottom = LiftColor(top, 16);
         return new LinearGradientBrush
         {

@@ -1,0 +1,46 @@
+# Polish boss list for Dark Souls II: Scholar of the First Sin (PL_DS2_BossList.txt)
+# Best-effort translations, aligned line-for-line with ENG_DS2_BossList.txt for easy correction.
+# Lines starting with '#' are ignored. Wrong entries are harmless (they simply will not match
+# on-screen text) - verify against the in-game Polish names and edit as needed.
+Aava, Pupil Króla
+Aldia, Badacz Pierwszego Grzechu
+Pradawny Smok
+Gargulce z Dzwonnicy
+Niebieski Demon Hutnik
+Spalony Król z Kości Słoniowej
+Zachłanny Demon
+Czający się w Mroku
+Demon Pieśni
+Smoczy Jeździec
+Smoczy Jeźdźcy
+Elana, Plugawa Królowa
+Rydwan Kata
+Giętki Strażnik
+Rycerz Oparów
+Władca Gigantów
+Grabarz, Varg i Cerah
+Smok Strażnik
+Rycerz Lustra
+Lud i Zallen, Pupile Króla
+Mytha, Zgubna Królowa
+Nashandra
+Stary Pogromca Smoków
+Stary Żelazny Król
+Krążący Mag i Kongregacja
+Królewski Szczurzy Zwierzchnik
+Królewska Szczurza Straż Przednia
+Strażnicy Ruin
+Skorpionica Najka
+Sinh, Drzemiący Smok
+Sir Alonne
+Władcy Szkieletów
+Demon Hutnik
+Freja, Ukochana Księcia
+Ostatni Gigant
+Zagubiony Grzesznik
+Prześladowca
+Zgniły
+Obrońca Tronu
+Strażnik Tronu
+Velstadt, Królewska Egida
+Vendrick

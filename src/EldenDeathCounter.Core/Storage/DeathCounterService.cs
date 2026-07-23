@@ -4,6 +4,8 @@ namespace EldenDeathCounter.Core.Storage;
 
 public sealed class DeathCounterService
 {
+    private const int MaximumStoredDeathEvents = 1_000;
+    private const int DeathEventArchiveBatchSize = 250;
     private readonly DeathCounterStore _store;
     private readonly ILogService _log;
     private string _dataFilePath;
@@ -153,6 +155,22 @@ public sealed class DeathCounterService
             () => $"Active boss cleared by {detectionMethod}.");
     }
 
+    public async Task SkipActiveBossAsync(string detectionMethod)
+    {
+        await MutateAndPersistAsync(
+            () =>
+            {
+                if (State.ActiveBoss is null)
+                {
+                    return;
+                }
+
+                State.CurrentDeathCount = Math.Max(0, State.CurrentDeathCount - State.ActiveBoss.DeathCount);
+                State.ActiveBoss = null;
+            },
+            () => $"Active boss skipped by {detectionMethod}.");
+    }
+
     public async Task MarkActiveBossDefeatedAsync(string detectionMethod)
     {
         await MarkActiveBossDefeatedAsync(detectionMethod, DateTimeOffset.Now);
@@ -252,6 +270,37 @@ public sealed class DeathCounterService
             () => $"Boss history entry '{entry.Name}' updated.");
     }
 
+    public async Task AddBossHistoryEntryAsync(
+        string name,
+        int deathCount,
+        DateTimeOffset startedAt,
+        DateTimeOffset defeatedAt,
+        string completedBy)
+    {
+        var normalizedName = name.Trim();
+        if (string.IsNullOrWhiteSpace(normalizedName))
+        {
+            return;
+        }
+
+        await MutateAndPersistAsync(
+            () =>
+            {
+                State.BossHistory.Add(new BossHistoryEntry
+                {
+                    Name = normalizedName,
+                    DeathCount = Math.Max(0, deathCount),
+                    StartedAt = startedAt,
+                    DefeatedAt = defeatedAt,
+                    KillDuration = defeatedAt >= startedAt
+                        ? defeatedAt - startedAt
+                        : TimeSpan.Zero,
+                    CompletedBy = completedBy.Trim()
+                });
+            },
+            () => $"Boss history entry '{normalizedName}' added.");
+    }
+
     public async Task DeleteBossHistoryEntryAsync(BossHistoryEntry entry)
     {
         if (!State.BossHistory.Contains(entry))
@@ -284,6 +333,7 @@ public sealed class DeathCounterService
         try
         {
             mutate();
+            await ArchiveExcessDeathEventsAsync();
             await _store.SaveAsync(_dataFilePath, State);
             _log.Info(createLogMessage());
             StateChanged?.Invoke(this, EventArgs.Empty);
@@ -292,5 +342,22 @@ public sealed class DeathCounterService
         {
             _saveLock.Release();
         }
+    }
+
+    private async Task ArchiveExcessDeathEventsAsync()
+    {
+        var excessEventCount = State.DeathEvents.Count - MaximumStoredDeathEvents;
+        if (excessEventCount <= 0)
+        {
+            return;
+        }
+
+        var eventsToArchive = State.DeathEvents
+            .OrderBy(item => item.Timestamp)
+            .Take(Math.Max(excessEventCount, DeathEventArchiveBatchSize))
+            .ToList();
+
+        await _store.ArchiveDeathEventsAsync(_dataFilePath, eventsToArchive);
+        State.DeathEvents.RemoveAll(item => eventsToArchive.Contains(item));
     }
 }

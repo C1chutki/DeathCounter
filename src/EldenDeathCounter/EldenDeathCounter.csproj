@@ -10,6 +10,17 @@
 
   <ItemGroup>
     <Content Include="..\..\Assets\*.*" Link="Assets\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\Assets\Icons\*.*" Link="Assets\Icons\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\Assets\Elden Ring\*.*" Link="Assets\Elden Ring\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\Assets\Elden Ring\Reforge\*.*" Link="Assets\Elden Ring\Reforge\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\Assets\Elden Ring\Convergence\*.*" Link="Assets\Elden Ring\Convergence\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\Assets\Dark souls 3\*.*" Link="Assets\Dark souls 3\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\Assets\Dark souls 2\*.*" Link="Assets\Dark souls 2\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\Assets\Black Myth Wukong\*.*" Link="Assets\Black Myth Wukong\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="..\..\Assets\Fonts\*.ttf" Link="Assets\Fonts\%(Filename)%(Extension)" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -20,9 +31,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PlatformTarget>x64</PlatformTarget>
+    <SatelliteResourceLanguages>en;pl</SatelliteResourceLanguages>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
-    <Version>1.5.1</Version>
+    <ApplicationIcon>..\..\Assets\Icons\AppIcon.ico</ApplicationIcon>
+    <Version>1.14.10</Version>
   </PropertyGroup>
 
 </Project>

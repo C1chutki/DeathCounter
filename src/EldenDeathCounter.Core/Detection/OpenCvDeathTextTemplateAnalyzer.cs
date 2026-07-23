@@ -64,6 +64,7 @@ public sealed class OpenCvDeathTextTemplateAnalyzer
                     $"template:{template.Name}:opencv",
                     scale)
                 {
+                    Threshold = threshold,
                     Details =
                         $"threshold={FormatScore(threshold)}; " +
                         $"candidate={candidate.Left},{candidate.Top},{candidateWidth}x{candidateHeight}; " +

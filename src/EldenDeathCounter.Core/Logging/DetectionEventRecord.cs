@@ -36,6 +36,10 @@ public sealed class DetectionEventRecord
 
     public long? TotalMs { get; set; }
 
+    public long? FrameDeltaMs { get; set; }
+
+    public string? TimingMode { get; set; }
+
     [JsonIgnore]
     public bool IsFrameDiagnostic { get; set; }
 }

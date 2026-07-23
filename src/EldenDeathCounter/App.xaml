@@ -3,7 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              ShutdownMode="OnMainWindowClose">
     <Application.Resources>
-        <FontFamily x:Key="AppFontFamily">EB Garamond</FontFamily>
-        <FontFamily x:Key="HeaderFontFamily">EB Garamond</FontFamily>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/EldenDeathCounter;component/Localization/Strings.en.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <FontFamily x:Key="AppFontFamily">EB Garamond</FontFamily>
+            <FontFamily x:Key="HeaderFontFamily">EB Garamond</FontFamily>
+            <FontFamily x:Key="MonoFontFamily">EB Garamond</FontFamily>
+            <FontFamily x:Key="EmblemFontFamily">pack://application:,,,/Assets/Fonts/#UnifrakturCook</FontFamily>
+            <FontFamily x:Key="OverlayHeaderFontFamily">pack://application:,,,/Assets/Fonts/#Cinzel</FontFamily>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -10,15 +10,11 @@ public sealed class DeathTextTemplateReferenceImageTests
     [Fact]
     public void BuildsTemplateFromProvidedDeathScreenAndMatchesItBack()
     {
-        var imagePath = GetAssetPath("PL_Death_Screen.png");
+        var imagePath = GetAssetPath(Path.Combine("Elden Ring", "PL_Death_Screen.png"));
         Assert.True(File.Exists(imagePath), imagePath);
 
         using var bitmap = new Bitmap(imagePath);
-        var crop = new PixelRect(
-            (int)(bitmap.Width * 0.33),
-            (int)(bitmap.Height * 0.43),
-            (int)(bitmap.Width * 0.67),
-            (int)(bitmap.Height * 0.58));
+        var crop = DeathTextTemplateReferenceRegion.DeathScreen(bitmap.Width, bitmap.Height);
 
         var template = WithLockedPixels(bitmap, getPixel => DeathTextTemplate.FromReference(
             "NIE ŻYJESZ",
@@ -43,17 +39,13 @@ public sealed class DeathTextTemplateReferenceImageTests
     [Fact]
     public void MatchesSecondProvidedDeathScreen()
     {
-        var templatePath = GetAssetPath("PL_Death_Screen.png");
-        var screenshotPath = GetAssetPath("PL_Death_Screen_v2.jpg");
+        var templatePath = GetAssetPath(Path.Combine("Elden Ring", "PL_Death_Screen.png"));
+        var screenshotPath = GetAssetPath(Path.Combine("Elden Ring", "PL_Death_Screen_v2.jpg"));
         Assert.True(File.Exists(templatePath), templatePath);
         Assert.True(File.Exists(screenshotPath), screenshotPath);
 
         using var templateBitmap = new Bitmap(templatePath);
-        var crop = new PixelRect(
-            (int)(templateBitmap.Width * 0.33),
-            (int)(templateBitmap.Height * 0.43),
-            (int)(templateBitmap.Width * 0.67),
-            (int)(templateBitmap.Height * 0.58));
+        var crop = DeathTextTemplateReferenceRegion.DeathScreen(templateBitmap.Width, templateBitmap.Height);
 
         var template = WithLockedPixels(templateBitmap, getPixel => DeathTextTemplate.FromReference(
             "NIE ZYJESZ",
@@ -77,17 +69,13 @@ public sealed class DeathTextTemplateReferenceImageTests
     }
 
     [Fact]
-    public void MatchesSecondEnglishDeathScreen()
+    public void MatchesMaintainedEnglishDeathScreen()
     {
-        var templatePath = GetAssetPath("ENG_Death_Screen_v2.jpg");
+        var templatePath = GetAssetPath(Path.Combine("Elden Ring", "ENG_Death_Screen_v9.png"));
         Assert.True(File.Exists(templatePath), templatePath);
 
         using var bitmap = new Bitmap(templatePath);
-        var crop = new PixelRect(
-            (int)(bitmap.Width * 0.33),
-            (int)(bitmap.Height * 0.43),
-            (int)(bitmap.Width * 0.67),
-            (int)(bitmap.Height * 0.58));
+        var crop = DeathTextTemplateReferenceRegion.DeathScreen(bitmap.Width, bitmap.Height);
 
         var template = WithLockedPixels(bitmap, getPixel => DeathTextTemplate.FromReference(
             "YOU DIED",
@@ -95,7 +83,38 @@ public sealed class DeathTextTemplateReferenceImageTests
             crop.Height,
             (x, y) => getPixel(crop.Left + x, crop.Top + y)));
         var analyzer = new DeathTextTemplateAnalyzer();
-        var capture = DeathTextCaptureRegionCalculator.Calculate(bitmap.Width, bitmap.Height);
+        // Production templates are pre-cropped capture strips, so analyze the strip directly.
+        var result = WithLockedPixels(bitmap, getPixel => analyzer.Analyze(
+            bitmap.Width,
+            bitmap.Height,
+            getPixel,
+            [template],
+            0.8));
+
+        Assert.True(
+            result.IsMatch,
+            $"score={result.Score:0.000}, scale={result.Scale:0.00}, method={result.Method}, template={template.Width}x{template.Height}, strokePoints={template.StrokePoints.Count}, edgePoints={template.EdgePoints.Count}, details={result.Details}");
+    }
+
+    [Fact]
+    public void BuildsDarkSouls2TemplateFromProvidedDeathScreenAndMatchesItInDarkSouls2CaptureRoi()
+    {
+        // Dark Souls II draws "YOU DIED" much lower than Elden Ring/DS3, so it needs its own reference
+        // crop and its own (lower, taller) live capture ROI. Building the template from the DS2 crop and
+        // matching it inside the DS2 capture ROI cut from the same full screenshot must confirm a match.
+        var imagePath = GetAssetPath(Path.Combine("Dark souls 2", "ENG_YouDied.jpg"));
+        Assert.True(File.Exists(imagePath), imagePath);
+
+        using var bitmap = new Bitmap(imagePath);
+        var crop = DeathTextTemplateReferenceRegion.DeathScreen(bitmap.Width, bitmap.Height, "DarkSouls2");
+
+        var template = WithLockedPixels(bitmap, getPixel => DeathTextTemplate.FromReference(
+            "YOU DIED",
+            crop.Width,
+            crop.Height,
+            (x, y) => getPixel(crop.Left + x, crop.Top + y)));
+        var analyzer = new DeathTextTemplateAnalyzer();
+        var capture = DeathTextCaptureRegionCalculator.Calculate(bitmap.Width, bitmap.Height, "DarkSouls2");
         var result = WithLockedPixels(bitmap, getPixel => analyzer.Analyze(
             capture.Width,
             capture.Height,
@@ -103,6 +122,7 @@ public sealed class DeathTextTemplateReferenceImageTests
             [template],
             0.8));
 
+        Assert.True(template.StrokePoints.Count > 50, $"strokePoints={template.StrokePoints.Count}, edgePoints={template.EdgePoints.Count}");
         Assert.True(
             result.IsMatch,
             $"score={result.Score:0.000}, scale={result.Scale:0.00}, method={result.Method}, template={template.Width}x{template.Height}, strokePoints={template.StrokePoints.Count}, edgePoints={template.EdgePoints.Count}, details={result.Details}");

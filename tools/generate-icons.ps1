@@ -128,4 +128,24 @@ $front = @( (P 40 196), (P 72 140), (P 232 140), (P 200 196) )
 $g.DrawPolygon($pen, [System.Drawing.PointF[]]$front)
 Save-Icon $s 'Open_Folder.png'
 
+# ---- Logo: emblem (ring enclosing an upright sword) at native 132x121 ----
+$logoW = 132; $logoH = 121
+$bmp = New-Object System.Drawing.Bitmap($logoW, $logoH, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+$g = [System.Drawing.Graphics]::FromImage($bmp)
+$g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+$g.Clear([System.Drawing.Color]::Transparent)
+$lpen = New-Object System.Drawing.Pen($dark, 8.0)
+$lpen.StartCap = [System.Drawing.Drawing2D.LineCap]::Round
+$lpen.EndCap = [System.Drawing.Drawing2D.LineCap]::Round
+$lpen.LineJoin = [System.Drawing.Drawing2D.LineJoin]::Round
+$g.DrawEllipse($lpen, 12, 8, 108, 104)            # outer ring
+$g.DrawLine($lpen, (P 66 26), (P 66 86))          # blade
+$g.DrawLine($lpen, (P 47 66), (P 85 66))          # crossguard
+$g.DrawEllipse($lpen, 60, 88, 12, 12)             # pommel
+$logoPath = Join-Path $assets 'Logo.png'
+$g.Dispose()
+$bmp.Save($logoPath, [System.Drawing.Imaging.ImageFormat]::Png)
+$bmp.Dispose()
+Write-Host 'wrote Logo.png'
+
 Write-Host 'done'

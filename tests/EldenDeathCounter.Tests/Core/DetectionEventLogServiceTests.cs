@@ -29,7 +29,9 @@ public sealed class DetectionEventLogServiceTests
             Stabilizer = "1/2",
             Gate = "latched=false,clearFrames=0/3",
             Reason = "own-settings-window-text",
-            Evidence = "diagnostics/evidence/summary.json"
+            Evidence = "diagnostics/evidence/summary.json",
+            FrameDeltaMs = 351,
+            TimingMode = "base"
         });
 
         var eventLogPath = Path.Combine(folder, "detection-events.jsonl");
@@ -39,6 +41,8 @@ public sealed class DetectionEventLogServiceTests
         Assert.Equal("boss-victory", eventJson.RootElement.GetProperty("kind").GetString());
         Assert.Equal("pending-expired", eventJson.RootElement.GetProperty("outcome").GetString());
         Assert.Equal(0.889, eventJson.RootElement.GetProperty("ocrScore").GetDouble(), precision: 3);
+        Assert.Equal(351, eventJson.RootElement.GetProperty("frameDeltaMs").GetInt64());
+        Assert.Equal("base", eventJson.RootElement.GetProperty("timingMode").GetString());
 
         using var latestJson = JsonDocument.Parse(File.ReadAllText(latestPath));
         Assert.Equal(20, latestJson.RootElement.GetProperty("state").GetProperty("deathCount").GetInt32());

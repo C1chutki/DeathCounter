@@ -9,36 +9,23 @@ namespace EldenDeathCounter.Detection;
 
 public sealed class TemplateDeathTextImageSignalDetector : IImageDeathSignalDetector
 {
-    private static readonly string[] DefaultTemplateFileNames =
-    [
-        "PL_Death_Screen.png",
-        "PL_Death_Screen_v2.jpg",
-        "PL_Death_Screen_v3.jpg"
-    ];
-
-    private static readonly string[] EnglishTemplateFileNames =
-    [
-        "ENG_Death_Screen.jpg",
-        "ENG_Death_Screen_v2.jpg"
-    ];
-
     private readonly ILogService _log;
+    private readonly string? _templatePath;
     private readonly OpenCvDeathTextTemplateAnalyzer _analyzer = new();
-    private readonly IReadOnlyDictionary<string, IReadOnlyList<DeathTextTemplate>> _templatesByLanguage;
+    private readonly object _cacheLock = new();
+    private readonly Dictionary<string, IReadOnlyList<DeathTextTemplate>> _templatesByGameLanguage =
+        new(StringComparer.OrdinalIgnoreCase);
 
     public TemplateDeathTextImageSignalDetector(ILogService log, string? templatePath = null)
     {
         _log = log;
-        _templatesByLanguage = LoadTemplatesByLanguage(templatePath, log);
+        _templatePath = templatePath;
     }
 
-    public ImageDeathSignalMatch Analyze(Bitmap bitmap, double sensitivity, string gameLanguage)
+    public ImageDeathSignalMatch Analyze(Bitmap bitmap, double sensitivity, string gameId, string gameLanguage, string bossHealthBarStyle)
     {
         var language = NormalizeLanguage(gameLanguage);
-        var templates = _templatesByLanguage.TryGetValue(language, out var languageTemplates)
-            ? languageTemplates
-            : [];
-
+        var templates = GetTemplates(gameId, language, bossHealthBarStyle);
         if (templates.Count == 0)
         {
             return ImageDeathSignalMatch.NoMatch;
@@ -55,13 +42,22 @@ public sealed class TemplateDeathTextImageSignalDetector : IImageDeathSignalDete
         }
     }
 
-    private static IReadOnlyDictionary<string, IReadOnlyList<DeathTextTemplate>> LoadTemplatesByLanguage(string? templatePath, ILogService log)
+    private IReadOnlyList<DeathTextTemplate> GetTemplates(string gameId, string language, string bossHealthBarStyle)
     {
-        return new Dictionary<string, IReadOnlyList<DeathTextTemplate>>(StringComparer.OrdinalIgnoreCase)
+        var style = BossHealthBarStyles.Normalize(bossHealthBarStyle);
+        var key = $"{gameId?.Trim() ?? string.Empty}|{language}|{style}";
+        lock (_cacheLock)
         {
-            ["PL"] = LoadTemplates(FindTemplatePaths(templatePath, DefaultTemplateFileNames), log),
-            ["ENG"] = LoadTemplates(FindTemplatePaths(templatePath, EnglishTemplateFileNames), log)
-        };
+            if (_templatesByGameLanguage.TryGetValue(key, out var cached))
+            {
+                return cached;
+            }
+
+            var fileNames = GameDeathScreenTemplates.DeathTemplateFiles(gameId ?? string.Empty, language, style);
+            var templates = LoadTemplates(FindTemplatePaths(_templatePath, fileNames), gameId, _log);
+            _templatesByGameLanguage[key] = templates;
+            return templates;
+        }
     }
 
     private static IReadOnlyList<string> FindTemplatePaths(string? templatePath, IReadOnlyList<string> templateFileNames)
@@ -91,7 +87,7 @@ public sealed class TemplateDeathTextImageSignalDetector : IImageDeathSignalDete
         };
     }
 
-    private static IReadOnlyList<DeathTextTemplate> LoadTemplates(IEnumerable<string> paths, ILogService log)
+    private static IReadOnlyList<DeathTextTemplate> LoadTemplates(IEnumerable<string> paths, string? gameId, ILogService log)
     {
         var templates = new List<DeathTextTemplate>();
         foreach (var path in paths)
@@ -104,7 +100,7 @@ public sealed class TemplateDeathTextImageSignalDetector : IImageDeathSignalDete
             try
             {
                 using var bitmap = new Bitmap(path);
-                var crop = GetReferenceTextSearchRegion(bitmap.Width, bitmap.Height);
+                var crop = GetReferenceTextSearchRegion(bitmap.Width, bitmap.Height, gameId);
                 var template = WithLockedPixels(bitmap, getPixel => DeathTextTemplate.FromReference(
                     Path.GetFileName(path),
                     crop.Width,
@@ -127,13 +123,9 @@ public sealed class TemplateDeathTextImageSignalDetector : IImageDeathSignalDete
         return templates;
     }
 
-    private static PixelRect GetReferenceTextSearchRegion(int width, int height)
+    private static PixelRect GetReferenceTextSearchRegion(int width, int height, string? gameId)
     {
-        return new PixelRect(
-            (int)(width * 0.33),
-            (int)(height * 0.43),
-            (int)(width * 0.67),
-            (int)(height * 0.58));
+        return DeathTextTemplateReferenceRegion.DeathScreen(width, height, gameId);
     }
 
     private static T WithLockedPixels<T>(Bitmap bitmap, Func<Func<int, int, RgbPixel>, T> read)

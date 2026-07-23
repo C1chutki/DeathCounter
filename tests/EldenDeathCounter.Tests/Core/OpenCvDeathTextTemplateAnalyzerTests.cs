@@ -9,23 +9,21 @@ namespace EldenDeathCounter.Tests.Core;
 public sealed class OpenCvDeathTextTemplateAnalyzerTests
 {
     [Fact]
-    public void MatchesEnglishDeathScreenQuickly()
+    public void MatchesMaintainedEnglishDeathScreenQuickly()
     {
-        var screenshotPath = GetAssetPath("ENG_Death_Screen.jpg");
+        var screenshotPath = GetAssetPath(Path.Combine("Elden Ring", "ENG_Death_Screen_v9.png"));
         Assert.True(File.Exists(screenshotPath), screenshotPath);
 
         using var bitmap = new Bitmap(screenshotPath);
-        var template = CreateTemplate(bitmap, "ENG_Death_Screen.jpg");
-        var capture = DeathTextCaptureRegionCalculator.Calculate(bitmap.Width, bitmap.Height);
+        var template = CreateTemplate(bitmap, "ENG_Death_Screen_v9.png");
         var analyzer = new OpenCvDeathTextTemplateAnalyzer();
-
         var elapsed = WithLockedPixels(bitmap, getPixel =>
         {
             var stopwatch = Stopwatch.StartNew();
             var result = analyzer.Analyze(
-                capture.Width,
-                capture.Height,
-                (x, y) => getPixel(capture.Left + x, capture.Top + y),
+                bitmap.Width,
+                bitmap.Height,
+                getPixel,
                 [template],
                 0.8);
             stopwatch.Stop();
@@ -40,7 +38,7 @@ public sealed class OpenCvDeathTextTemplateAnalyzerTests
     [Fact]
     public void IgnoresRedBackgroundWithoutDeathTextShape()
     {
-        using var bitmap = new Bitmap(GetAssetPath("ENG_Death_Screen.jpg"));
+        using var bitmap = new Bitmap(GetAssetPath(Path.Combine("Elden Ring", "ENG_Death_Screen.png")));
         var template = CreateTemplate(bitmap, "ENG_Death_Screen.jpg");
         var analyzer = new OpenCvDeathTextTemplateAnalyzer();
 
@@ -57,7 +55,7 @@ public sealed class OpenCvDeathTextTemplateAnalyzerTests
     [Fact]
     public void IgnoresBossBarWithoutDeathTextShape()
     {
-        using var bitmap = new Bitmap(GetAssetPath("ENG_Death_Screen.jpg"));
+        using var bitmap = new Bitmap(GetAssetPath(Path.Combine("Elden Ring", "ENG_Death_Screen.png")));
         var template = CreateTemplate(bitmap, "ENG_Death_Screen.jpg");
         var analyzer = new OpenCvDeathTextTemplateAnalyzer();
 
@@ -77,11 +75,7 @@ public sealed class OpenCvDeathTextTemplateAnalyzerTests
 
     private static DeathTextTemplate CreateTemplate(Bitmap bitmap, string name)
     {
-        var crop = new PixelRect(
-            (int)(bitmap.Width * 0.33),
-            (int)(bitmap.Height * 0.43),
-            (int)(bitmap.Width * 0.67),
-            (int)(bitmap.Height * 0.58));
+        var crop = DeathTextTemplateReferenceRegion.DeathScreen(bitmap.Width, bitmap.Height);
 
         return WithLockedPixels(bitmap, getPixel => DeathTextTemplate.FromReference(
             name,

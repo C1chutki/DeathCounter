@@ -3,25 +3,37 @@ namespace EldenDeathCounter.Core.Detection;
 public sealed class BossHealthBarAnalyzer
 {
     public IReadOnlyList<BossHealthBarRegion> Analyze(int width, int height, Func<int, int, RgbPixel> getPixel)
+        => Analyze(width, height, "EldenRing", getPixel);
+
+    public IReadOnlyList<BossHealthBarRegion> Analyze(int width, int height, string? gameId, Func<int, int, RgbPixel> getPixel)
+        => Analyze(width, height, gameId, BossHealthBarStyles.Vanilla, getPixel);
+
+    public IReadOnlyList<BossHealthBarRegion> Analyze(
+        int width,
+        int height,
+        string? gameId,
+        string? bossHealthBarStyle,
+        Func<int, int, RgbPixel> getPixel)
     {
         if (width <= 0 || height <= 0)
         {
             return [];
         }
 
+        var tuning = GameTuning.For(gameId, bossHealthBarStyle);
         var left = (int)(width * 0.16);
         var right = (int)(width * 0.86);
         var isLowerScreenCrop = height <= width * 0.35;
         var top = isLowerScreenCrop ? 0 : (int)(height * 0.70);
-        var bottom = isLowerScreenCrop ? (int)(height * 0.92) : (int)(height * 0.91);
-        var minimumSpan = (int)(width * 0.32);
+        var bottom = isLowerScreenCrop ? (int)(height * tuning.BottomFractionForLowerCrop) : (int)(height * tuning.BottomFraction);
+        var minimumSpan = (int)(width * tuning.MinimumSpanFraction);
         var minimumVisibleHealthSpan = (int)(width * 0.10);
         var inferredBossBarSpan = (int)(width * 0.52);
         var candidates = new List<RowCandidate>();
 
         for (var y = top; y < bottom; y += 2)
         {
-            var row = FindRedRunOnRow(left, right, y, getPixel);
+            var row = FindRedRunOnRow(left, right, y, tuning, getPixel);
             if (row is null)
             {
                 continue;
@@ -50,10 +62,12 @@ public sealed class BossHealthBarAnalyzer
 
         var clusters = ClusterRows(candidates);
         return clusters
-            .Where(cluster => cluster.Bottom - cluster.Top >= 4)
+            .Where(cluster =>
+                cluster.Bottom - cluster.Top >= 4 &&
+                cluster.Bottom - cluster.Top <= tuning.MaxClusterHeight(height))
             .OrderBy(cluster => cluster.Top)
             .Take(3)
-            .Select(cluster => ToRegion(cluster, width, height))
+            .Select(cluster => ToRegion(cluster, width, height, tuning))
             .ToList();
     }
 
@@ -62,7 +76,7 @@ public sealed class BossHealthBarAnalyzer
     // thresholds. currentRight only advances on real red pixels, so a trailing gap never inflates a run.
     private const int MaxRedRunGap = 12;
 
-    private static (int Left, int Right)? FindRedRunOnRow(int left, int right, int y, Func<int, int, RgbPixel> getPixel)
+    private static (int Left, int Right)? FindRedRunOnRow(int left, int right, int y, GameTuning tuning, Func<int, int, RgbPixel> getPixel)
     {
         var bestLeft = 0;
         var bestRight = 0;
@@ -72,7 +86,7 @@ public sealed class BossHealthBarAnalyzer
 
         for (var x = left; x < right; x += 2)
         {
-            if (IsBossBarRed(getPixel(x, y)))
+            if (IsBossBarRed(getPixel(x, y), tuning))
             {
                 if (currentLeft < 0)
                 {
@@ -137,17 +151,23 @@ public sealed class BossHealthBarAnalyzer
         return clusters;
     }
 
-    private static BossHealthBarRegion ToRegion(RowCluster cluster, int width, int height)
+    private static BossHealthBarRegion ToRegion(RowCluster cluster, int width, int height, GameTuning tuning)
     {
         var bar = new PixelRect(
             Math.Clamp(cluster.Left - 8, 0, width),
             Math.Clamp(cluster.Top - 2, 0, height),
             Math.Clamp(cluster.Right + 8, 0, width),
             Math.Clamp(cluster.Bottom + 4, 0, height));
+
+        // The boss name is left-anchored above the bar. Elden Ring's bright bar is detected at its true
+        // left edge, so the name region starts there. Dark Souls III's bar is dimmer and its name sits
+        // further left than the detected red fill (the bar frame extends left of the visible health), so
+        // the name region is shifted left by a game-specific fraction of the screen width.
+        var nameLeft = Math.Clamp(bar.Left - (int)(width * tuning.NameLeftInsetFraction), 0, width);
         var nameRegion = new PixelRect(
-            bar.Left,
+            nameLeft,
             Math.Clamp(bar.Top - 58, 0, height),
-            Math.Clamp(Math.Min(bar.Right, bar.Left + Math.Max(420, bar.Width / 2)), 0, width),
+            Math.Clamp(Math.Min(bar.Right, nameLeft + Math.Max(420, bar.Width / 2)), 0, width),
             Math.Clamp(bar.Top - 4, 0, height));
 
         return new BossHealthBarRegion(bar, nameRegion);
@@ -159,11 +179,79 @@ public sealed class BossHealthBarAnalyzer
     // while orange fire (220,150,60) and grey (120,120,120) are rejected because green sits too close
     // to red. The downstream boss-list OCR match (0.82 threshold) is the final guard against any
     // non-bar red that still slips through.
-    private static bool IsBossBarRed(RgbPixel pixel)
+    private static bool IsBossBarRed(RgbPixel pixel, GameTuning tuning)
     {
-        return pixel.R >= 60 &&
-               pixel.G <= pixel.R * 0.55 &&
-               pixel.B <= pixel.R * 0.60;
+        return pixel.R >= tuning.MinRed &&
+               pixel.G <= pixel.R * tuning.MaxGreenFraction &&
+               pixel.B <= pixel.R * tuning.MaxBlueFraction;
+    }
+
+    // Per-game heuristics for the otherwise identical bar scan. Dark Souls III's bar is a dim, thin
+    // crimson line whose red channel sits right at Elden Ring's 60 floor, so it needs a lower minimum
+    // and a name region shifted left of the visible health (see ToRegion). All other games keep the
+    // Elden-Ring-tuned values, so their detection is unchanged.
+    private readonly record struct GameTuning(
+        int MinRed,
+        double NameLeftInsetFraction,
+        double BottomFraction,
+        double BottomFractionForLowerCrop,
+        double MinimumSpanFraction,
+        double MaxClusterHeightFraction,
+        double MaxGreenFraction = 0.55,
+        double MaxBlueFraction = 0.60)
+    {
+        public int MaxClusterHeight(int height) => Math.Max(24, (int)(height * MaxClusterHeightFraction));
+
+        public static GameTuning For(string? gameId, string? bossHealthBarStyle)
+        {
+            if (string.Equals(gameId?.Trim(), "DarkSouls3", StringComparison.OrdinalIgnoreCase))
+            {
+                return new GameTuning(
+                    MinRed: 48,
+                    NameLeftInsetFraction: 0.075,
+                    BottomFraction: 0.91,
+                    BottomFractionForLowerCrop: 0.92,
+                    MinimumSpanFraction: 0.32,
+                    MaxClusterHeightFraction: 1.0);
+            }
+
+            // Dark Souls II's boss bar is a dark, desaturated crimson: its red channel sits well below
+            // Elden Ring's 60 floor and its green/blue sit closer to red than the vanilla ceilings allow
+            // (~G 0.55R, B 0.5R), so it needs a lower red minimum and slightly looser colour ceilings.
+            // Grey UI (G≈R) and orange fire (G>0.62R) are still rejected. Its name also starts slightly
+            // left of the visible red fill, so the name region is inset left by a small screen fraction.
+            if (string.Equals(gameId?.Trim(), "DarkSouls2", StringComparison.OrdinalIgnoreCase))
+            {
+                return new GameTuning(
+                    MinRed: 35,
+                    NameLeftInsetFraction: 0.03,
+                    BottomFraction: 0.91,
+                    BottomFractionForLowerCrop: 0.92,
+                    MinimumSpanFraction: 0.32,
+                    MaxClusterHeightFraction: 1.0,
+                    MaxGreenFraction: 0.62,
+                    MaxBlueFraction: 0.62);
+            }
+
+            if (BossHealthBarStyles.Normalize(bossHealthBarStyle) == BossHealthBarStyles.Reforged)
+            {
+                return new GameTuning(
+                    MinRed: 55,
+                    NameLeftInsetFraction: 0.0,
+                    BottomFraction: 0.93,
+                    BottomFractionForLowerCrop: 0.96,
+                    MinimumSpanFraction: 0.28,
+                    MaxClusterHeightFraction: 0.03);
+            }
+
+            return new GameTuning(
+                MinRed: 60,
+                NameLeftInsetFraction: 0.0,
+                BottomFraction: 0.91,
+                BottomFractionForLowerCrop: 0.92,
+                MinimumSpanFraction: 0.32,
+                MaxClusterHeightFraction: 1.0);
+        }
     }
 
     private readonly record struct RowCandidate(int Left, int Right, int Y);

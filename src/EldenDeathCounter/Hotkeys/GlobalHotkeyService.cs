@@ -131,6 +131,7 @@ public sealed class GlobalHotkeyService : IDisposable
         {
             "PAGEUP" => Key.PageUp,
             "PAGEDOWN" => Key.PageDown,
+            { Length: 1 } when key[0] is >= '0' and <= '9' => Key.D0 + (key[0] - '0'),
             _ => Enum.TryParse<Key>(key, ignoreCase: true, out var parsed) ? parsed : Key.None
         };
 

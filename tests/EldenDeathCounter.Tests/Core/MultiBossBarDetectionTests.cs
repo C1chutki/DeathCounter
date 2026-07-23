@@ -12,7 +12,7 @@ public sealed class MultiBossBarDetectionTests
     private static IReadOnlyList<BossHealthBarRegion> AnalyzeAsset(string assetName)
     {
         var analyzer = new BossHealthBarAnalyzer();
-        using var bitmap = new Bitmap(GetAssetPath(assetName));
+        using var bitmap = new Bitmap(GetAssetPath(Path.Combine("Elden Ring", assetName)));
         return analyzer.Analyze(bitmap.Width, bitmap.Height, (x, y) =>
         {
             var pixel = bitmap.GetPixel(x, y);

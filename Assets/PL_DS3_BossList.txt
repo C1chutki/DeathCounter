@@ -1,0 +1,35 @@
+# Polish boss list for Dark Souls III (PL_DS3_BossList.txt)
+# Best-effort translations, aligned line-for-line with ENG_DS3_BossList.txt for easy correction.
+# Lines starting with '#' are ignored. Wrong entries are harmless (they simply will not match
+# on-screen text) - verify against the in-game Polish names and edit as needed.
+Strażnicy Otchłani
+Aldrich, Pożeracz Bogów
+Pradawna Wiwerna
+Friede Czarnego Płomienia
+Czempion Gundyr
+Grabarz Mistrzów
+Kryształowy Mędrzec
+Przeklęte Wielkie Drzewo
+Tancerka z Borealnej Doliny
+Midir, Pożeracz Mroku
+Diakoni Głębi
+Demon z Otchłani
+Demon w Bólu
+Książę Demonów
+Zbroja Pogromcy Smoków
+Ojciec Ariandel i Siostra Friede
+Wielki Wilk Grabarza
+Półświatło, Włócznia Kościoła
+Najwyższy Władca Wolnir
+Iudex Gundyr
+Lorian, Starszy Książę
+Lothric, Młodszy Książę
+Bezimienny Król
+Oceiros, Pochłonięty Król
+Stary Król Demonów
+Pontifex Sulyvahn
+Siostra Friede
+Rycerz Niewolnik Gael
+Dusza Żaru
+Vordt z Borealnej Doliny
+Yhorm Olbrzym

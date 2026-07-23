@@ -5,15 +5,23 @@ namespace EldenDeathCounter.Tests.Core;
 public sealed class AppGameThemeTests
 {
     [Fact]
-    public void DarkSouls3ThemeUsesRequestedTitleAndPrimaryColor()
+    public void DarkSoulsThemesMatchEldenRingPaletteExceptTitleAndPrimaryAccent()
     {
-        var theme = AppGameTheme.DarkSouls3;
+        AssertThemeMatchesEldenRingPalette(AppGameTheme.DarkSouls1, "Dark Souls Death Counter", "#4A90E2");
+        AssertThemeMatchesEldenRingPalette(AppGameTheme.DarkSouls3, "Dark Souls 3 Death Counter", "#E65100");
+    }
 
-        Assert.Equal("Dark Souls 3 Death Counter", theme.Title);
-        Assert.Equal("#E65100", theme.Primary);
-        Assert.Equal("#424242", theme.Secondary);
-        Assert.Equal("#CFD8DC", theme.Tertiary);
-        Assert.Equal("#0A0A0A", theme.Neutral);
+    [Fact]
+    public void DarkSouls2UsesItsOwnPalette()
+    {
+        var theme = AppGameTheme.DarkSouls2;
+
+        Assert.Equal("Dark Souls 2 Death Counter", theme.Title);
+        Assert.Equal("#5F7355", theme.Primary);
+        Assert.Equal(AppGameTheme.EldenRing.Secondary, theme.Secondary);
+        Assert.Equal("#A68A4B", theme.Tertiary);
+        Assert.Equal("#10150F", theme.Neutral);
+        Assert.Equal(theme.Primary, theme.OverlayBorder);
     }
 
     [Fact]
@@ -21,8 +29,27 @@ public sealed class AppGameThemeTests
     {
         var theme = AppGameTheme.EldenRing;
 
-        Assert.Equal("#EAC36D", theme.OverlayBorder);
+        Assert.Equal("#D9B45A", theme.OverlayBorder);
         Assert.Equal(theme.Primary, theme.OverlayBorder);
         Assert.Equal("#7F000000", theme.OverlayBackground);
+    }
+
+    private static void AssertThemeMatchesEldenRingPalette(AppGameTheme theme, string title, string primary)
+    {
+        var eldenRing = AppGameTheme.EldenRing;
+
+        Assert.Equal(title, theme.Title);
+        Assert.Equal(primary, theme.Primary);
+        Assert.Equal(eldenRing.Secondary, theme.Secondary);
+        Assert.Equal(eldenRing.Tertiary, theme.Tertiary);
+        Assert.Equal(eldenRing.Neutral, theme.Neutral);
+        Assert.Equal(eldenRing.Ink, theme.Ink);
+        Assert.Equal(eldenRing.MutedInk, theme.MutedInk);
+        Assert.Equal(eldenRing.Panel, theme.Panel);
+        Assert.Equal(eldenRing.PanelAlt, theme.PanelAlt);
+        Assert.Equal(eldenRing.Border, theme.Border);
+        Assert.Equal(eldenRing.OverlayBackground, theme.OverlayBackground);
+        Assert.Equal(theme.Primary, theme.OverlayBorder);
+        Assert.Equal(eldenRing.OverlayText, theme.OverlayText);
     }
 }

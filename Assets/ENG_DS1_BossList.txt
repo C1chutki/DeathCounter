@@ -1,0 +1,32 @@
+# English boss list for Dark Souls (Remastered) (ENG_DS1_BossList.txt)
+# One boss name per line. Lines starting with '#' are ignored.
+# Includes base game + Artorias of the Abyss DLC. Ornstein & Smough show two
+# separate health bars, so both names are listed.
+# Kept alphabetical and aligned line-for-line with PL_DS1_BossList.txt for easy correction.
+Asylum Demon
+Bed of Chaos
+Bell Gargoyle
+Black Dragon Kalameet
+Capra Demon
+Ceaseless Discharge
+Centipede Demon
+Chaos Witch Quelaag
+Crossbreed Priscilla
+Dark Sun Gwyndolin
+Demon Firesage
+Dragon Slayer Ornstein
+Executioner Smough
+Four Kings
+Gaping Dragon
+Gravelord Nito
+Great Grey Wolf Sif
+Gwyn, Lord of Cinder
+Iron Golem
+Knight Artorias
+Manus, Father of the Abyss
+Moonlight Butterfly
+Pinwheel
+Sanctuary Guardian
+Seath the Scaleless
+Stray Demon
+Taurus Demon

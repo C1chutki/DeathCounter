@@ -1,5 +1,6 @@
 using System.Text.Json;
 using EldenDeathCounter.Core.Configuration;
+using EldenDeathCounter.Core.Detection;
 using EldenDeathCounter.Core.Logging;
 
 namespace EldenDeathCounter.Core.Storage;
@@ -31,9 +32,23 @@ public sealed class AppSettingsStore
                 return defaults;
             }
 
-            await using var stream = File.OpenRead(settingsFilePath);
-            var settings = await JsonSerializer.DeserializeAsync<AppSettings>(stream, JsonFileOptions.Value);
-            return Normalize(settings ?? AppSettings.CreateDefault(desktopPath, profile), desktopPath, profile);
+            AppSettings? settings;
+            await using (var stream = File.OpenRead(settingsFilePath))
+            {
+                settings = await JsonSerializer.DeserializeAsync<AppSettings>(stream, JsonFileOptions.Value);
+            }
+
+            var normalized = Normalize(
+                settings ?? AppSettings.CreateDefault(desktopPath, profile),
+                desktopPath,
+                profile,
+                out var migrated);
+            if (migrated)
+            {
+                await SaveAsync(settingsFilePath, normalized);
+            }
+
+            return normalized;
         }
         catch (JsonException exception)
         {
@@ -65,24 +80,20 @@ public sealed class AppSettingsStore
         }
     }
 
-    private static AppSettings Normalize(AppSettings settings, string desktopPath, AppGameProfile profile)
+    private static AppSettings Normalize(AppSettings settings, string desktopPath, AppGameProfile profile, out bool migrated)
     {
         var defaults = AppSettings.CreateDefault(desktopPath, profile);
+        migrated = settings.SettingsVersion < AppSettings.CurrentSettingsVersion;
 
         if (string.IsNullOrWhiteSpace(settings.DataFolderPath))
         {
             settings.DataFolderPath = defaults.DataFolderPath;
         }
 
-        if (settings.DetectionPhrases is null || settings.DetectionPhrases.Count == 0)
-        {
-            settings.DetectionPhrases = defaults.DetectionPhrases;
-        }
-
-        if (settings.BossVictoryPhrases is null || settings.BossVictoryPhrases.Count == 0)
-        {
-            settings.BossVictoryPhrases = defaults.BossVictoryPhrases;
-        }
+        settings.GameId = profile.Id;
+        settings.CharacterProfileName = AppCharacterProfile.NormalizeName(settings.CharacterProfileName ?? string.Empty);
+        settings.DetectionPhrases = AppSettings.CreateDefaultDetectionPhrases();
+        settings.BossVictoryPhrases = AppSettings.CreateDefaultBossVictoryPhrases();
 
         if (settings.BossNameCorrections is null || settings.BossNameCorrections.Count == 0)
         {
@@ -90,11 +101,16 @@ public sealed class AppSettingsStore
         }
 
         settings.GameLanguage = NormalizeGameLanguage(settings.GameLanguage, defaults.GameLanguage);
+        settings.BossHealthBarStyle = BossHealthBarStyles.Normalize(settings.BossHealthBarStyle);
+        settings.DetectionMode = DetectionModePresets.Get(settings.DetectionMode).Mode;
 
-        if (settings.DetectionIntervalMs <= 0)
+        if (migrated && settings.DetectionIntervalMs == 500 && settings.DetectionCooldownSeconds == 5)
         {
             settings.DetectionIntervalMs = defaults.DetectionIntervalMs;
+            settings.DetectionCooldownSeconds = defaults.DetectionCooldownSeconds;
         }
+
+        settings.DetectionIntervalMs = DetectionTimingOptions.NormalizeBaseIntervalMs(settings.DetectionIntervalMs);
 
         if (settings.DetectionCooldownSeconds <= 0)
         {
@@ -122,7 +138,8 @@ public sealed class AppSettingsStore
             settings.DiagnosticsRetentionDays = defaults.DiagnosticsRetentionDays;
         }
 
-        settings.CaptureTarget = string.IsNullOrWhiteSpace(settings.CaptureTarget)
+        settings.CaptureTarget = string.IsNullOrWhiteSpace(settings.CaptureTarget) ||
+                                 (profile != AppGameProfile.EldenRing && settings.CaptureTarget.Equals("EldenRingWindow", StringComparison.OrdinalIgnoreCase))
             ? defaults.CaptureTarget
             : settings.CaptureTarget;
         settings.ManualAddHotkey = string.IsNullOrWhiteSpace(settings.ManualAddHotkey)
@@ -131,15 +148,35 @@ public sealed class AppSettingsStore
         settings.ManualSubtractHotkey = string.IsNullOrWhiteSpace(settings.ManualSubtractHotkey)
             ? defaults.ManualSubtractHotkey
             : settings.ManualSubtractHotkey;
+        if (migrated &&
+            settings.ManualAddHotkey.Equals("F8", StringComparison.OrdinalIgnoreCase) &&
+            settings.ManualSubtractHotkey.Equals("F9", StringComparison.OrdinalIgnoreCase))
+        {
+            settings.ManualAddHotkey = defaults.ManualAddHotkey;
+            settings.ManualSubtractHotkey = defaults.ManualSubtractHotkey;
+        }
+
+        if (migrated)
+        {
+            settings.SettingsVersion = AppSettings.CurrentSettingsVersion;
+        }
+
         settings.BossDefeatedHotkey = string.IsNullOrWhiteSpace(settings.BossDefeatedHotkey)
             ? defaults.BossDefeatedHotkey
             : settings.BossDefeatedHotkey;
         settings.OverlayToggleHotkey = string.IsNullOrWhiteSpace(settings.OverlayToggleHotkey)
             ? defaults.OverlayToggleHotkey
             : settings.OverlayToggleHotkey;
+        settings.DetectionToggleHotkey = string.IsNullOrWhiteSpace(settings.DetectionToggleHotkey)
+            ? defaults.DetectionToggleHotkey
+            : settings.DetectionToggleHotkey;
+        settings.BossSkipHotkey = string.IsNullOrWhiteSpace(settings.BossSkipHotkey)
+            ? defaults.BossSkipHotkey
+            : settings.BossSkipHotkey;
         settings.OverlayFontScale = settings.OverlayFontScale <= 0
             ? defaults.OverlayFontScale
             : Math.Clamp(settings.OverlayFontScale, 0.6, 1.6);
+        settings.OverlayBackgroundOpacity = Math.Clamp(settings.OverlayBackgroundOpacity, 0.0, 1.0);
 
         return settings;
     }

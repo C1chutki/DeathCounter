@@ -1,0 +1,73 @@
+# Elden Ring: The Convergence boss list.
+# Source: https://elden-ring-the-convergence-mod.fandom.com/wiki/Bosses
+# Used as an English supplemental boss-name list for the Convergence detection variant.
+
+# New Remembrance Bosses
+Daergarf, Underworld Archmage/Feigned Dragonlord Daergarf
+Daergarf, Underworld Archmage
+Feigned Dragonlord Daergarf
+Skarde, Crucible's Betrayer
+Godskin Matriarch
+Vessel of Rot/Scion of the Sealed God
+Vessel of Rot
+Scion of the Sealed God
+Dyru, Scavenger King
+Einar, Ice Guardian
+Spiritshaper Caimar
+
+# New Minibosses / Field Bosses
+Pureblood Knight
+Bloodflame Dragon Sanguivaros
+Seera, Blade of the Ancients
+Dakk, Starcaller Lord
+Sigurd, Night's Captain
+Shabiri's Chosen
+Goras, Scourge of Dreams
+Rhys, Carian Paragon
+Blighted Nox Ancestor
+Banished Knight Oleg
+Erdtree Sentries
+
+# Erdtree Waygate Bosses
+Erdtree Guardian
+Erdtree Avatar
+Grafted Scion
+Giant Crystal Crab
+Carian Golem
+Ancestral Shaman
+Jar Warrior Champion
+Rotten Monk
+Putrid Avatar
+Demi-Human Chief
+Charred Banished Knight
+Erdtree Sentry
+Wormface
+Blighted Omen
+Death Rite Bird
+Grand Flame Prelate
+Mountain Troll
+Albinauric Wolf Rider
+Mimic Tear
+Nox Insect Cavalry
+Ulcerated Tree Spirit
+
+# Shadow of the Erdtree Waygate Bosses
+Monstrous Spider Scorpion
+Bloodfiend Mystic
+Black Knight Captain
+Fire Knight Crusader
+Divine Bird Warrior
+Grave Bird Raptor
+Maddened Hippopotamus
+
+# Bosses Changelog
+Lichdragon Fortissax
+Sir Gideon Ofnir, the All-Knowing
+Divine Beast Dancing Lion
+Ancient Dragon Lansseax
+Leoline Misbegotten
+Leoline Misbegotten (Castle Morne)
+Dragonkin Soldier
+Beastman of Farum Azula
+Beastman of Farum Azula (Limgrave)
+Aled, Knight of Godwyn

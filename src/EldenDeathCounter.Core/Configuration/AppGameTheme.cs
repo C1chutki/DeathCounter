@@ -17,31 +17,39 @@ public sealed record AppGameTheme(
 {
     public static AppGameTheme EldenRing { get; } = new(
         "Elden Ring Death Counter",
-        "#EAC36D",
-        "#191919",
-        "#F1EEE7",
-        "#0B0B0B",
-        "#F1EEE7",
-        "#B8B1A6",
-        "#141414",
-        "#191815",
-        "#4A3D27",
+        "#D9B45A",
+        "#0C0A06",
+        "#ECE3CF",
+        "#0B0907",
+        "#ECE3CF",
+        "#8A7C5E",
+        "#13100B",
+        "#1A150D",
+        "#2E2719",
         "#7F000000",
-        "#EAC36D",
+        "#D9B45A",
         "#FFFFFF");
 
-    public static AppGameTheme DarkSouls3 { get; } = new(
-        "Dark Souls 3 Death Counter",
-        "#E65100",
-        "#424242",
-        "#CFD8DC",
-        "#0A0A0A",
-        "#F2ECE8",
-        "#998982",
-        "#1E1E1E",
-        "#242424",
-        "#6F4536",
-        "#CC1E1E1E",
-        "#E65100",
-        "#FFB49F");
+    public static AppGameTheme DarkSouls1 { get; } = EldenRing with
+    {
+        Title = "Dark Souls Death Counter",
+        Primary = "#4A90E2",
+        OverlayBorder = "#4A90E2",
+    };
+
+    public static AppGameTheme DarkSouls2 { get; } = EldenRing with
+    {
+        Title = "Dark Souls 2 Death Counter",
+        Primary = "#5F7355",
+        Tertiary = "#A68A4B",
+        Neutral = "#10150F",
+        OverlayBorder = "#5F7355",
+    };
+
+    public static AppGameTheme DarkSouls3 { get; } = EldenRing with
+    {
+        Title = "Dark Souls 3 Death Counter",
+        Primary = "#E65100",
+        OverlayBorder = "#E65100",
+    };
 }

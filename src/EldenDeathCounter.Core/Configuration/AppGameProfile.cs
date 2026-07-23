@@ -4,6 +4,10 @@ public sealed record AppGameProfile(string Id, string FolderName, AppGameTheme T
 {
     public static AppGameProfile EldenRing { get; } = new("EldenRing", "EldenRing", AppGameTheme.EldenRing);
 
+    public static AppGameProfile DarkSouls1 { get; } = new("DarkSouls1", "DarkSouls1", AppGameTheme.DarkSouls1);
+
+    public static AppGameProfile DarkSouls2 { get; } = new("DarkSouls2", "DarkSouls2", AppGameTheme.DarkSouls2);
+
     public static AppGameProfile DarkSouls3 { get; } = new("DarkSouls3", "DarkSouls3", AppGameTheme.DarkSouls3);
 
     public string GetDataFolderPath(string desktopPath)

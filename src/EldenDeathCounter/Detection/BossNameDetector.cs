@@ -21,7 +21,7 @@ public sealed partial class BossNameDetector : IBossNameDetector
         _log = log;
     }
 
-    public IReadOnlyList<BossHealthBarRegion> AnalyzeBars(Bitmap screenshot)
+    public IReadOnlyList<BossHealthBarRegion> AnalyzeBars(Bitmap screenshot, string gameId, string bossHealthBarStyle)
     {
         try
         {
@@ -33,7 +33,7 @@ public sealed partial class BossNameDetector : IBossNameDetector
                 var bytes = new byte[byteCount];
                 Marshal.Copy(data.Scan0, bytes, 0, byteCount);
 
-                return _analyzer.Analyze(screenshot.Width, screenshot.Height, (x, y) =>
+                return _analyzer.Analyze(screenshot.Width, screenshot.Height, gameId, bossHealthBarStyle, (x, y) =>
                 {
                     var row = data.Stride > 0 ? y : data.Height - 1 - y;
                     var offset = row * Math.Abs(data.Stride) + x * 4;

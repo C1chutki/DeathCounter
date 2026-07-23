@@ -14,127 +14,193 @@
     <Border x:Name="OverlayChrome"
             MinWidth="356"
             Background="#E60A1014"
-            BorderBrush="#4A3D27"
+            BorderBrush="#5A3A20"
             BorderThickness="1"
             CornerRadius="7"
-            Padding="22,20,22,18">
+            Padding="0">
+        <Border.LayoutTransform>
+            <ScaleTransform x:Name="OverlayScaleTransform" ScaleX="1" ScaleY="1" />
+        </Border.LayoutTransform>
         <Border.Effect>
             <DropShadowEffect BlurRadius="16"
                               ShadowDepth="0"
                               Opacity="0.45"
                               Color="#000000" />
         </Border.Effect>
-        <StackPanel>
-            <Grid Margin="0,0,0,22">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal"
-                            VerticalAlignment="Center">
-                    <Ellipse x:Name="DetectionDot"
-                             Width="9"
-                             Height="9"
-                             Fill="#8DA46D"
-                             Margin="0,0,10,0" />
-                    <TextBlock x:Name="DetectionStatusTextBlock"
-                               Text="DETECTION STOPPED"
-                               Foreground="#A18C52"
+        <Grid>
+            <!-- Souls-style inner frame: a delicate gold line inset from the outer border. -->
+            <Border Margin="4"
+                    BorderBrush="#E08A3C"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Opacity="0.5"
+                    IsHitTestVisible="False" />
+
+            <!-- Geometric corner accents (pure XAML brackets, no bitmaps). -->
+            <Path Data="M0,14 L0,0 L14,0"
+                  Stroke="#E08A3C"
+                  StrokeThickness="1.2"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Top"
+                  Margin="7,7,0,0"
+                  Opacity="0.85"
+                  IsHitTestVisible="False" />
+            <Path Data="M0,0 L14,0 L14,14"
+                  Stroke="#E08A3C"
+                  StrokeThickness="1.2"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Top"
+                  Margin="0,7,7,0"
+                  Opacity="0.85"
+                  IsHitTestVisible="False" />
+            <Path Data="M0,0 L0,14 L14,14"
+                  Stroke="#E08A3C"
+                  StrokeThickness="1.2"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Bottom"
+                  Margin="7,0,0,7"
+                  Opacity="0.85"
+                  IsHitTestVisible="False" />
+            <Path Data="M14,0 L14,14 L0,14"
+                  Stroke="#E08A3C"
+                  StrokeThickness="1.2"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Bottom"
+                  Margin="0,0,7,7"
+                  Opacity="0.85"
+                  IsHitTestVisible="False" />
+
+            <StackPanel Margin="22,20,22,18">
+                <Grid Margin="0,0,0,22">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel x:Name="DetectionStatusPanel"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center">
+                        <Ellipse x:Name="DetectionDot"
+                                 Width="9"
+                                 Height="9"
+                                 Fill="#8DA46D"
+                                 Margin="0,0,10,0" />
+                        <TextBlock x:Name="DetectionStatusTextBlock"
+                                   Text="{DynamicResource Overlay_DetectionStopped}"
+                                   Foreground="#B0702E"
+                                   FontFamily="{DynamicResource OverlayHeaderFontFamily}"
+                                   FontSize="12"
+                                   FontWeight="Bold" />
+                    </StackPanel>
+                    <TextBlock x:Name="VersionTextBlock"
+                               Grid.Column="1"
+                               Text="v1.0.0"
+                               Foreground="#8D8780"
                                FontFamily="{DynamicResource HeaderFontFamily}"
                                FontSize="12"
-                               FontWeight="Bold" />
-                </StackPanel>
-                <TextBlock x:Name="VersionTextBlock"
-                           Grid.Column="1"
-                           Text="v1.0.0"
-                           Foreground="#8D8780"
-                           FontFamily="{DynamicResource HeaderFontFamily}"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center" />
+                </Grid>
+
+                <TextBlock x:Name="TotalDeathsLabelTextBlock"
+                           Text="{DynamicResource Overlay_TotalDeaths}"
+                           Foreground="#B0702E"
+                           FontFamily="{DynamicResource OverlayHeaderFontFamily}"
                            FontSize="12"
                            FontWeight="Bold"
-                           VerticalAlignment="Center" />
-            </Grid>
-
-            <TextBlock x:Name="TotalDeathsLabelTextBlock"
-                       Text="TOTAL DEATHS"
-                       Foreground="#A18C52"
-                       FontFamily="{DynamicResource HeaderFontFamily}"
-                       FontSize="12"
-                       FontWeight="Bold"
-                       Margin="0,0,0,6" />
-            <TextBlock x:Name="CounterTextBlock"
-                       Text="Śmierci: 0"
-                       Foreground="#D6A1A6"
-                       FontSize="26"
-                       FontWeight="SemiBold"
-                       FontFamily="{DynamicResource AppFontFamily}" />
-
-            <StackPanel x:Name="BossPanel"
-                        Visibility="Collapsed"
-                        Margin="0,22,0,0">
-                <Border x:Name="DividerBorder"
-                        Height="1"
-                        Background="#2C2E27"
-                        Margin="0,0,0,24" />
-                <TextBlock x:Name="BossTextBlock"
-                           Text=""
-                           Foreground="#E8E3DA"
-                           FontSize="20"
+                           Margin="0,0,0,6" />
+                <TextBlock x:Name="CounterTextBlock"
+                           Text="Śmierci: 0"
+                           Foreground="#D6A1A6"
+                           FontSize="34"
                            FontWeight="SemiBold"
-                           FontFamily="{DynamicResource AppFontFamily}"
-                           MaxWidth="620"
-                           TextWrapping="Wrap"
-                           TextTrimming="CharacterEllipsis"
-                           LineHeight="25" />
-                <TextBlock x:Name="BossDeathTextBlock"
-                           Text=""
-                           Foreground="#D3B365"
-                           FontFamily="{DynamicResource HeaderFontFamily}"
-                           FontSize="14"
-                           FontWeight="Bold"
-                           Margin="0,6,0,0" />
-                <Border x:Name="TimerChrome"
-                        Background="#B3000000"
-                        BorderBrush="#293522"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="16,12"
-                        Margin="0,24,0,0">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Viewbox Width="20"
-                                 Height="20"
-                                 VerticalAlignment="Center"
-                                 Margin="0,0,16,0">
-                            <Grid Width="20" Height="20">
-                                <Ellipse x:Name="ClockFace"
-                                         Stroke="{Binding Foreground, ElementName=TimerTextBlock}"
-                                         StrokeThickness="2"
-                                         Width="16"
-                                         Height="16"
-                                         HorizontalAlignment="Center"
-                                         VerticalAlignment="Center" />
-                                <Path x:Name="ClockHands"
-                                      Stroke="{Binding Foreground, ElementName=TimerTextBlock}"
-                                      StrokeThickness="2"
-                                      StrokeStartLineCap="Round"
-                                      StrokeEndLineCap="Round"
-                                      Data="M10,5 L10,10 L14,13" />
-                            </Grid>
-                        </Viewbox>
-                        <TextBlock x:Name="TimerTextBlock"
-                                   Grid.Column="1"
-                                   Text="00:00:00"
-                                   Foreground="#D6DBDF"
-                                   FontFamily="{DynamicResource AppFontFamily}"
-                                   FontSize="20"
-                                   FontWeight="Bold"
-                                   VerticalAlignment="Center" />
+                           FontFamily="{DynamicResource AppFontFamily}">
+                    <TextBlock.Effect>
+                        <DropShadowEffect BlurRadius="12"
+                                          ShadowDepth="0"
+                                          Opacity="0.55"
+                                          Color="#E08A3C" />
+                    </TextBlock.Effect>
+                </TextBlock>
+
+                <StackPanel x:Name="BossPanel"
+                            Visibility="Collapsed"
+                            Margin="0,22,0,0">
+                    <!-- Souls-style separator: a themed line with a gold diamond at its centre. -->
+                    <Grid Margin="0,0,0,24">
+                        <Border x:Name="DividerBorder"
+                                Height="1"
+                                Background="#2C2E27"
+                                VerticalAlignment="Center" />
+                        <Path Data="M6,0 L12,6 L6,12 L0,6 Z"
+                              Width="12"
+                              Height="12"
+                              Fill="#E08A3C"
+                              Stroke="#5A3A20"
+                              StrokeThickness="1"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              IsHitTestVisible="False" />
                     </Grid>
-                </Border>
+                    <TextBlock x:Name="BossTextBlock"
+                               Text=""
+                               Foreground="#E8E3DA"
+                               FontSize="22"
+                               FontWeight="SemiBold"
+                               FontFamily="{DynamicResource OverlayHeaderFontFamily}"
+                               MaxWidth="620"
+                               TextWrapping="Wrap"
+                               TextTrimming="CharacterEllipsis"
+                               LineHeight="28" />
+                    <TextBlock x:Name="BossDeathTextBlock"
+                               Text=""
+                               Foreground="#C9742E"
+                               FontFamily="{DynamicResource OverlayHeaderFontFamily}"
+                               FontSize="14"
+                               FontWeight="Bold"
+                               Margin="0,8,0,0" />
+                    <Border x:Name="TimerChrome"
+                            BorderBrush="#293522"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="16,12"
+                            Margin="0,20,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Viewbox Width="18"
+                                     Height="18"
+                                     VerticalAlignment="Center"
+                                     Margin="0,0,16,0">
+                                <Grid Width="20" Height="20">
+                                    <Ellipse x:Name="ClockFace"
+                                             Stroke="{Binding Foreground, ElementName=TimerTextBlock}"
+                                             StrokeThickness="2"
+                                             Width="16"
+                                             Height="16"
+                                             HorizontalAlignment="Center"
+                                             VerticalAlignment="Center" />
+                                    <Path x:Name="ClockHands"
+                                          Stroke="{Binding Foreground, ElementName=TimerTextBlock}"
+                                          StrokeThickness="2"
+                                          StrokeStartLineCap="Round"
+                                          StrokeEndLineCap="Round"
+                                          Data="M10,5 L10,10 L14,13" />
+                                </Grid>
+                            </Viewbox>
+                            <TextBlock x:Name="TimerTextBlock"
+                                       Grid.Column="1"
+                                       Text="00:00:00"
+                                       Foreground="#D6DBDF"
+                                       FontFamily="{DynamicResource AppFontFamily}"
+                                       FontSize="18"
+                                       FontWeight="Bold"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+                    </Border>
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
+        </Grid>
     </Border>
 </Window>

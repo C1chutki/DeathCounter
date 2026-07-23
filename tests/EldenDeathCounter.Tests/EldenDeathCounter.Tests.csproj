@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <NoWarn>$(NoWarn);CA1416</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,7 +22,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\EldenDeathCounter.Core\EldenDeathCounter.Core.csproj" />
-    <ProjectReference Include="..\..\src\EldenDeathCounter\EldenDeathCounter.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\src\EldenDeathCounter\UI\RelayCommand.cs" Link="UI\RelayCommand.cs" />
   </ItemGroup>
 
 </Project>

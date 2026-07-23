@@ -84,6 +84,7 @@ public sealed class DeathTextTemplateAnalyzer
                         $"template:{template.Name}",
                         scale)
                     {
+                        Threshold = threshold,
                         Details =
                             $"threshold={FormatScore(threshold)}; " +
                             $"candidate={candidate.Left},{candidate.Top},{candidateWidth}x{candidateHeight}; " +

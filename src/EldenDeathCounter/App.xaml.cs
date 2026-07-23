@@ -5,6 +5,7 @@ using EldenDeathCounter.Core.Logging;
 using EldenDeathCounter.Core.Storage;
 using EldenDeathCounter.Detection;
 using EldenDeathCounter.Hotkeys;
+using EldenDeathCounter.Localization;
 using EldenDeathCounter.ViewModels;
 
 namespace EldenDeathCounter;
@@ -55,6 +56,10 @@ public partial class App : System.Windows.Application
             settings.DataFolderPath = Environment.ExpandEnvironmentVariables(settings.DataFolderPath);
             Directory.CreateDirectory(settings.DataFolderPath);
 
+            // Apply the persisted UI language before any window is shown so static text and
+            // runtime strings render in the chosen language from the first frame.
+            LocalizationService.Instance.SetLanguage(settings.AppLanguage);
+
             var activeLogPath = Path.Combine(settings.DataFolderPath, "log.txt");
             if (!Path.GetFullPath(activeLogPath).Equals(Path.GetFullPath(startupProfile.GetLogFilePath(desktopPath)), StringComparison.OrdinalIgnoreCase))
             {
@@ -70,7 +75,7 @@ public partial class App : System.Windows.Application
             _detectionEventLog.Configure(settings, new DetectionDiagnosticsState(state.CurrentDeathCount, state.ActiveBoss?.Name, false));
 
             var overlayWindow = new OverlayWindow(settings);
-            overlayWindow.UpdateCount(state.CurrentDeathCount, state.ActiveBoss, settings.GameLanguage);
+            overlayWindow.UpdateCount(state.CurrentDeathCount, state.ActiveBoss, settings.AppLanguage);
             if (settings.OverlayEnabled)
             {
                 overlayWindow.Show();

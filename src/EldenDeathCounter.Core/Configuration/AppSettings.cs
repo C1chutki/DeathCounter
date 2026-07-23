@@ -1,7 +1,14 @@
+using System.Text.Json.Serialization;
+using EldenDeathCounter.Core.Detection;
+
 namespace EldenDeathCounter.Core.Configuration;
 
 public sealed class AppSettings
 {
+    public const int CurrentSettingsVersion = 1;
+
+    public int SettingsVersion { get; set; }
+
     public bool OverlayEnabled { get; set; } = true;
 
     public double OverlayX { get; set; } = 40;
@@ -12,11 +19,28 @@ public sealed class AppSettings
 
     public bool AutoDetectBossNames { get; set; } = true;
 
+    public bool DetectDeaths { get; set; } = true;
+
+    public bool DetectBossVictories { get; set; } = true;
+
+    public string BossHealthBarStyle { get; set; } = BossHealthBarStyles.Vanilla;
+
+    public string DetectionMode { get; set; } = DetectionModePresets.Balanced;
+
     public string GameLanguage { get; set; } = "PL";
+
+    // Active game profile id (EldenRing/DarkSouls1/DarkSouls2/DarkSouls3). Derived from the loaded
+    // profile by AppSettingsStore, never read from disk, so a stale JSON value can't select the
+    // wrong game's detection assets (boss lists, death/victory templates).
+    [JsonIgnore]
+    public string GameId { get; set; } = AppGameProfile.EldenRing.Id;
+
+    // UI language for the app chrome (en/pl). Independent of GameLanguage (OCR/detection).
+    public string AppLanguage { get; set; } = "en";
 
     public Dictionary<string, string> BossNameCorrections { get; set; } = [];
 
-    public int DetectionIntervalMs { get; set; } = 300;
+    public int DetectionIntervalMs { get; set; } = DetectionTimingOptions.DefaultBaseIntervalMs;
 
     public int DetectionCooldownSeconds { get; set; } = 25;
 
@@ -26,6 +50,8 @@ public sealed class AppSettings
 
     public string DataFolderPath { get; set; } = string.Empty;
 
+    public string CharacterProfileName { get; set; } = string.Empty;
+
     public DiagnosticsMode DiagnosticsMode { get; set; } = DiagnosticsMode.Events;
 
     public int DiagnosticsSessionMinutes { get; set; } = 10;
@@ -34,19 +60,35 @@ public sealed class AppSettings
 
     public int DiagnosticsRetentionDays { get; set; } = 7;
 
-    public List<string> DetectionPhrases { get; set; } = [];
+    [JsonIgnore]
+    public List<string> DetectionPhrases { get; set; } = CreateDefaultDetectionPhrases();
 
-    public List<string> BossVictoryPhrases { get; set; } = [];
+    [JsonIgnore]
+    public List<string> BossVictoryPhrases { get; set; } = CreateDefaultBossVictoryPhrases();
 
-    public string ManualAddHotkey { get; set; } = "F8";
+    public string ManualAddHotkey { get; set; } = "F9";
 
-    public string ManualSubtractHotkey { get; set; } = "F9";
+    public string ManualSubtractHotkey { get; set; } = "F8";
 
     public string BossDefeatedHotkey { get; set; } = "F7";
 
     public string OverlayToggleHotkey { get; set; } = "Ctrl+Shift+O";
 
+    public string DetectionToggleHotkey { get; set; } = "F6";
+
+    public string BossSkipHotkey { get; set; } = "Ctrl+Shift+P";
+
+    // Scale of the whole overlay window (text, spacing, borders, divider, timer).
+    // Kept under the original "OverlayFontScale" name so existing settings JSON keeps loading.
     public double OverlayFontScale { get; set; } = 1.0;
+
+    // Opacity of the overlay background only (0.0–1.0). Text stays fully opaque.
+    // Default 0.9 matches the previous look (background alpha 0xE6 ≈ 0.90).
+    public double OverlayBackgroundOpacity { get; set; } = 0.9;
+
+    public bool ShowBossTimer { get; set; } = true;
+
+    public bool ShowDetectionStatus { get; set; } = true;
 
     public static AppSettings CreateDefault(string desktopPath)
     {
@@ -57,44 +99,67 @@ public sealed class AppSettings
     {
         return new AppSettings
         {
+            SettingsVersion = CurrentSettingsVersion,
             OverlayEnabled = true,
             OverlayX = 40,
             OverlayY = 40,
             DetectionEnabledOnStartup = false,
             AutoDetectBossNames = true,
+            DetectDeaths = true,
+            DetectBossVictories = true,
+            BossHealthBarStyle = BossHealthBarStyles.Vanilla,
+            DetectionMode = DetectionModePresets.Balanced,
+            GameId = profile.Id,
             GameLanguage = "PL",
-            DetectionIntervalMs = 300,
+            AppLanguage = "en",
+            DetectionIntervalMs = DetectionTimingOptions.DefaultBaseIntervalMs,
             DetectionCooldownSeconds = 25,
             DetectionSensitivity = 0.8,
-            CaptureTarget = "EldenRingWindow",
+            CaptureTarget = GameWindowTargetResolver.GetCaptureTarget(profile),
             DataFolderPath = profile.GetDataFolderPath(desktopPath),
+            CharacterProfileName = string.Empty,
             DiagnosticsMode = DiagnosticsMode.Events,
             DiagnosticsSessionMinutes = 10,
             DiagnosticsMaxEventLogMb = 5,
             DiagnosticsRetentionDays = 7,
-            DetectionPhrases = ["YOU DIED", "NIE ŻYJESZ"],
-            BossVictoryPhrases =
-            [
-                "POKONANO WROGA",
-                "POKONANO WIELKIEGO WROGA",
-                "POKONANO LEGENDE",
-                "POKONANO POLBOGA",
-                "ZABITO BOGA",
-                "WRÓG POWALONY",
-                "WIELKI WRÓG POWALONY",
-                "ENEMY FELLED",
-                "GREAT ENEMY FELLED",
-                "LEGEND FELLED",
-                "DEMIGOD FELLED",
-                "GOD SLAIN"
-            ],
+            DetectionPhrases = CreateDefaultDetectionPhrases(),
+            BossVictoryPhrases = CreateDefaultBossVictoryPhrases(),
             BossNameCorrections = CreateDefaultBossNameCorrections(),
-            ManualAddHotkey = "F8",
-            ManualSubtractHotkey = "F9",
+            ManualAddHotkey = "F9",
+            ManualSubtractHotkey = "F8",
             BossDefeatedHotkey = "F7",
             OverlayToggleHotkey = "Ctrl+Shift+O",
-            OverlayFontScale = 1.0
+            DetectionToggleHotkey = "F6",
+            BossSkipHotkey = "Ctrl+Shift+P",
+            OverlayFontScale = 1.0,
+            OverlayBackgroundOpacity = 0.9,
+            ShowBossTimer = true,
+            ShowDetectionStatus = true
         };
+    }
+
+    public static List<string> CreateDefaultDetectionPhrases()
+    {
+        return ["YOU DIED", "NIE ŻYJESZ"];
+    }
+
+    public static List<string> CreateDefaultBossVictoryPhrases()
+    {
+        return
+        [
+            "POKONANO WROGA",
+            "POKONANO WIELKIEGO WROGA",
+            "POKONANO LEGENDE",
+            "POKONANO POLBOGA",
+            "ZABITO BOGA",
+            "WRÓG POWALONY",
+            "WIELKI WRÓG POWALONY",
+            "ENEMY FELLED",
+            "GREAT ENEMY FELLED",
+            "LEGEND FELLED",
+            "DEMIGOD FELLED",
+            "GOD SLAIN"
+        ];
     }
 
     private static Dictionary<string, string> CreateDefaultBossNameCorrections()

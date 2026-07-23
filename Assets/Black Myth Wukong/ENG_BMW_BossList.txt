@@ -1,0 +1,99 @@
+# English boss list for Black Myth: Wukong (ENG_BMW_BossList.txt)
+# One boss health-bar name per line. Lines starting with '#' are ignored.
+# Includes story, optional, and secret bosses from all six chapters.
+Apramana Bat
+Baw-Lang-Lang
+Baw-Li-Guhh-Lang
+Bishui Golden-Eyed Beast
+Black Bear Guai
+Black Loong
+Black Wind King
+Brown-Iron Cart
+Buddha's Right Hand
+Bullguard
+Captain Kalpa-Wave
+Captain Lotus-Vision
+Captain Wise-Voice
+Centipede Guai
+Chen Loong
+Cloudtreading Deer
+Cloudy Mist
+Commander Beetle
+Crimson-Silver Cart
+Cyan Loong
+Daoist Mi
+Elder Amourworm
+Elder Jinchi
+Emerald-Armed Mantis
+Erlang Shen
+Erlang, the Sacred Divinity
+Fast as Wind
+Father of Stones
+Feng-Tail General
+First Prince of Flowing Sands
+Flint Chief
+Flint Vanguard
+Fuban
+Fungiwoman
+Giant Shigandang
+Gold Armored Rhino
+Gore-Eye Daoist
+Gray-Bronze Cart
+Green-Capped Martialist
+Guangmou
+Guangzhi
+Hundred-Eyed Daoist Master
+Jiao-Loong of Waves
+Kang-Jin Loong
+Kang-Jin Star
+Keeper of the Flaming Mountains
+King of Flowing Sands
+Lang-Baw-Baw
+Lang-Li-Guhh-Lang
+Lingxuzi
+Macaque Chief
+Mad Tiger
+Man-in-Stone
+Misty Cloud
+Monk from the Sea
+Mother of Flamlings
+Mother of Stones
+Nine-Capped Lingzhi Guai
+Non-Able
+Non-Pure
+Non-Void
+Non-White
+Old Ginseng Guai
+Pale-Axe Stalwart
+Poison Chief
+Quick as Fire
+Red Boy
+Red Loong
+Rusty-Gold Cart
+Second Rat Prince
+Shigandang
+Son of Stones
+Stone Monkey
+Stone Vanguard
+Supreme Inspector
+The Duskveil
+The Four Heavenly Kings
+The Great Sage's Broken Shell
+The Scorpionlord
+The Second Sister
+Tiger Vanguard
+Tiger's Acolyte
+Top Takes Bottom
+Venom Daoist
+Violet Spider
+Wandering Wight
+Water-Wood Beast
+Whiteclad Noble
+Yaksha King
+Yellow Loong
+Yellow Wind Sage
+Yellow-Robed Squire
+Yellowbrow
+Yin Tiger
+Yin-Yang Fish
+Zhu Bajie

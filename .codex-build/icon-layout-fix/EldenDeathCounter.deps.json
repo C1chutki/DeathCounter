@@ -1,0 +1,126 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0/win-x64",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {},
+    ".NETCoreApp,Version=v9.0/win-x64": {
+      "EldenDeathCounter/1.14.5": {
+        "dependencies": {
+          "EldenDeathCounter.Core": "1.0.0",
+          "System.Drawing.Common": "9.0.9",
+          "runtimepack.Microsoft.Windows.SDK.NET.Ref": "10.0.19041.57"
+        },
+        "runtime": {
+          "EldenDeathCounter.dll": {}
+        }
+      },
+      "runtimepack.Microsoft.Windows.SDK.NET.Ref/10.0.19041.57": {
+        "runtime": {
+          "Microsoft.Windows.SDK.NET.dll": {
+            "assemblyVersion": "10.0.19041.38",
+            "fileVersion": "10.0.19041.55"
+          },
+          "WinRT.Runtime.dll": {
+            "assemblyVersion": "2.2.0.0",
+            "fileVersion": "2.2.0.48161"
+          }
+        }
+      },
+      "Microsoft.Win32.SystemEvents/9.0.9": {},
+      "OpenCvSharp4/4.13.0.20260427": {
+        "dependencies": {
+          "System.Memory": "4.6.3"
+        },
+        "runtime": {
+          "lib/net8.0/OpenCvSharp.dll": {
+            "assemblyVersion": "4.13.0.0",
+            "fileVersion": "4.13.0.0"
+          }
+        }
+      },
+      "OpenCvSharp4.runtime.win/4.13.0.20260302": {
+        "native": {
+          "runtimes/win-x64/native/OpenCvSharpExtern.dll": {
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/opencv_videoio_ffmpeg4130_64.dll": {
+            "fileVersion": "2025.12.0.0"
+          }
+        }
+      },
+      "System.Drawing.Common/9.0.9": {
+        "dependencies": {
+          "Microsoft.Win32.SystemEvents": "9.0.9"
+        }
+      },
+      "System.Memory/4.6.3": {},
+      "EldenDeathCounter.Core/1.0.0": {
+        "dependencies": {
+          "OpenCvSharp4": "4.13.0.20260427",
+          "OpenCvSharp4.runtime.win": "4.13.0.20260302"
+        },
+        "runtime": {
+          "EldenDeathCounter.Core.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "EldenDeathCounter/1.14.5": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "runtimepack.Microsoft.Windows.SDK.NET.Ref/10.0.19041.57": {
+      "type": "runtimepack",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.Win32.SystemEvents/9.0.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-eJU9vZbN710Cc25p/jPecPEL+gFcnynAvznNRnEvMU7i7u0PSjFXlGO4SOlaIUvkykTlS2N++M9B/coxYT7aPw==",
+      "path": "microsoft.win32.systemevents/9.0.9",
+      "hashPath": "microsoft.win32.systemevents.9.0.9.nupkg.sha512"
+    },
+    "OpenCvSharp4/4.13.0.20260427": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-2+bL0ID2B+IgGzSJjQ2OB8OW31asDSpweHKH3BPZajuG1Q9Yhg7yCZ9pdC/SHlytIOfGAhRFokbnuCVVwUoMWA==",
+      "path": "opencvsharp4/4.13.0.20260427",
+      "hashPath": "opencvsharp4.4.13.0.20260427.nupkg.sha512"
+    },
+    "OpenCvSharp4.runtime.win/4.13.0.20260302": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-VC2n9CVZQvAm+p0NXW077e/MGkDBraT3ye4FdInRPpxTVK64DwGnLuIncS8mwrkVcKhqh82/KgcDgKXNWDndAA==",
+      "path": "opencvsharp4.runtime.win/4.13.0.20260302",
+      "hashPath": "opencvsharp4.runtime.win.4.13.0.20260302.nupkg.sha512"
+    },
+    "System.Drawing.Common/9.0.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-BS17VFUf4RS9G/JoA6br+79jAjyTj0UaomgXCVNJJn9EWIvmHkn0ZCqAynxwloO00yPIvWgXBF9SBjcM06bl1w==",
+      "path": "system.drawing.common/9.0.9",
+      "hashPath": "system.drawing.common.9.0.9.nupkg.sha512"
+    },
+    "System.Memory/4.6.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-qdcDOgnFZY40+Q9876JUHnlHu7bosOHX8XISRoH94fwk6hgaeQGSgfZd8srWRZNt5bV9ZW2TljcegDNxsf+96A==",
+      "path": "system.memory/4.6.3",
+      "hashPath": "system.memory.4.6.3.nupkg.sha512"
+    },
+    "EldenDeathCounter.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

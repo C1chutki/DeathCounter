@@ -27,10 +27,55 @@ public sealed class AppGameProfileTests
     }
 
     [Fact]
+    public void DarkSouls1ProfileUsesSharedDesktopRootAndGameSubfolder()
+    {
+        var desktopPath = @"C:\Users\TestUser\Desktop";
+
+        Assert.Equal(@"C:\Users\TestUser\Desktop\DeathCounter\DarkSouls1", AppGameProfile.DarkSouls1.GetDataFolderPath(desktopPath));
+        Assert.Equal(@"C:\Users\TestUser\Desktop\DeathCounter\DarkSouls1\appsettings.json", AppGameProfile.DarkSouls1.GetSettingsFilePath(desktopPath));
+        Assert.Equal(@"C:\Users\TestUser\Desktop\DeathCounter\DarkSouls1\deaths.json", AppGameProfile.DarkSouls1.GetDeathDataFilePath(desktopPath));
+        Assert.Equal(@"C:\Users\TestUser\Desktop\DeathCounter\DarkSouls1\log.txt", AppGameProfile.DarkSouls1.GetLogFilePath(desktopPath));
+    }
+
+    [Fact]
+    public void DarkSouls2ProfileUsesSharedDesktopRootAndGameSubfolder()
+    {
+        var desktopPath = @"C:\Users\TestUser\Desktop";
+
+        Assert.Equal(@"C:\Users\TestUser\Desktop\DeathCounter\DarkSouls2", AppGameProfile.DarkSouls2.GetDataFolderPath(desktopPath));
+        Assert.Equal(@"C:\Users\TestUser\Desktop\DeathCounter\DarkSouls2\appsettings.json", AppGameProfile.DarkSouls2.GetSettingsFilePath(desktopPath));
+        Assert.Equal(@"C:\Users\TestUser\Desktop\DeathCounter\DarkSouls2\deaths.json", AppGameProfile.DarkSouls2.GetDeathDataFilePath(desktopPath));
+        Assert.Equal(@"C:\Users\TestUser\Desktop\DeathCounter\DarkSouls2\log.txt", AppGameProfile.DarkSouls2.GetLogFilePath(desktopPath));
+    }
+
+    [Fact]
     public void ProfileDefaultSettingsUseThatProfilesDataFolder()
     {
         var settings = AppSettings.CreateDefault(@"C:\Users\TestUser\Desktop", AppGameProfile.DarkSouls3);
 
         Assert.Equal(@"C:\Users\TestUser\Desktop\DeathCounter\DarkSouls3", settings.DataFolderPath);
+    }
+
+    [Fact]
+    public void CharacterProfileUsesSanitizedSubfolderInsideGameProfile()
+    {
+        var desktopPath = @"C:\Users\TestUser\Desktop";
+
+        Assert.Equal(
+            @"C:\Users\TestUser\Desktop\DeathCounter\EldenRing\Characters\Kamil",
+            AppCharacterProfile.GetDataFolderPath(desktopPath, AppGameProfile.EldenRing, " Kamil "));
+        Assert.Equal(
+            @"C:\Users\TestUser\Desktop\DeathCounter\EldenRing\Characters\Kamil_save_1",
+            AppCharacterProfile.GetDataFolderPath(desktopPath, AppGameProfile.EldenRing, "Kamil: save/1"));
+    }
+
+    [Fact]
+    public void EmptyCharacterProfileNameFallsBackToGameProfileFolder()
+    {
+        var desktopPath = @"C:\Users\TestUser\Desktop";
+
+        Assert.Equal(
+            AppGameProfile.EldenRing.GetDataFolderPath(desktopPath),
+            AppCharacterProfile.GetDataFolderPath(desktopPath, AppGameProfile.EldenRing, "   "));
     }
 }

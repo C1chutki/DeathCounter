@@ -1,5 +1,178 @@
 # Changelog
 
+## 2026-07-14
+
+- Dodano angielską listę nazw bossów z Black Myth: Wukong w folderze assetów i dołączono ją do plików wyjściowych aplikacji. Wersję podniesiono do 1.14.10.
+
+- Powiększono ikonę resetowania licznika w dashboardzie i usunięto jej nadmierne przezroczyste marginesy, aby niemal wypełniała przycisk. Wersję podniesiono do 1.14.9.
+
+- Zwiększono odstęp między ikoną aplikacji a przyciskiem Dashboard oraz zmniejszono odstępy między przyciskami nawigacji. Wersję podniesiono do 1.14.8.
+
+- Zastąpiono rozmyte rastrowe ikony nawigacji natywnymi glifami wektorowymi Windows, w tym ponownie dodaną ikonę statystyk. Lokalne katalogi `.codex-build` są ignorowane; wersję podniesiono do 1.14.7.
+
+## 2026-07-13
+
+- Poprawiono skalowanie layoutu okna głównego: sztywne szerokości nagłówka i paneli zamieniono na proporcjonalne z `MinWidth`, duży licznik śmierci owinięto w `Viewbox`, a dashboard dostał własny `ScrollViewer`. Obniżono minimalny rozmiar okna do 720x560 i usunięto nakładanie się tekstu z przyciskami w zakładkach Detekcja i Bossowie w wąskim oknie. Wersję podniesiono do 1.14.6.
+
+- Dopasowano ikonę aplikacji w panelu bocznym do wysokości górnego paska, aby nie wychodziła poza jego obszar. Wersję podniesiono do 1.14.5.
+
+- Powiększono znak na ikonie aplikacji i odtworzono wielorozmiarowy plik ICO, aby poprawić czytelność w aplikacji oraz Windows. Wersję podniesiono do 1.14.4.
+
+- Poprawiono czytelność ikon nawigacji przez pominięcie dużych przezroczystych marginesów w plikach PNG. Wersję podniesiono do 1.14.3.
+
+- Ustawiono `Assets/Icons/AppIcon.png` jako ikonę głównego okna i paska zadań oraz dodano jej wariant `.ico` jako domyślną ikonę pliku wykonywalnego. Wersję podniesiono do 1.14.2.
+
+- Zastąpiono literę `D` w lewym górnym rogu aplikacji nową ikoną `Assets/Icons/AppIcon.png`. Wersję podniesiono do 1.14.1.
+
+- Dodano `CLAUDE.md` importujący `AGENTS.md` (`@AGENTS.md`), aby Claude Code automatycznie wczytywał instrukcje projektu przy starcie sesji.
+
+- Dodano wykrywanie Dark Souls II: ekran śmierci (własny niższy ROI i angielski szablon `YOU DIED`), ciemniejszy pasek bossa oraz angielskie dopasowanie nazw z listy DS2. Wersję podniesiono do 1.14.0.
+
+- Dodano zasady UTF-8 dla edytowanych plików tekstowych i kontrolę polskich znaków przed commitem; wersję podniesiono do 1.13.22.
+
+- Historia zdarzeń przechowuje teraz najwyżej 1000 najnowszych wpisów w profilu; starsze są archiwizowane partiami po 250 do CSV w folderze `archives`. Dodano test retencji i podniesiono wersję do 1.13.21.
+
+- Komendy asynchroniczne oczekują teraz swoich `Task`, blokują ponowne uruchomienie i logują obsłużone błędy ze statusem w UI; Start/Stop/Toggle detekcji są dodatkowo serializowane. Dodano regresję `RelayCommand`, wersję podniesiono do 1.13.20.
+
+- Ustawienia maja wersje schematu; migracje dawnych wartosci interval/cooldown i hotkeysa uruchamiaja sie tylko raz, a legalne kombinacje `500 ms / 5 s` oraz `F8 / F9` przetrwaja kolejne uruchomienia. Dodano regresje i podniesiono wersje do 1.13.19.
+
+- Capture ekranu zwalnia teraz bitmapę po błędzie kopiowania, a resolver okna zwalnia uchwyt procesu po odczycie nazwy. Wersję podniesiono do 1.13.18.
+
+- Testy referencyjne angielskiego ekranu smierci korzystaja teraz z utrzymywanego `ENG_Death_Screen_v9.png` jako pre-cropped capture stripu, zamiast wskazywac nieistniejacy asset `v2`. Pelna walidacja testowa jest odblokowana; wersje podniesiono do 1.13.17.
+
+- Profile Dark Souls wybieraja teraz wlasne procesy okna gry zamiast procesu Elden Ring; stare odziedziczone ustawienie jest migrowane, a status ostrzega o fallbacku na ekran glowny. Dodano testy resolvera czterech profili i podniesiono wersje do 1.13.16.
+
+- Naprawiono fallback OCR dla zwyciestwa bossa: przy slabym sygnale obrazu wykorzystywany jest wspoldzielony, leniwy OCR klatki, nawet gdy death detector go nie potrzebuje. Dodano regresje i podniesiono wersje do 1.13.15.
+
+## 2026-07-12
+
+- Dodano do instrukcji projektu wymóg uruchomienia właściwej weryfikacji przed oznaczeniem zadania jako ukończonego oraz raportowania komendy, wyniku i ścieżki artefaktu; wersję podniesiono do 1.13.14.
+
+## 2026-07-06
+
+- Dodano wariant detekcji `Convergence`, ktory laduje dodatkowa angielska liste bossow z moda obok bazowej listy Elden Ring, zeby OCR akceptowal nowych bossow Convergence przy ustawieniu PL/ENG. Dodano regresje resolvera i assetow listy bossow; wersje podniesiono do 1.13.13.
+
+## 2026-06-23
+
+- Dla wariantu `Reforged` matcher nazw bossow laduje teraz angielska liste nazw razem z wybrana lista jezykowa, zeby angielskie nazwy moda byly akceptowane przy ustawieniu OCR na PL. Dodano regresje resolvera list bossow; wersje podniesiono do 1.13.12.
+
+- Poprawiono wariant `Reforged`, aby ignorowal grube czerwone plamy sceny nad paskiem bossa i akceptowal `Crucible Knight Rhyacis` w listach bossow ENG/PL. Dodano regresje dla falszywego klastra oraz dopasowania nazwy; wersje podniesiono do 1.13.11.
+
+- Rozszerzono wariant `Reforged` o osobny template napisu `YOU DIED` z `Assets/Elden Ring/Reforge/YouDied_Reforge.png`, zeby detekcja smierci dzialala po zmianie czcionki w modzie. Dodano regresje resolvera templatek i realnego dopasowania screena Reforged; wersje podniesiono do 1.13.10.
+
+- Dodano ustawienie stylu paska zdrowia bossa `Vanilla Elden Ring` / `Reforged`, uzywane tylko do odczytu paska HP przy automatycznym OCR nazwy bossa. Dodano regresje dla zapisu ustawienia, widoku Settings i referencyjnego screena Reforged; wersje podniesiono do 1.13.9.
+
+## 2026-06-11
+
+- Podpieto tlo panelu timera w overlay pod ustawienie opacity, tak jak glowne tlo overlaya, bez zmiany przezroczystosci tekstu i ikon. Dodano regresje blokujaca powrot stalego tla timera; wersje podniesiono do 1.13.8.
+
+- Przeniesiono odswiezanie sekund timera aktywnego bossa w overlay z `DispatcherTimer` na timer thread-pool publikujacy aktualizacje do renderowania WPF, zeby tekst czasu nie przestawal tykac przy obciazonym dispatcherze, mimo poprawnego koncowego czasu walki. Dodano regresje pilnujaca mechanizmu odswiezania; wersje podniesiono do 1.13.7.
+
+- Podmieniono ikone przycisku `RESET COUNTER` w dashboardzie na `Assets/Icons/Reset.png`, renderowana jako maska w kolorze przycisku. Dodano regresje XAML dla resetowej ikony; wersje podniesiono do 1.13.6.
+
+- Naprawiono crash startowy WPF po kolorowaniu ikon: maski `ImageBrush` uzywaja teraz jawnych `pack://siteoforigin` URI dla kopiowanych plikow `Assets/Icons`. Dodano regresje blokujaca powrot wzglednych `ImageSource`; wersje podniesiono do 1.13.5.
+
+- Zmieniono ikony paska bocznego na maski kolorowane aktualnym akcentem gry oraz dodano transparentnemu gornemu headerowi dolna ramke w kolorze aktywnej gry. Dodano regresje XAML dla kolorowania chrome; wersje podniesiono do 1.13.4.
+
+- Podmieniono glify paska bocznego na podpisane ikony PNG z `Assets/Icons` dla Dashboard, Detection, Bosses, Stats i Settings oraz dodano kopiowanie tego folderu do outputu. Dodano regresje XAML/projektu dla nowych ikon; wersje podniesiono do 1.13.3.
+
+- Poprawiono liczbowe pola Settings: interval, cooldown, sensitivity, pozycja, skala i opacity overlaya maja teraz reczne wpisywanie z min/max, filtrowaniem wklejania i clampem po opuszczeniu pola zamiast natychmiastowego nadpisywania podczas pisania. Dodano regresje XAML dla bounded numeric input; wersje podniesiono do 1.13.2.
+
+- Dodano regresje sprawdzajaca, ze wszystkie nowe teksty `DynamicResource` w Settings istnieja w slownikach EN/PL, zeby przyciski i checkboxy nie renderowaly sie bez etykiet. Przebudowano aplikacje po aktualizacji slownikow; wersje podniesiono do 1.13.1.
+
+- Rozszerzono Settings o skale overlaya, przelaczniki timera/statusu overlay, tryby detekcji Conservative/Balanced/Aggressive, osobne wlaczniki death i boss-victory detection oraz akcje otwarcia folderu i resetu ustawien profilu. Dodano regresje ustawien i presetow; wersje podniesiono do 1.13.0.
+
+- Rozszerzono statystyki bossow w zakladce Stats: Best boss wybiera najmniej smierci i szybszy kill przy remisie, Hardest boss wybiera najwiecej smierci, a Longest boss pokazuje najdluzsza walke. Dodano regresje statystyk i XAML; wersje podniesiono do 1.12.19.
+
+## 2026-06-10
+
+- Dodano migracje legacy ustawien detekcji: zapisany zestaw `500 ms / 5 s` jest przy ladowaniu profilu przepisywany na obecne domyslne `350 ms / 25 s`, zeby stare appsettings nie przykrywaly nowych defaultow w UI. Dodano regresje ustawien; wersje podniesiono do 1.12.18.
+
+- Dodano do Settings edycje przezroczystosci tla overlaya oraz dopisano przy polach detection podpowiedzi z zakresem i domyslnymi wartosciami, zeby aktualne wartosci byly czytelne w aplikacji. Dodano regresje XAML dla tych ustawien; wersje podniesiono do 1.12.17.
+
+- Przywrocono z `new-ocr` zakladke Stats z kartami statystyk runu, lista ostatnich zdarzen i lokalnym eksportem profilu do CSV/ZIP. Dodano testy uslug statystyk/eksportu oraz regresje XAML menu; wersje podniesiono do 1.12.16.
+
+- Ograniczono OCR death/boss-victory do potwierdzania podejrzanych sygnalow obrazowych lub aktywnego pendingu, zeby tekst z innych aplikacji na `PrimaryScreen` nie zliczal smierci ani zwyciestw bossa. Dodano regresje bramki OCR; wersje podniesiono do 1.12.15.
+
+- Rozszerzono 10-minutowa diagnostyke full frames: zapisuje teraz okresowe screenshoty probek oraz loguje `frameDeltaMs` i `timingMode`, zeby zweryfikowac realne interwaly 350 ms i burst 200 ms. Dodano regresje dla samplera screenshotow i pol timingowych eventow; wersje podniesiono do 1.12.14.
+
+- Przyspieszono probkowanie detekcji: domyslny i minimalny interwal bazowy wynosi teraz 350 ms, a po slabym/pending sygnale wlacza sie krotki burst 200 ms przez 1.5 s. Dodano testy timing helpera i migracje starych ustawien interwalu; wersje podniesiono do 1.12.13.
+
+- Usprawniono angielska detekcje death screena Elden Ring: z 11 obrazow wybrano 6 najbardziej roznych graficznie templatek, a log slabych kandydatow pokazuje teraz threshold obok score. Dodano regresje dla listy templatek i strukturalnego progu; wersje podniesiono do 1.12.12.
+
+## 2026-06-03
+
+- Wycentrowano naglowek sekcji dashboardu wzgledem glownej liczby smierci, wyrownujac boczne kolumny topbara. Dodano regresje XAML; wersje podniesiono do 1.12.11.
+
+- Usunieto napis `Elden Ring Death Counter` z prawej strony topbara i ustawiono status detekcji nad wierszem `LAST`, zeby prawy pasek nie ucinal tekstu przy mniejszej szerokosci. Dodano regresje XAML; wersje podniesiono do 1.12.10.
+
+- Poprawiono czytelnosc dashboardu: naglowek i status detekcji maja osobne kolumny, centralny licznik jest bardziej zwarty, obok resetu dodano okragly przycisk `START`/`STOP` detekcji, a domyslne skroty `F8`/`F9` zamieniono miejscami. Dodano regresje XAML i migracje starej domyslnej pary hotkeyow; wersje podniesiono do 1.12.9.
+
+- Powiekszono licznik smierci aktywnego encountera w dashboardzie, usunieto z niego nawiasy i dodano przyciski `-`/`+` przed `SET` w tym samym stylu. Wersje podniesiono do 1.12.8.
+
+- Powiekszono i wycentrowano naglowek aktywnej sekcji wzgledem calego okna oraz ujednolicono jego font z naglowkiem Settings. Wersje podniesiono do 1.12.7.
+
+- Poprawiono dashboardowe przyciski licznika: `F8` nie ma juz lokalnie mocniejszej ramki, a animacja hover skaluje przyciski subtelnie od srodka zamiast zmniejszac je od lewego gornego rogu. Dodano regresje XAML dla punktu skalowania i wersje podniesiono do 1.12.6.
+
+## 2026-06-02
+
+- Ujednolicono cztery okragle przyciski dashboardu do zlotego stylu przycisku `F8`, zastapiono resetowa litere `R` ikona zapetlonej strzalki i dodano animacje scale-up przy najechaniu. Dodano test regresyjny XAML dla tych przyciskow; wersje podniesiono do 1.12.5.
+
+- Usunieto widoczny naglowek `Great Enemy Felled` z zakladki Bosses oraz odpowiadajacy mu nieuzywany klucz lokalizacji. Dodano test layoutu blokujacy powrot tego napisu; wersje podniesiono do 1.12.4.
+
+- Ujednolicono motywy DS1, DS2 i DS3 z paleta Elden Ring tak, ze roznia sie tylko kolorem primary-akcentu oraz tytulem gry. Dodano test regresyjny blokujacy ponowne rozjechanie palet; wersje podniesiono do 1.12.3.
+
+- Usunieto podtytuly z zakladki Bosses i przeniesiono wyszukiwarke oraz `ADD RECORD` do jednego paska z sortowaniem historii bossow. Wersje podniesiono do 1.12.2.
+
+- Zwiekszono liczbe kulek w animowanym tle dashboarda do 40, ujednolicono je do jednego zlotego koloru i dodano im wspolny blur. Wzmocniono glow oraz rozmycie duzej liczby smierci przez mocniejszy cien i dodatkowa warstwe `BlurEffect`; wersje podniesiono do 1.12.1.
+
+- Zrobiono dolny pasek aktywnego encountera przezroczystym, zwiekszono liczbe kulek w animowanym tle dashboarda z 12 do 20 i wzmocniono glow duzej liczby smierci. Wersje podniesiono do 1.12.0.
+
+- Podmieniono tlo dashboarda na czarne, CSS-like particle background inspirowane CodePenem TutsPlus; rozmyte smugi zastapiono animowanymi kulkami w zloto-rdzawych kolorach Elden Ring. Wersje podniesiono do 1.11.9.
+
+- Przesunieto glowna animowana smuge dashboarda na srodek za duza cyfra licznika i ograniczono jej poziomy dryf, zeby pozostawala za cyfra. Wersje podniesiono do 1.11.8.
+
+- Dopasowano kolorystyke animowanego tla dashboarda do palety aplikacji: zimne szarosci zastapiono ciemnym Elden Ring brazem, zlotym swiatlem i przygaszonym czerwonym akcentem. Wersje podniesiono do 1.11.7.
+
+- Ozywiono tlo dashboarda natywnym storyboardem WPF: rozmyte swiatla pulsuja i dryfuja, a drobne czastki zmieniaja pozycje oraz przezroczystosc podobnie do referencyjnego CodePena. Wersje podniesiono do 1.11.6.
+
+- Dodano do dashboarda tlo inspirowane dostarczonym gradientem i particle/light efektem oraz mocniejszy glow pod duza liczba smierci. Wersje podniesiono do 1.11.5.
+
+- Zmieniono emblemat w lewym railu z `M` na dark-fantasy `D` renderowane krojem `UnifrakturCook` z subtelnym ciemnoczerwonym cieniem. Wersje podniesiono do 1.11.4.
+
+- Pogrubiono obramowania okraglych przyciskow dashboardu i powiekszono podpisy pod nimi. Wersje podniesiono do 1.11.3.
+
+- Przywrocono stara czcionke aplikacji `EB Garamond` dla wszystkich zasobow fontow UI, w tym nowych kluczy dodanych przez ostatni redesign. Wersje podniesiono do 1.11.2.
+
+- Przemodelowano Dashboard pod dostarczony screen: okno ma rozmiar referencyjny 1582x840, rail 78px z emblematem `M`, topbar `DS/DS2/DS3/ER`, centralny licznik `YOU HAVE DIED` oraz dolny pasek aktywnego encountera. Zaktualizowano testy XAML dla nowego ukladu; wersje podniesiono do 1.11.1.
+
+- Przebudowano wyglad glownego okna na styl projektu Claude Design "MEMENTO", zachowujac uklad i funkcje kazdej zakladki. Lewy panel zastapiono waskim paskiem ikon (72px) z okraglym emblematem (font UnifrakturCook) i nawigacja glifowa; naglowek przerobiono na pasek z pigulkami gier (aktywna na zlotym gradiencie), wysrodkowanym tytulem sekcji (Cinzel) oraz zywym statusem detekcji i nazwa postaci. Dolny pasek statusu usunieto. Dodano spakowane czcionki (Cinzel, Spectral, JetBrains Mono, UnifrakturCook) w `Assets/Fonts`, dostrojono palete motywu Elden Ring do tonacji CD (zloto `#D9B45A`, tlo `#0B0907`) i tlo z gradientem radialnym. Zaktualizowano testy chrome; wersje podniesiono do 1.11.0.
+
+- Dodano w pelni funkcjonalne przelaczenie aplikacji na gre Dark Souls 1 przyciskiem `DS` w naglowku. Nowy profil `AppGameProfile.DarkSouls1` (folder `DeathCounter\DarkSouls1` z osobnymi `appsettings.json`/`deaths.json`/`log.txt`) i motyw `AppGameTheme.DarkSouls1` w niebiesko-grafitowej palecie ze screena (Primary `#4A90E2`, tlo `#0A0A0A`/`#1A1A1A`, szary tekst `#C2C2C2`) sa przelaczane na zywo wraz z overlayem. Dodano testy profilu i motywu Dark Souls 1; wersje podniesiono do 1.10.0.
+
+## 2026-06-01
+
+- Rozdzielono testy core od testow wymagajacych pelnej aplikacji WPF: `EldenDeathCounter.Tests` referencjonuje teraz tylko `EldenDeathCounter.Core`, a test zatrzymywania `DeathDetectionService` przeniesiono do `EldenDeathCounter.App.Tests`. Zmniejsza to zwykly output testow i ogranicza kopiowanie ciezkich zaleznosci WPF/aplikacji; wersje podniesiono do 1.9.1.
+
+- Dodano pelne tlumaczenie interfejsu (angielski/polski) przelaczane na zywo z selektora APP LANGUAGE w Settings, bez restartu. Statyczne teksty XAML korzystaja z `{DynamicResource}`, a slowniki `Localization/Strings.en.xaml` i `Strings.pl.xaml` sa wymieniane w zasobach aplikacji przez `LocalizationService` (z `GetString` dla tekstow budowanych w kodzie). Teksty statusu/walidacji w `MainWindowViewModel` oraz etykiety overlaya (`TOTAL DEATHS`, `DETECTION RUNNING/STOPPED`) tlumaczone sa przez `GetString`, a zdarzenie `LanguageChanged` odswieza juz wyswietlone teksty i listy. Etykieta licznika smierci (`Deaths:` / `Śmierci:`, takze `First Try` / `Pierwsze podejscie`) na overlayu i glownym ekranie idzie teraz za `AppLanguage`, a nie za `GameLanguage` OCR, i zmienia sie na zywo wraz z jezykiem interfejsu. Wybor jezyka UI zapisywany jest w `AppSettings.AppLanguage` (domyslnie `en`, niezalezny od `GameLanguage` OCR) i przezywa restart. Dodano testy `AppLanguage` (domyslny `en`, round-trip JSON, niezaleznosc od `GameLanguage`) oraz test parzystosci kluczy obu slownikow; testy pokrycia Settings przepiete na klucze zasobow. Wersje podniesiono do 1.9.0.
+
+- Dodano reczne profile postaci dla Elden Ring: wpisanie nazwy postaci ustawia osobny folder `DeathCounter\<Gra>\Characters\<Nazwa>`, przelacza aktywny `deaths.json` i zapisuje nazwe profilu w ustawieniach. Puste pole wraca do domyslnego folderu gry; nazwy folderow sa sanityzowane. Wersje podniesiono do 1.8.3.
+
+## 2026-05-31
+
+- Zawezono pionowy pas przechwytywania death/boss-victory na podstawie pomiaru realnych zrzutow gry (a nie recznych szacunkow), co zmniejsza powierzchnie OCR i ogranicza falszywe trafienia z innych okien (np. notatnika). Frakcja `captureHeight` spadla `0.26 -> 0.15` (na 2560x1440 wysokosc pasa 374 -> 216 px, pas ~636..852 zamiast 547..921, ~89/69 px mniej u gory/dolu), `centerY` doprecyzowano `0.51 -> 0.517`, a floor wysokosci obnizono `260 -> 160` px. Zmierzone pasmo tekstu (`YOU DIED` / `NIE ZYJESZ` / `ENEMY FELLED` / `POKONANO WROGA`) to ~693..797 px (frac ~0.481..0.553). Crop referencyjny templatu (wczesniej `0.43..0.58` death i `0.43..0.62` victory) zawezono i scentralizowano w nowym `DeathTextTemplateReferenceRegion` (y `0.476..0.558`), tak by template pozostal mniejszy niz ROI analizatora i zachowal zapas na jitter pozycji tekstu. Oba detektory (`TemplateDeathTextImageSignalDetector`, `TemplateBossVictoryTextImageSignalDetector`) i testy korzystaja z tego samego cropu. Zaktualizowano stale/progi w testach regresyjnych; pelny zestaw 195/195. Wersje podniesiono do 1.8.2.
+
+- Dodano globalny skrot `F6` do wlaczania/wylaczania detekcji oraz `Ctrl+Shift+P` do pomijania aktywnego bossa. Pomijanie anuluje aktualne podejscie: odejmuje smierci aktywnego bossa od globalnego licznika, usuwa aktywna nazwe/czas i nie tworzy wpisu historii; obok `BOSS DEFEATED` dodano przycisk `SKIP`. Wersje podniesiono do 1.8.1.
+
+- Dodano reczne dodawanie pokonanych bossow w zakladce Bosses przez ten sam modal co edycja historii: `ADD RECORD` otwiera formularz z polami Name, Attempts, Duration, Recorded at i Completed by, a `DELETE` jest widoczny tylko przy edycji istniejacego wpisu. Nowe rekordy zapisuja `manual-entry`, trimuja dane i przeliczaja czas walki tak jak edycja; wersje podniesiono do 1.8.0.
+
+- Przebudowano zakladke Settings do ukladu 2:3:1: Overlay + Detection, Character + Language + Hotkeys oraz Profile / Save game. Usunieto edycje Detection Phrases z Settings; frazy detekcji i zwyciestwa bossa sa teraz hardcoded w kodzie i nie zapisuja sie do appsettings JSON. Wersje podniesiono do 1.7.1.
+
+- Overlay skaluje sie teraz jako cala calosc przez `ScaleTransform` (`LayoutTransform` na `OverlayChrome`) zamiast recznego skalowania per-element, wiec tekst, odstepy, ramki, divider, sekcja bossa i timer skaluja sie proporcjonalnie; `OverlayFontScale` zachowuje nazwe pola (kompatybilnosc JSON), a `ApplyFontScale` zmieniono na `ApplyScale`. Dodano `AppSettings.OverlayBackgroundOpacity` (domyslnie 0.9, zakres 0.0–1.0) sterujace alfa tla overlaya bez wyblakniecia tekstu, z kontrolka „Przezroczystosc tla" w Quick Settings i zywa aktualizacja niezalezna od zmiany motywu. Dodano testy domyslnych/persistencji i podniesiono wersje do 1.7.0.
+- Graficzna przebudowa UI (tylko XAML/layout, bez zmian logiki). Zakladka Detection oczyszczona z sekcji konfiguracyjnych (Configuration, Active Detection Phrases, Global Hotkeys) — pokazuje teraz wylacznie status, przycisk Toggle Detection oraz Detection Log/diagnostyke na pelnej szerokosci. Wszystkie ustawienia detekcji pozostaja dostepne w Settings (bez duplikatow).
+- W Settings dodano graficzne (placeholder, bez logiki) selektory Character name i Save game oraz selektor APP LANGUAGE pod istniejacym wyborem jezyka OCR. Okno poszerzono o 25px (`Width` 1400→1425, `MinWidth` 1040→1065).
+- Odswiezono zestaw ikon `Assets/` przez `tools/generate-icons.ps1` (spojny ciemny outline, te same nazwy i wymiary); dodano generowanie `Logo.png` (132x121). Screeny i listy bossow nietkniete. Wersje podniesiono do 1.6.0.
+
 ## 2026-05-30
 
 - Podmieniono zestaw ikon w `Assets/` (Edit, Settings, Status, Detection, Detection_settings, Quick_Settings, Quick_Reminders, DashBoard, Open_Folder) z wypelnionych sylwetek na spojny zestaw outline (charcoal, jednolita grubosc linii ~18px @256px, zaokraglone konce, przezroczyste tlo, renderowane 256x256 z czytelnoscia w 16/24 px). `Logo.png` (sylwetka czaszki) i `PL_Death_Screen.png` (szablon detekcji) celowo nietkniete. Ikony nie sa referowane w XAML/kodzie, wiec build i zasoby pozostaja sprawne; dodano generator `tools/generate-icons.ps1`. Wersje podniesiono do 1.5.1.

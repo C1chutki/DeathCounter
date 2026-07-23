@@ -6,7 +6,13 @@ public sealed class BossNameMatcherTests
 {
     private static BossNameMatcher CreateEnglishMatcher()
     {
-        var lines = File.ReadAllLines(GetAssetPath("ENG_BossList.txt"));
+        var lines = File.ReadAllLines(GetAssetPath(Path.Combine("Elden Ring", "ENG_ER_BossList.txt")));
+        return new BossNameMatcher(BossNameMatcher.ParseList(lines));
+    }
+
+    private static BossNameMatcher CreatePolishMatcher()
+    {
+        var lines = File.ReadAllLines(GetAssetPath(Path.Combine("Elden Ring", "PL_ER_BossList.txt")));
         return new BossNameMatcher(BossNameMatcher.ParseList(lines));
     }
 
@@ -37,6 +43,13 @@ public sealed class BossNameMatcherTests
         Assert.True(match.IsMatch);
         Assert.Equal("Margit, the Fell Omen", match.CanonicalName);
         Assert.True(match.Confidence >= 0.99);
+    }
+
+    [Fact]
+    public void ReforgedCrucibleKnightRhyacisIsAcceptedInBothGameLanguages()
+    {
+        Assert.True(CreateEnglishMatcher().Match("Crucible Knight Rhyacis").IsMatch);
+        Assert.True(CreatePolishMatcher().Match("Crucible Knight Rhyacis").IsMatch);
     }
 
     [Fact]
