@@ -18,6 +18,7 @@ public static class GameBossListFiles
 {
     private const string EldenRingFolderName = "Elden Ring";
     private const string DarkSouls2FolderName = "Dark souls 2";
+    private const string SekiroFolderName = "Sekiro";
     private const string ConvergenceFolderName = "Convergence";
 
     public static string Resolve(string? gameId, string? language)
@@ -28,6 +29,8 @@ public static class GameBossListFiles
             "DARKSOULS1" => $"{prefix}_DS1_BossList.txt",
             "DARKSOULS2" => Path.Combine(DarkSouls2FolderName, $"{prefix}_DS2_BossList.txt"),
             "DARKSOULS3" => $"{prefix}_DS3_BossList.txt",
+            // Only the English Sekiro list exists, so the prefix is ignored for Sekiro.
+            "SEKIRO" => Path.Combine(SekiroFolderName, "ENG_SE_BossList.txt"),
             _ => Path.Combine(EldenRingFolderName, $"{prefix}_ER_BossList.txt")
         };
     }

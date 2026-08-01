@@ -37,10 +37,26 @@ public static class DeathTextTemplateReferenceRegion
     private const double DarkSouls2Top = 0.64;
     private const double DarkSouls2Bottom = 0.80;
 
+    private const double SekiroTop = 0.27;
+    private const double SekiroBottom = 0.59;
+
     public static PixelRect DeathScreen(int width, int height) => DeathScreen(width, height, gameId: null);
 
     public static PixelRect DeathScreen(int width, int height, string? gameId)
     {
+        // Sekiro's death mark is the 死 kanji at x ~0.42..0.58, y ~0.30..0.57. The crop stops above the
+        // spaced "D E A T H" (~0.60) so the built template is the kanji alone; the ink bounding box in
+        // DeathTextTemplate then tightens it further.
+        if (string.Equals(gameId?.Trim(), "Sekiro", StringComparison.OrdinalIgnoreCase) &&
+            !IsPreCroppedStrip(width, height))
+        {
+            return new PixelRect(
+                (int)(width * 0.38),
+                (int)(height * SekiroTop),
+                (int)(width * 0.62),
+                (int)(height * SekiroBottom));
+        }
+
         if (string.Equals(gameId?.Trim(), "DarkSouls2", StringComparison.OrdinalIgnoreCase) &&
             !IsPreCroppedStrip(width, height))
         {

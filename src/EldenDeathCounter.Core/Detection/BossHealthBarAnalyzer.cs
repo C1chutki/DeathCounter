@@ -21,14 +21,14 @@ public sealed class BossHealthBarAnalyzer
         }
 
         var tuning = GameTuning.For(gameId, bossHealthBarStyle);
-        var left = (int)(width * 0.16);
-        var right = (int)(width * 0.86);
-        var isLowerScreenCrop = height <= width * 0.35;
-        var top = isLowerScreenCrop ? 0 : (int)(height * 0.70);
-        var bottom = isLowerScreenCrop ? (int)(height * tuning.BottomFractionForLowerCrop) : (int)(height * tuning.BottomFraction);
+        var left = (int)(width * tuning.LeftFraction);
+        var right = (int)(width * tuning.RightFraction);
+        var isBandCrop = height <= width * 0.35;
+        var top = isBandCrop ? 0 : (int)(height * tuning.TopFraction);
+        var bottom = isBandCrop ? (int)(height * tuning.BottomFractionForLowerCrop) : (int)(height * tuning.BottomFraction);
         var minimumSpan = (int)(width * tuning.MinimumSpanFraction);
-        var minimumVisibleHealthSpan = (int)(width * 0.10);
-        var inferredBossBarSpan = (int)(width * 0.52);
+        var minimumVisibleHealthSpan = (int)(width * tuning.MinimumVisibleSpanFraction);
+        var inferredBossBarSpan = (int)(width * tuning.InferredSpanFraction);
         var candidates = new List<RowCandidate>();
 
         for (var y = top; y < bottom; y += 2)
@@ -163,12 +163,15 @@ public sealed class BossHealthBarAnalyzer
         // left edge, so the name region starts there. Dark Souls III's bar is dimmer and its name sits
         // further left than the detected red fill (the bar frame extends left of the visible health), so
         // the name region is shifted left by a game-specific fraction of the screen width.
+        // Sekiro is the exception: its name plate sits *below* the bar, so the band is mirrored.
         var nameLeft = Math.Clamp(bar.Left - (int)(width * tuning.NameLeftInsetFraction), 0, width);
+        var nameTop = tuning.NameBelowBar ? bar.Bottom + 4 : bar.Top - 58;
+        var nameBottom = tuning.NameBelowBar ? bar.Bottom + 58 : bar.Top - 4;
         var nameRegion = new PixelRect(
             nameLeft,
-            Math.Clamp(bar.Top - 58, 0, height),
+            Math.Clamp(nameTop, 0, height),
             Math.Clamp(Math.Min(bar.Right, nameLeft + Math.Max(420, bar.Width / 2)), 0, width),
-            Math.Clamp(bar.Top - 4, 0, height));
+            Math.Clamp(nameBottom, 0, height));
 
         return new BossHealthBarRegion(bar, nameRegion);
     }
@@ -198,7 +201,13 @@ public sealed class BossHealthBarAnalyzer
         double MinimumSpanFraction,
         double MaxClusterHeightFraction,
         double MaxGreenFraction = 0.55,
-        double MaxBlueFraction = 0.60)
+        double MaxBlueFraction = 0.60,
+        double LeftFraction = 0.16,
+        double RightFraction = 0.86,
+        double TopFraction = 0.70,
+        double MinimumVisibleSpanFraction = 0.10,
+        double InferredSpanFraction = 0.52,
+        bool NameBelowBar = false)
     {
         public int MaxClusterHeight(int height) => Math.Max(24, (int)(height * MaxClusterHeightFraction));
 
@@ -231,6 +240,27 @@ public sealed class BossHealthBarAnalyzer
                     MaxClusterHeightFraction: 1.0,
                     MaxGreenFraction: 0.62,
                     MaxBlueFraction: 0.62);
+            }
+
+            // Sekiro's bar is a short crimson strip at the top-left (x ~0.06..0.29, y ~0.09 of the
+            // screen) with the name plate below it, so the whole scan window moves to the top-left and
+            // the span thresholds shrink: a full Sekiro bar is only ~0.22 of the screen width, far under
+            // the 0.32 every bottom-centre game uses.
+            if (string.Equals(gameId?.Trim(), "Sekiro", StringComparison.OrdinalIgnoreCase))
+            {
+                return new GameTuning(
+                    MinRed: 45,
+                    NameLeftInsetFraction: 0.0,
+                    BottomFraction: 0.22,
+                    BottomFractionForLowerCrop: 1.0,
+                    MinimumSpanFraction: 0.06,
+                    MaxClusterHeightFraction: 1.0,
+                    LeftFraction: 0.03,
+                    RightFraction: 0.60,
+                    TopFraction: 0.02,
+                    MinimumVisibleSpanFraction: 0.04,
+                    InferredSpanFraction: 0.22,
+                    NameBelowBar: true);
             }
 
             if (BossHealthBarStyles.Normalize(bossHealthBarStyle) == BossHealthBarStyles.Reforged)

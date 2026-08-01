@@ -473,10 +473,12 @@ public sealed class DeathDetectionService
     private static IReadOnlyList<string> BuildOcrLanguageHints(AppSettings settings)
     {
         // Dark Souls II and III render their death/victory banners in English even when the UI/OCR
-        // language is Polish, so they need both engines; every other game only needs the configured one.
+        // language is Polish, and Sekiro always prints "D E A T H" under its 死 kanji, so they need both
+        // engines; every other game only needs the configured one.
         var gameId = settings.GameId?.Trim();
         if (string.Equals(gameId, "DarkSouls3", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(gameId, "DarkSouls2", StringComparison.OrdinalIgnoreCase))
+            string.Equals(gameId, "DarkSouls2", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(gameId, "Sekiro", StringComparison.OrdinalIgnoreCase))
         {
             return ["en", "pl"];
         }
@@ -728,7 +730,7 @@ public sealed class DeathDetectionService
             _lastBossNameDetectionAttempt = now;
 
             var matcher = GetBossNameMatcher(settings);
-            using var screenshot = await _captureService.CaptureBossHealthBarAsync(settings.CaptureTarget, cancellationToken);
+            using var screenshot = await _captureService.CaptureBossHealthBarAsync(settings.CaptureTarget, settings.GameId, cancellationToken);
 
             // 1) Detect boss HP bars first (cheap). Boss-name OCR is gated entirely on this.
             var bars = _bossNameDetector.AnalyzeBars(screenshot.Bitmap, settings.GameId, settings.BossHealthBarStyle);

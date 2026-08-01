@@ -52,4 +52,12 @@ public sealed record AppGameTheme(
         Primary = "#E65100",
         OverlayBorder = "#E65100",
     };
+
+    // Sekiro's accent is the red of its 死 death kanji.
+    public static AppGameTheme Sekiro { get; } = EldenRing with
+    {
+        Title = "Sekiro Death Counter",
+        Primary = "#D6332B",
+        OverlayBorder = "#D6332B",
+    };
 }

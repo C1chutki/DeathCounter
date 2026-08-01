@@ -1,0 +1,50 @@
+# English boss list for Sekiro: Shadows Die Twice (ENG_SE_BossList.txt)
+# One boss health-bar name per line. Lines starting with '#' are ignored.
+# Includes main bosses and minibosses (both share the same red bar + name plate),
+# plus the alternate names used across multi-phase fights.
+# Kept alphabetical for easy correction.
+Armored Warrior
+Ashina Elite - Jinsuke Saze
+Ashina Elite - Ujinari Mizuo
+Blazing Bull
+Chained Ogre
+Corrupted Monk
+Demon of Hatred
+Divine Dragon
+Emma, the Gentle Blade
+Folding Screen Monkeys
+General Kuranosuke Matsumoto
+General Naomori Kawarada
+General Tenzen Yamauchi
+Genichiro Ashina
+Genichiro, Way of Tomoe
+Great Serpent
+Great Shinobi - Owl
+Guardian Ape
+Gyoubu Masataka Oniwa
+Headless
+Headless Ape
+Isshin Ashina
+Isshin, the Sword Saint
+Juzou the Drunkard
+Lady Butterfly
+Leader Shigenori Yamauchi
+Lone Shadow Longswordsman
+Lone Shadow Masanaga the Spear-Bearer
+Lone Shadow Vilehand
+Long-arm Centipede Giraffe
+Long-arm Centipede Sen'un
+Mist Noble
+O'Rin of the Water
+Okami Leader Shizu
+Owl (Father)
+Sakura Bull of the Palace
+Seven Ashina Spears - Shikibu Toshikatsu Yamauchi
+Seven Ashina Spears - Shume Masaji Oniwa
+Shichimen Warrior
+Shinobi Hunter Enshin of Misen
+Snake Eyes Shirafuji
+Snake Eyes Shirahagi
+Tokujiro the Glutton
+True Corrupted Monk
+True Monk

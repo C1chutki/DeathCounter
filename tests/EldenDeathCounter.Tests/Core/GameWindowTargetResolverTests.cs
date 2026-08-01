@@ -9,7 +9,8 @@ public sealed class GameWindowTargetResolverTests
         [AppGameProfile.EldenRing, "EldenRingWindow", "eldenring"],
         [AppGameProfile.DarkSouls1, "DarkSouls1Window", "DarkSoulsRemastered"],
         [AppGameProfile.DarkSouls2, "DarkSouls2Window", "DarkSoulsII"],
-        [AppGameProfile.DarkSouls3, "DarkSouls3Window", "DarkSoulsIII"]
+        [AppGameProfile.DarkSouls3, "DarkSouls3Window", "DarkSoulsIII"],
+        [AppGameProfile.Sekiro, "SekiroWindow", "sekiro"]
     ];
 
     [Theory]

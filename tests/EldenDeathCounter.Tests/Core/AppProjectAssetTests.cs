@@ -161,6 +161,33 @@ public sealed class AppProjectAssetTests
     }
 
     [Fact]
+    public void AppProjectCopiesSekiroBossList()
+    {
+        var projectPath = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory, "..", "..", "..", "..", "..",
+            "src", "EldenDeathCounter", "EldenDeathCounter.csproj"));
+        var project = XDocument.Load(projectPath);
+        var includes = project
+            .Descendants("Content")
+            .Select(element => element.Attribute("Include")?.Value)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        Assert.Contains(@"..\..\Assets\Sekiro\*.*", includes);
+
+        var sekiroRoot = Path.GetFullPath(Path.Combine(
+            Path.GetDirectoryName(projectPath)!, "..", "..", "Assets", "Sekiro"));
+        var bossListPath = Path.Combine(sekiroRoot, "ENG_SE_BossList.txt");
+        Assert.True(File.Exists(bossListPath), $"Missing Sekiro asset: {bossListPath}");
+
+        var bossNames = BossNameMatcher.ParseList(File.ReadAllLines(bossListPath));
+        Assert.Contains("Genichiro Ashina", bossNames);
+        Assert.Contains("Isshin, the Sword Saint", bossNames);
+        Assert.Contains("Guardian Ape", bossNames);
+        Assert.True(bossNames.Count > 30);
+    }
+
+    [Fact]
     public void BuildOutputContainsDarkSouls2DetectionAssets()
     {
         // After compiling the WPF app, the DS2 assets must physically exist in the app build output.

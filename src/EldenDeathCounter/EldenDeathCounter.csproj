@@ -17,6 +17,7 @@
     <Content Include="..\..\Assets\Dark souls 3\*.*" Link="Assets\Dark souls 3\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\Assets\Dark souls 2\*.*" Link="Assets\Dark souls 2\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\Assets\Black Myth Wukong\*.*" Link="Assets\Black Myth Wukong\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\Assets\Sekiro\*.*" Link="Assets\Sekiro\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,7 +36,7 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>..\..\Assets\Icons\AppIcon.ico</ApplicationIcon>
-    <Version>1.14.10</Version>
+    <Version>1.15.0</Version>
   </PropertyGroup>
 
 </Project>

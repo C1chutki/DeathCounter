@@ -14,4 +14,9 @@ public interface IScreenCaptureService
     Task<CapturedFrame> CaptureFullScreenAsync(string captureTarget, CancellationToken cancellationToken);
 
     Task<CapturedFrame> CaptureBossHealthBarAsync(string captureTarget, CancellationToken cancellationToken);
+
+    // Sekiro's boss bar sits at the top of the screen instead of the bottom, so the ROI is game-aware.
+    // The default keeps the game-agnostic ROI so existing fakes/implementations need no change.
+    Task<CapturedFrame> CaptureBossHealthBarAsync(string captureTarget, string? gameId, CancellationToken cancellationToken) =>
+        CaptureBossHealthBarAsync(captureTarget, cancellationToken);
 }

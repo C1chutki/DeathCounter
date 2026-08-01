@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-08-01
+
+- Dodano profil gry Sekiro: przycisk „SE" w pasku gier, motyw w czerwieni kanji 死, własny folder danych, okno przechwytywania procesu `sekiro`, angielska lista bossów oraz detekcja dostosowana do Sekiro (pasek bossa u góry ekranu z nazwą pod paskiem, ekran śmierci 死 / „D E A T H"). Wersję podniesiono do 1.15.0.
+
 ## 2026-07-14
 
 - Dodano angielską listę nazw bossów z Black Myth: Wukong w folderze assetów i dołączono ją do plików wyjściowych aplikacji. Wersję podniesiono do 1.14.10.

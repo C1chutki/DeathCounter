@@ -47,6 +47,17 @@ public sealed class GameBossListFilesTests
         Assert.Equal(Path.Combine("Elden Ring", fileName), GameBossListFiles.Resolve(gameId, language));
     }
 
+    [Theory]
+    [InlineData("PL")]
+    [InlineData("ENG")]
+    public void SekiroAlwaysResolvesTheEnglishListBecauseItIsTheOnlyOne(string language)
+    {
+        var expected = Path.Combine("Sekiro", "ENG_SE_BossList.txt");
+
+        Assert.Equal(expected, GameBossListFiles.Resolve("Sekiro", language));
+        Assert.Equal([expected], GameBossListFiles.ResolveForMatcher("Sekiro", language, BossHealthBarStyles.Vanilla));
+    }
+
     [Fact]
     public void UnknownOrEmptyGameFallsBackToEldenRingList()
     {

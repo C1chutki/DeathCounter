@@ -1,3 +1,4 @@
+using EldenDeathCounter.Core.Configuration;
 using EldenDeathCounter.Core.Detection;
 
 namespace EldenDeathCounter.Tests.Core;
@@ -13,6 +14,19 @@ public sealed class DeathPhraseMatcherTests
 
         Assert.True(result.IsMatch);
         Assert.Equal("YOU DIED", result.MatchedPhrase);
+    }
+
+    [Fact]
+    public void FindsSekiroSpacedDeathWordButNotTheAppsOwnOverlayCounter()
+    {
+        var matcher = new DeathPhraseMatcher();
+        var phrases = AppSettings.CreateDefaultDetectionPhrases();
+
+        Assert.True(matcher.Match("死\nD E A T H", phrases, 0.85).IsMatch);
+
+        // The overlay ("Deaths: 156") can sit inside Sekiro's tall capture band, so the spaced phrase
+        // must not degrade into a plain "DEATH" match.
+        Assert.False(matcher.Match("Deaths: 156", phrases, 0.85).IsMatch);
     }
 
     [Fact]

@@ -8,7 +8,8 @@ public static class GameWindowTargetResolver
             ["EldenRingWindow"] = ["eldenring", "start_protected_game"],
             ["DarkSouls1Window"] = ["DarkSoulsRemastered", "DARKSOULS"],
             ["DarkSouls2Window"] = ["DarkSoulsII"],
-            ["DarkSouls3Window"] = ["DarkSoulsIII"]
+            ["DarkSouls3Window"] = ["DarkSoulsIII"],
+            ["SekiroWindow"] = ["sekiro"]
         };
 
     public static string GetCaptureTarget(AppGameProfile profile) => profile.Id switch
@@ -16,6 +17,7 @@ public static class GameWindowTargetResolver
         "DarkSouls1" => "DarkSouls1Window",
         "DarkSouls2" => "DarkSouls2Window",
         "DarkSouls3" => "DarkSouls3Window",
+        "Sekiro" => "SekiroWindow",
         _ => "EldenRingWindow"
     };
 

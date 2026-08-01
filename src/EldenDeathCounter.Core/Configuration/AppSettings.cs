@@ -140,7 +140,10 @@ public sealed class AppSettings
 
     public static List<string> CreateDefaultDetectionPhrases()
     {
-        return ["YOU DIED", "NIE ŻYJESZ"];
+        // Sekiro prints its death word letter-spaced under the 死 kanji ("D E A T H"), identical in every
+        // language. The spaced form is deliberate: a plain "DEATH" would also match the app's own English
+        // overlay ("Deaths: 12") whenever it sits inside the capture band.
+        return ["YOU DIED", "NIE ŻYJESZ", "D E A T H"];
     }
 
     public static List<string> CreateDefaultBossVictoryPhrases()

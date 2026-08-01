@@ -56,6 +56,26 @@ public sealed class DeathTextCaptureRegionCalculatorTests
     }
 
     [Fact]
+    public void SekiroBandFitsTheDeathKanjiInsideTheTemplateSearchWindow()
+    {
+        // Measured on a 1920x1080 Sekiro death screen: the 死 kanji spans y ~330..610 and the spaced
+        // "D E A T H" sits at ~645..665. The template matcher only searches the middle 18%..78% of the
+        // ROI, so the kanji has to fall inside that sub-band, and OCR still needs the Latin text.
+        const int kanjiTop = 330;
+        const int kanjiBottom = 610;
+        const int latinTextBottom = 665;
+
+        var region = DeathTextCaptureRegionCalculator.Calculate(1920, 1080, "Sekiro");
+        var searchTop = region.Top + (int)(region.Height * 0.18);
+        var searchBottom = region.Top + (int)(region.Height * 0.78);
+
+        Assert.True(searchTop <= kanjiTop, $"searchTop={searchTop}");
+        Assert.True(searchBottom >= kanjiBottom, $"searchBottom={searchBottom}");
+        Assert.True(region.Bottom >= latinTextBottom, $"bottom={region.Bottom}");
+        Assert.True(region.Top >= 0 && region.Bottom <= 1080);
+    }
+
+    [Fact]
     public void DefaultOverloadMatchesEldenRingGameAwareOverload()
     {
         var legacy = DeathTextCaptureRegionCalculator.Calculate(2560, 1440);

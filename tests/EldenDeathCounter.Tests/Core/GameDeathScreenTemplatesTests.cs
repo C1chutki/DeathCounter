@@ -111,4 +111,17 @@ public sealed class GameDeathScreenTemplatesTests
 
         Assert.DoesNotContain(Path.Combine("Elden Ring", "Reforge", "YouDied_Reforge.png"), files);
     }
+
+    [Theory]
+    [InlineData("PL")]
+    [InlineData("ENG")]
+    public void SekiroUsesItsOwnLanguageIndependentDeathScreenAndHasNoVictoryTemplate(string language)
+    {
+        // The 死 death screen is identical in every language, and a boss kill shows only the 忍殺 kanji,
+        // so Sekiro has one death reference and no victory reference (never Elden Ring's).
+        Assert.Equal(
+            [Path.Combine("Sekiro", "ENG_Death_Screen.png")],
+            GameDeathScreenTemplates.DeathTemplateFiles("Sekiro", language));
+        Assert.Empty(GameDeathScreenTemplates.VictoryTemplateFiles("Sekiro", language));
+    }
 }

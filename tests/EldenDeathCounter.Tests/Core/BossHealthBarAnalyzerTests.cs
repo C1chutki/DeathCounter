@@ -56,6 +56,46 @@ public sealed class BossHealthBarAnalyzerTests
         Assert.True(bar.NameRegion.Top < bar.Bar.Top);
     }
 
+    [Fact]
+    public void FindsSekiroTopLeftBossHealthBarWithNameRegionBelowTheBar()
+    {
+        // Sekiro's bar is a short crimson strip at the top-left (x ~0.06..0.28 of the screen) with the
+        // name plate *below* it, so the scan window, the span thresholds and the name band all differ
+        // from every bottom-centre game. The capture handed to the analyzer is the upper band
+        // (y 0.02..0.22 of a 2560x1440 screen), i.e. 2560x288 with the bar at crop y ~91..106.
+        var analyzer = new BossHealthBarAnalyzer();
+
+        var bars = analyzer.Analyze(2560, 288, "Sekiro", (x, y) =>
+        {
+            var bossBar = x is > 150 and < 715 && y is > 91 and < 106;
+            return bossBar ? new RgbPixel(150, 34, 30) : new RgbPixel(60, 66, 72);
+        });
+
+        var bar = Assert.Single(bars);
+        Assert.InRange(bar.Bar.Left, 130, 165);
+        Assert.InRange(bar.Bar.Right, 700, 740);
+
+        // The name "Guardian Ape" sits at crop y ~136..161, under the bar.
+        Assert.True(bar.NameRegion.Top > bar.Bar.Bottom - 8, "Sekiro's name region must sit below the bar.");
+        Assert.True(bar.NameRegion.Top <= 136 && bar.NameRegion.Bottom >= 161, "Name region must cover the name plate.");
+    }
+
+    [Fact]
+    public void EldenRingTuningMissesTheSekiroBarBecauseItScansTheBottomOfAFullFrame()
+    {
+        // Same top-left bar, but on a full frame with the default tuning: nothing is found, which is why
+        // Sekiro needs both its own capture band and its own scan window.
+        var analyzer = new BossHealthBarAnalyzer();
+
+        var bars = analyzer.Analyze(2560, 1440, (x, y) =>
+        {
+            var bossBar = x is > 150 and < 715 && y is > 120 and < 135;
+            return bossBar ? new RgbPixel(150, 34, 30) : new RgbPixel(60, 66, 72);
+        });
+
+        Assert.Empty(bars);
+    }
+
     [Theory]
     [InlineData("ENG_Boss_bar.jpg")]
     [InlineData("ENG_Boss_bar_v2.jpg")]

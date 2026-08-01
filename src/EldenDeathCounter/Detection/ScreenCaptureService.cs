@@ -79,7 +79,10 @@ public sealed class ScreenCaptureService : IScreenCaptureService
         }
     }
 
-    public Task<CapturedFrame> CaptureBossHealthBarAsync(string captureTarget, CancellationToken cancellationToken)
+    public Task<CapturedFrame> CaptureBossHealthBarAsync(string captureTarget, CancellationToken cancellationToken) =>
+        CaptureBossHealthBarAsync(captureTarget, gameId: null, cancellationToken);
+
+    public Task<CapturedFrame> CaptureBossHealthBarAsync(string captureTarget, string? gameId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -87,12 +90,13 @@ public sealed class ScreenCaptureService : IScreenCaptureService
         {
             var screen = SelectScreen(captureTarget);
             var bounds = screen.Bounds;
-            var region = BossHealthBarCaptureRegionCalculator.Calculate(bounds.Width, bounds.Height);
+            var region = BossHealthBarCaptureRegionCalculator.Calculate(bounds.Width, bounds.Height, gameId);
             var captureLeft = bounds.Left + region.Left;
             var captureTop = bounds.Top + region.Top;
-            if (!string.Equals(_loggedBossHealthBarCaptureTarget, captureTarget, StringComparison.OrdinalIgnoreCase))
+            var logKey = $"{captureTarget}|{gameId}";
+            if (!string.Equals(_loggedBossHealthBarCaptureTarget, logKey, StringComparison.OrdinalIgnoreCase))
             {
-                _loggedBossHealthBarCaptureTarget = captureTarget;
+                _loggedBossHealthBarCaptureTarget = logKey;
                 _log.Info($"Boss health bar capture region: target='{captureTarget}', screen={bounds.Width}x{bounds.Height}@{bounds.Left},{bounds.Top}, region={region}, captureLeft={captureLeft}, captureTop={captureTop}.");
             }
 

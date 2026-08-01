@@ -10,6 +10,8 @@ public sealed record AppGameProfile(string Id, string FolderName, AppGameTheme T
 
     public static AppGameProfile DarkSouls3 { get; } = new("DarkSouls3", "DarkSouls3", AppGameTheme.DarkSouls3);
 
+    public static AppGameProfile Sekiro { get; } = new("Sekiro", "Sekiro", AppGameTheme.Sekiro);
+
     public string GetDataFolderPath(string desktopPath)
     {
         return Path.Combine(desktopPath, "DeathCounter", FolderName);

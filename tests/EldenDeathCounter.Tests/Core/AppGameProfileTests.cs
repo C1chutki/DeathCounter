@@ -49,6 +49,17 @@ public sealed class AppGameProfileTests
     }
 
     [Fact]
+    public void SekiroProfileUsesSharedDesktopRootAndGameSubfolder()
+    {
+        var desktopPath = @"C:\Users\TestUser\Desktop";
+
+        Assert.Equal(@"C:\Users\TestUser\Desktop\DeathCounter\Sekiro", AppGameProfile.Sekiro.GetDataFolderPath(desktopPath));
+        Assert.Equal(@"C:\Users\TestUser\Desktop\DeathCounter\Sekiro\appsettings.json", AppGameProfile.Sekiro.GetSettingsFilePath(desktopPath));
+        Assert.Equal(@"C:\Users\TestUser\Desktop\DeathCounter\Sekiro\deaths.json", AppGameProfile.Sekiro.GetDeathDataFilePath(desktopPath));
+        Assert.Equal(@"C:\Users\TestUser\Desktop\DeathCounter\Sekiro\log.txt", AppGameProfile.Sekiro.GetLogFilePath(desktopPath));
+    }
+
+    [Fact]
     public void ProfileDefaultSettingsUseThatProfilesDataFolder()
     {
         var settings = AppSettings.CreateDefault(@"C:\Users\TestUser\Desktop", AppGameProfile.DarkSouls3);

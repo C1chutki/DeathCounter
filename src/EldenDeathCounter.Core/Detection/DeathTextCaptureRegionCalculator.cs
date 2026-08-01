@@ -15,9 +15,14 @@ public static class DeathTextCaptureRegionCalculator
             return new PixelRect(0, 0, 0, 0);
         }
 
+        // Sekiro's death signal is the tall red 死 kanji (~0.26 of screen height, centred at ~0.44) with a
+        // spaced "D E A T H" under it at ~0.60. The template matcher only searches the middle 60% of the
+        // ROI, so the band has to be roughly twice the kanji's height for it to fit, and it reaches far
+        // enough down to keep the Latin text in the OCR fallback.
         var isDarkSouls2 = string.Equals(gameId?.Trim(), "DarkSouls2", StringComparison.OrdinalIgnoreCase);
-        var heightFraction = isDarkSouls2 ? 0.24 : 0.15;
-        var centerFraction = isDarkSouls2 ? 0.72 : 0.517;
+        var isSekiro = string.Equals(gameId?.Trim(), "Sekiro", StringComparison.OrdinalIgnoreCase);
+        var heightFraction = isDarkSouls2 ? 0.24 : isSekiro ? 0.52 : 0.15;
+        var centerFraction = isDarkSouls2 ? 0.72 : isSekiro ? 0.435 : 0.517;
 
         var captureWidth = Math.Min(screenWidth, Math.Max(640, (int)Math.Round(screenWidth * 0.66)));
         var captureHeight = Math.Min(screenHeight, Math.Max(160, (int)Math.Round(screenHeight * heightFraction)));

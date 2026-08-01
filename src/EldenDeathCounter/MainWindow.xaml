@@ -794,7 +794,7 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,8">
-                    <TextBlock Text="v1.14.10"
+                    <TextBlock Text="v1.15.0"
                                FontFamily="{DynamicResource MonoFontFamily}"
                                FontSize="8.5"
                                Foreground="{DynamicResource Faint}"
@@ -829,6 +829,9 @@
                     <Button x:Name="EldenRingButton" Content="ER"
                             Style="{StaticResource GamePillActive}"
                             Click="EldenRingButton_Click" />
+                    <Button x:Name="SekiroButton" Content="SE"
+                            Style="{StaticResource GamePill}"
+                            Click="SekiroButton_Click" />
                 </StackPanel>
 
                 <!-- Section title -->

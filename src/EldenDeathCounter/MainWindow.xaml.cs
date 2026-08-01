@@ -240,6 +240,11 @@ public partial class MainWindow : Window
         await ApplyGameProfileAsync(AppGameProfile.EldenRing);
     }
 
+    private async void SekiroButton_Click(object sender, RoutedEventArgs e)
+    {
+        await ApplyGameProfileAsync(AppGameProfile.Sekiro);
+    }
+
     private async Task ApplyGameProfileAsync(AppGameProfile profile)
     {
         if (await _viewModel.SwitchGameProfileAsync(profile))
@@ -263,6 +268,7 @@ public partial class MainWindow : Window
         DarkSouls1Button.Style = profile.Id == AppGameProfile.DarkSouls1.Id ? active : inactive;
         DarkSouls2Button.Style = profile.Id == AppGameProfile.DarkSouls2.Id ? active : inactive;
         DarkSouls3Button.Style = profile.Id == AppGameProfile.DarkSouls3.Id ? active : inactive;
+        SekiroButton.Style = profile.Id == AppGameProfile.Sekiro.Id ? active : inactive;
     }
 
     private void ApplyGameTheme(AppGameTheme theme)

@@ -16,6 +16,7 @@ public static class GameDeathScreenTemplates
     private const string DarkSouls3FolderName = "Dark souls 3";
     private const string DarkSouls2FolderName = "Dark souls 2";
     private const string EldenRingFolderName = "Elden Ring";
+    private const string SekiroFolderName = "Sekiro";
 
     public static IReadOnlyList<string> DeathTemplateFiles(string gameId, string language) =>
         DeathTemplateFiles(gameId, language, BossHealthBarStyles.Vanilla);
@@ -37,6 +38,13 @@ public static class GameDeathScreenTemplates
             // Dark Souls II renders "YOU DIED" in English regardless of language, and we only have the
             // English reference, so DS2 always uses it and never falls back to the Elden Ring screens.
             return [Ds2("ENG_YouDied.jpg")];
+        }
+
+        if (IsSekiro(gameId))
+        {
+            // Sekiro's death screen is the red 死 kanji with a spaced "D E A T H" beneath it, identical
+            // in every language, so one reference is enough and Elden Ring's screens never apply.
+            return [Se("ENG_Death_Screen.png")];
         }
 
         IReadOnlyList<string> files = IsPolish(language)
@@ -63,6 +71,14 @@ public static class GameDeathScreenTemplates
             return [];
         }
 
+        if (IsSekiro(gameId))
+        {
+            // Sekiro's boss kill shows only the 忍殺 kanji (no Latin text), so there is no victory
+            // template or phrase to match; boss victories are recorded from the bar disappearing or
+            // from the manual hotkey.
+            return [];
+        }
+
         if (IsDarkSouls3(gameId))
         {
             return
@@ -82,6 +98,11 @@ public static class GameDeathScreenTemplates
     private static string Ds2(string file) => Path.Combine(DarkSouls2FolderName, file);
 
     private static string Er(string file) => Path.Combine(EldenRingFolderName, file);
+
+    private static string Se(string file) => Path.Combine(SekiroFolderName, file);
+
+    public static bool IsSekiro(string? gameId) =>
+        string.Equals(gameId?.Trim(), "Sekiro", StringComparison.OrdinalIgnoreCase);
 
     private static bool IsDarkSouls3(string? gameId) =>
         string.Equals(gameId?.Trim(), "DarkSouls3", StringComparison.OrdinalIgnoreCase);
