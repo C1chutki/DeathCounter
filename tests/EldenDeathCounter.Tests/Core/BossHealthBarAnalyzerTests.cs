@@ -268,6 +268,33 @@ public sealed class BossHealthBarAnalyzerTests
         Assert.Single(ds2);
     }
 
+    [Fact]
+    public void FindsSekiroTopLeftBossHealthBarWithNameRegionBelowIt()
+    {
+        // Sekiro's bar is a short crimson strip at the top-left (x ~150..500, y ~115..130 at 1440p) with
+        // "Leader Shigenori Yamauchi" *below* it. Elden Ring's tuning finds nothing here: its scan window
+        // starts at y0.70 and demands a 0.32-width span.
+        var analyzer = new BossHealthBarAnalyzer();
+        using var bitmap = new Bitmap(GetAssetPath(Path.Combine("Sekiro", "ENG_Boss_Bar.jpg")));
+
+        RgbPixel Sample(int x, int y)
+        {
+            var pixel = bitmap.GetPixel(x, y);
+            return new RgbPixel(pixel.R, pixel.G, pixel.B);
+        }
+
+        var bars = analyzer.Analyze(bitmap.Width, bitmap.Height, "Sekiro", Sample);
+
+        var bar = Assert.Single(bars);
+        Assert.InRange(bar.Bar.Top, 100, 135);
+        Assert.InRange(bar.Bar.Left, 130, 175);
+        Assert.True(bar.NameRegion.Top >= bar.Bar.Bottom, "Sekiro's name plate sits below the bar.");
+        Assert.True(
+            bar.NameRegion.Bottom >= 180,
+            $"Name region bottom {bar.NameRegion.Bottom} should cover the name text (~y 150..185).");
+        Assert.Empty(analyzer.Analyze(bitmap.Width, bitmap.Height, "EldenRing", Sample));
+    }
+
     private static string GetAssetPath(string assetName)
     {
         return Path.GetFullPath(Path.Combine(

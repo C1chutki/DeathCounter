@@ -2,6 +2,8 @@
 
 ## 2026-08-01
 
+- Dodano referencyjne screeny Sekiro (`Assets/Sekiro/ENG_Boss_Bar.jpg`, `ENG_Death_Screen.png`) — wcześniej kod odwoływał się do ekranu śmierci, którego nie było na dysku. Dołożono testy regresyjne na prawdziwych obrazach: wykrycie paska bossa u góry ekranu z regionem nazwy pod paskiem (i brak wykrycia przy tuningu Elden Ring) oraz zbudowanie i dopasowanie szablonu 死 w ROI Sekiro. Wersję podniesiono do 1.15.1.
+
 - Dodano profil gry Sekiro: przycisk „SE" w pasku gier, motyw w czerwieni kanji 死, własny folder danych, okno przechwytywania procesu `sekiro`, angielska lista bossów oraz detekcja dostosowana do Sekiro (pasek bossa u góry ekranu z nazwą pod paskiem, ekran śmierci 死 / „D E A T H"). Wersję podniesiono do 1.15.0.
 
 ## 2026-07-14
