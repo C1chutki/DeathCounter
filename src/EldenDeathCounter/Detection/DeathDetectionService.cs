@@ -282,7 +282,11 @@ public sealed class DeathDetectionService
                         LogWeakImageSignal(imageSignal);
                     }
 
-                    if (!signal.IsMatch && DetectionOcrGate.ShouldRunOcr(imageSignal, _deathSignalStabilizer.IsPending))
+                    // Sekiro's resurrection-eligible death uses the same glyph in white/gray, so OCR
+                    // cannot distinguish it from the red final-death signal and must not confirm it.
+                    if (!signal.IsMatch &&
+                        !GameDeathScreenTemplates.IsSekiro(settings.GameId) &&
+                        DetectionOcrGate.ShouldRunOcr(imageSignal, _deathSignalStabilizer.IsPending))
                     {
                         ocrText = await RecognizeFrameTextAsync();
                         match = _phraseMatcher.Match(ocrText, settings.DetectionPhrases, settings.DetectionSensitivity);

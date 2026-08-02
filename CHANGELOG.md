@@ -2,6 +2,8 @@
 
 ## 2026-08-02
 
+- Zabezpieczono licznik Sekiro przed zaliczaniem pierwszej śmierci z możliwością wskrzeszenia: biały lub szary znak 死 nie przechodzi czerwonego profilu obrazu, a OCR nie może już samodzielnie potwierdzić śmierci w tym profilu gry. Dodano test regresyjny znaku w skali szarości; wersję podniesiono do 1.15.3.
+
 - Poprawiono wykrywanie śmierci w Sekiro przez ładowanie czterech referencji kolejnych faz rozjaśniania i wygaszania znaku 死. Dodano test regresyjny wszystkich referencji na produkcyjnym analizatorze OpenCV; wersję podniesiono do 1.15.2.
 
 ## 2026-08-01

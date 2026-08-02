@@ -31,6 +31,29 @@ public sealed class OpenCvDeathTextTemplateAnalyzerTests
     }
 
     [Fact]
+    public void IgnoresGraySekiroDeathKanji()
+    {
+        using var bitmap = new Bitmap(GetAssetPath(Path.Combine("Sekiro", "ENG_Death_Screen_v3.png")));
+        var template = CreateTemplate(bitmap, "ENG_Death_Screen_v3.png", "Sekiro");
+        var capture = DeathTextCaptureRegionCalculator.Calculate(bitmap.Width, bitmap.Height, "Sekiro");
+        var analyzer = new OpenCvDeathTextTemplateAnalyzer();
+
+        var result = WithLockedPixels(bitmap, getPixel => analyzer.Analyze(
+            capture.Width,
+            capture.Height,
+            (x, y) =>
+            {
+                var pixel = getPixel(capture.Left + x, capture.Top + y);
+                var gray = (byte)((pixel.R + pixel.G + pixel.B) / 3);
+                return new RgbPixel(gray, gray, gray);
+            },
+            [template],
+            0.8));
+
+        Assert.False(result.IsMatch, $"score={result.Score:0.000}, details={result.Details}");
+    }
+
+    [Fact]
     public void MatchesMaintainedEnglishDeathScreenQuickly()
     {
         var screenshotPath = GetAssetPath(Path.Combine("Elden Ring", "ENG_Death_Screen_v9.png"));
