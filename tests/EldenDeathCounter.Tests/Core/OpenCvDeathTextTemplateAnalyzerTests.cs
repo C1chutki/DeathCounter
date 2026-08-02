@@ -8,6 +8,28 @@ namespace EldenDeathCounter.Tests.Core;
 
 public sealed class OpenCvDeathTextTemplateAnalyzerTests
 {
+    [Theory]
+    [InlineData("ENG_Death_Screen.png")]
+    [InlineData("ENG_Death_Screen_v2.png")]
+    [InlineData("ENG_Death_Screen_v3.png")]
+    [InlineData("ENG_Death_Screen_v4.png")]
+    public void MatchesSekiroDeathFadeStages(string fileName)
+    {
+        using var bitmap = new Bitmap(GetAssetPath(Path.Combine("Sekiro", fileName)));
+        var template = CreateTemplate(bitmap, fileName, "Sekiro");
+        var capture = DeathTextCaptureRegionCalculator.Calculate(bitmap.Width, bitmap.Height, "Sekiro");
+        var analyzer = new OpenCvDeathTextTemplateAnalyzer();
+
+        var result = WithLockedPixels(bitmap, getPixel => analyzer.Analyze(
+            capture.Width,
+            capture.Height,
+            (x, y) => getPixel(capture.Left + x, capture.Top + y),
+            [template],
+            0.8));
+
+        Assert.True(result.IsMatch, $"file={fileName}, score={result.Score:0.000}, scale={result.Scale:0.00}, details={result.Details}");
+    }
+
     [Fact]
     public void MatchesMaintainedEnglishDeathScreenQuickly()
     {
@@ -73,9 +95,9 @@ public sealed class OpenCvDeathTextTemplateAnalyzerTests
         Assert.False(result.IsMatch, $"score={result.Score:0.000}, details={result.Details}");
     }
 
-    private static DeathTextTemplate CreateTemplate(Bitmap bitmap, string name)
+    private static DeathTextTemplate CreateTemplate(Bitmap bitmap, string name, string? gameId = null)
     {
-        var crop = DeathTextTemplateReferenceRegion.DeathScreen(bitmap.Width, bitmap.Height);
+        var crop = DeathTextTemplateReferenceRegion.DeathScreen(bitmap.Width, bitmap.Height, gameId);
 
         return WithLockedPixels(bitmap, getPixel => DeathTextTemplate.FromReference(
             name,

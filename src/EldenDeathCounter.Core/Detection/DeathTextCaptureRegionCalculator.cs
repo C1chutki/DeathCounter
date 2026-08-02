@@ -21,7 +21,7 @@ public static class DeathTextCaptureRegionCalculator
         // enough down to keep the Latin text in the OCR fallback.
         var isDarkSouls2 = string.Equals(gameId?.Trim(), "DarkSouls2", StringComparison.OrdinalIgnoreCase);
         var isSekiro = string.Equals(gameId?.Trim(), "Sekiro", StringComparison.OrdinalIgnoreCase);
-        var heightFraction = isDarkSouls2 ? 0.24 : isSekiro ? 0.52 : 0.15;
+        var heightFraction = isDarkSouls2 ? 0.24 : isSekiro ? 0.64 : 0.15;
         var centerFraction = isDarkSouls2 ? 0.72 : isSekiro ? 0.435 : 0.517;
 
         var captureWidth = Math.Min(screenWidth, Math.Max(640, (int)Math.Round(screenWidth * 0.66)));

@@ -43,8 +43,14 @@ public static class GameDeathScreenTemplates
         if (IsSekiro(gameId))
         {
             // Sekiro's death screen is the red 死 kanji with a spaced "D E A T H" beneath it, identical
-            // in every language, so one reference is enough and Elden Ring's screens never apply.
-            return [Se("ENG_Death_Screen.png")];
+            // in every language. Multiple fade stages cover its changing brightness and glow.
+            return
+            [
+                Se("ENG_Death_Screen.png"),
+                Se("ENG_Death_Screen_v2.png"),
+                Se("ENG_Death_Screen_v3.png"),
+                Se("ENG_Death_Screen_v4.png")
+            ];
         }
 
         IReadOnlyList<string> files = IsPolish(language)

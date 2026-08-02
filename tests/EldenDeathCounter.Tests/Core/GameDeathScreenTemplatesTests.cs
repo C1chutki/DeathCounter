@@ -10,6 +10,8 @@ public sealed class GameDeathScreenTemplatesTests
 
     private static string Er(string file) => Path.Combine("Elden Ring", file);
 
+    private static string Se(string file) => Path.Combine("Sekiro", file);
+
     [Fact]
     public void DarkSouls2DeathTemplatesUseEnglishYouDiedAndNeverEldenRingScreens()
     {
@@ -118,9 +120,14 @@ public sealed class GameDeathScreenTemplatesTests
     public void SekiroUsesItsOwnLanguageIndependentDeathScreenAndHasNoVictoryTemplate(string language)
     {
         // The 死 death screen is identical in every language, and a boss kill shows only the 忍殺 kanji,
-        // so Sekiro has one death reference and no victory reference (never Elden Ring's).
+        // so Sekiro shares its fade-stage references and has no victory reference (never Elden Ring's).
         Assert.Equal(
-            [Path.Combine("Sekiro", "ENG_Death_Screen.png")],
+            [
+                Se("ENG_Death_Screen.png"),
+                Se("ENG_Death_Screen_v2.png"),
+                Se("ENG_Death_Screen_v3.png"),
+                Se("ENG_Death_Screen_v4.png")
+            ],
             GameDeathScreenTemplates.DeathTemplateFiles("Sekiro", language));
         Assert.Empty(GameDeathScreenTemplates.VictoryTemplateFiles("Sekiro", language));
     }

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-08-02
+
+- Poprawiono wykrywanie śmierci w Sekiro przez ładowanie czterech referencji kolejnych faz rozjaśniania i wygaszania znaku 死. Dodano test regresyjny wszystkich referencji na produkcyjnym analizatorze OpenCV; wersję podniesiono do 1.15.2.
+
 ## 2026-08-01
 
 - Dodano referencyjne screeny Sekiro (`Assets/Sekiro/ENG_Boss_Bar.jpg`, `ENG_Death_Screen.png`) — wcześniej kod odwoływał się do ekranu śmierci, którego nie było na dysku. Dołożono testy regresyjne na prawdziwych obrazach: wykrycie paska bossa u góry ekranu z regionem nazwy pod paskiem (i brak wykrycia przy tuningu Elden Ring) oraz zbudowanie i dopasowanie szablonu 死 w ROI Sekiro. Wersję podniesiono do 1.15.1.
